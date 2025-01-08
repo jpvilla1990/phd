@@ -2,6 +2,11 @@ datasets:
   ET:
     url: "https://github.com/zhouhaoyi/ETDataset"
     type: "gitRepository"
+    subdatasets:
+      ETTh1: ["ETT-small", "ETTh1.csv"]
+      ETTh2: ["ETT-small", "ETTh2.csv"]
+      ETTm1: ["ETT-small", "ETTm1.csv"]
+      ETTm2: ["ETT-small", "ETTm2.csv"]
   electricityUCI:
     url: "https://archive.ics.uci.edu/dataset/321/electricityloaddiagrams20112014"
   weatherMaxPlanckInstitut:

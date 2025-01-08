@@ -2,6 +2,8 @@ import os
 from utils.fileSystem import FileSystem
 from utils.utils import Utils
 from exceptions.datasetException import DatasetException
+from datasets.datasetDownloader import DatasetDownloader
+from datasets.datasetIterator import DatasetIterator
 
 class Datasets(FileSystem):
     """
@@ -10,45 +12,60 @@ class Datasets(FileSystem):
     def __init__(self):
         super().__init__()
         self.__datasets : dict = self._getConfig()["datasets"]
-        self.__datasetConfig : dict = self.__loadDatasetConfig()
 
     def __loadDatasetConfig(self) -> dict:
         """
         Method to load dataset config
         """
-        return Utils.readYaml(
+        datasetConfig : dict = Utils.readYaml(
             self._getFiles()["datasets"]
         )
+        return datasetConfig if type(datasetConfig) == dict else dict()
+
+    def __writeDatasetConfig(self, entry : dict):
+        """
+        Method to write in dataset config
+        """
+        Utils.writeYaml(
+            self._getFiles()["datasets"],
+            self.__loadDatasetConfig() | entry,
+        )
     
-    def __verifyDatasetIsDownloaded(self, dataset : str, type : str) -> bool:
+    def __verifyDatasetIsDownloaded(self, dataset : str) -> bool:
         """
         Method to verify if dataset is already downloaded
         """
-        if dataset in self.__datasetConfig:
+        if dataset in self.__loadDatasetConfig():
             return True
         else:
-            datasetConfigDict : dict = {
-                "path" : os.path.join(self._getPaths["datasets"], dataset)
-            }
-            self.__datasetConfig[dataset] = datasetConfigDict
             return False
 
     def loadDataset(self, dataset : str, forceDownload : bool = False):
         """
         Method to load dataset
         """
-        self.__datasetConfig : dict = self.__loadDatasetConfig()
-
         if dataset not in self.__datasets:
             raise DatasetException(f"Dataset {dataset} does not exists")
 
-        datasetDict : dict = self.__datasets[dataset]
+        if not self.__verifyDatasetIsDownloaded(dataset):
+            datasetDownloader : DatasetDownloader = DatasetDownloader(
+                dataset,
+                self.__datasets[dataset],
+            )
+            datasetPath : str = datasetDownloader.downloadDataset()
 
-        type : str = datasetDict["type"]
+            datasetConfig : dict = {
+                subDataset: os.path.join(
+                    datasetPath,
+                    *self.__datasets[dataset]["subdatasets"][subDataset]
+                ) for subDataset in self.__datasets[dataset]["subdatasets"]
+            }
 
-        if type == "gitRepository":
-            print(datasetDict["url"])
-        else:
-            raise DatasetException(f"Type {type} on dataset {dataset} is not supported")
-
-        datasetDownloaded : bool = self.__verifyDatasetIsDownloaded(dataset, type)
+            self.__writeDatasetConfig(
+                {dataset : datasetConfig}
+            )
+        
+        return DatasetIterator(
+            dataset,
+            self.__loadDatasetConfig()[dataset],
+        )

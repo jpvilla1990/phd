@@ -46,7 +46,7 @@ class FileSystem(object):
 
         return paths
 
-    def __deleteFolder(self, folder : str):
+    def _deleteFolder(self, folder : str):
         """
         Private method to delete a folder
         """
@@ -77,7 +77,7 @@ class FileSystem(object):
         if folderKey not in self.__paths:
             raise Exception("Folder " + folderKey + " does not exists")
         else:
-            self.__deleteFolder(self.__paths[folderKey])
+            self._deleteFolder(self.__paths[folderKey])
             self._createFolder(self.__paths[folderKey])
 
     def _getFiles(self) -> dict:
@@ -97,6 +97,15 @@ class FileSystem(object):
         Private method to get config
         """
         return self.__config
+
+    def _createPath(self, *subdicts : str) -> str:
+        """
+        Method to create a path based on a list of subdicts
+        """
+        path : dict = os.path.join(*subdicts)
+        self._createFolder(path)
+
+        return path
 
     def _createFolder(self, folderName : str):
         """
