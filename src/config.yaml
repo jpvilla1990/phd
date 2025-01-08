@@ -1,0 +1,29 @@
+datasets:
+  ET:
+    url: "https://github.com/zhouhaoyi/ETDataset"
+    type: "gitRepository"
+  electricityUCI:
+    url: "https://archive.ics.uci.edu/dataset/321/electricityloaddiagrams20112014"
+  weatherMaxPlanckInstitut:
+    url: "https://www.bgc-jena.mpg.de/wetter"
+  m4-weekly:
+    url: "https://zenodo.org/records/4656480"
+    dataset : "monash"
+  trafficCalifornia:
+    url: "https://pems.dot.ca.gov"
+  IllnessSurveillance:
+    url: "https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html"
+  solarEnergy:
+    url: "https://zenodo.org/records/4656151"
+    dataset: "monash"
+  power:
+    url: "https://www.kaggle.com/datasets/dharanikra/electrical-power-demand-in-turkey"
+    dataset: "kaggle"
+  trafficInstanbul:
+    url: "https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html"
+    dataset: "kaggle"
+paths:
+  data: ["data"]
+  datasets: ["data", "datasets"]
+files:
+  datasets: ["data", "datasets", "datasets.yaml"]
