@@ -47,7 +47,7 @@ class Datasets(FileSystem):
         if dataset not in self.__datasets:
             raise DatasetException(f"Dataset {dataset} does not exists")
 
-        if not self.__verifyDatasetIsDownloaded(dataset):
+        if not self.__verifyDatasetIsDownloaded(dataset) or forceDownload:
             datasetDownloader : DatasetDownloader = DatasetDownloader(
                 dataset,
                 self.__datasets[dataset],
@@ -68,4 +68,6 @@ class Datasets(FileSystem):
         return DatasetIterator(
             dataset,
             self.__loadDatasetConfig()[dataset],
+            self.__datasets[dataset]["separator"],
+            self.__datasets[dataset]["decimal"],
         )

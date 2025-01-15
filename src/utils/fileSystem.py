@@ -1,5 +1,6 @@
 import os
 import shutil
+import zipfile
 from pathlib import Path
 from utils.utils import Utils
 
@@ -61,14 +62,20 @@ class FileSystem(object):
         """
         return os.path.exists(filePath)
 
-    def _deleteFile(self, fileKey : str):
+    def _deleteFileFromFiles(self, fileKey : str):
         """
         Protected Method to delete a file
         """
         if fileKey not in self.__files:
             raise Exception("File " + fileKey + " does not exists")
         else:
-            os.remove(self.__files[fileKey])
+            self._deleteFile(self.__files[fileKey])
+
+    def _deleteFile(self, filePath : str):
+        """
+        Protected Method to delete a file
+        """
+        os.remove(filePath)
 
     def _deleteFolderContent(self, folderKey : str):
         """
@@ -112,6 +119,13 @@ class FileSystem(object):
         Public method to create a folder
         """
         os.makedirs(folderName, exist_ok=True)
+
+    def _unzipFile(self, zipFile : str, path : str):
+        """
+        Method to unzip file
+        """
+        with zipfile.ZipFile(zipFile, "r") as zipRef:
+            zipRef.extractall(path)
 
     def _saveFile(self, fileName : str, content : list):
         """
