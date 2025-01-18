@@ -3,12 +3,12 @@ from datasets.datasets import Datasets
 
 dataset : Datasets = Datasets()
 
-#iterator = dataset.loadDataset("ET")
+iterator = dataset.loadDataset("ET", True)
 #iterator.getDatasetSizes()
 #samples : list = iterator.loadSamples("ETTh2", 30, ["HUFL", "HULL"])
 #print(samples)
 
-iterator = dataset.loadDataset("electricityUCI")
+iterator = dataset.loadDataset("electricityUCI",True)
 iterator.setSampleSize(16)
 #iterator.getAvailableFeatures("electricity")
 startTime = time.perf_counter()

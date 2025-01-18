@@ -1,4 +1,6 @@
 __pycache__
+.pytest_cache
 src/ChatTime
 src/data
+src/reports
 .venv

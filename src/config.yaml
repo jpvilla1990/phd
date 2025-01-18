@@ -26,7 +26,7 @@ datasets:
   IllnessSurveillance:
     url: "https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html"
   solarEnergy:
-    url: "https://zenodo.org/records/4656151"
+    url: "https://zenodo.org/records/4656151/files/solar_weekly_dataset.zip?download=1"
     dataset: "monash"
   power:
     url: "https://www.kaggle.com/datasets/dharanikra/electrical-power-demand-in-turkey"
