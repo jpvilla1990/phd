@@ -2,6 +2,7 @@ datasets:
   ET:
     url: "https://github.com/zhouhaoyi/ETDataset"
     type: "gitRepository"
+    format: csv
     separator: ","
     decimal: "."
     subdatasets:
@@ -12,6 +13,7 @@ datasets:
   electricityUCI:
     url: "https://archive.ics.uci.edu/static/public/321/electricityloaddiagrams20112014.zip"
     type: "zip"
+    format: csv
     separator: ";"
     decimal: ","
     subdatasets:
@@ -20,20 +22,28 @@ datasets:
     url: "https://www.bgc-jena.mpg.de/wetter"
   m4-weekly:
     url: "https://zenodo.org/records/4656480"
-    dataset : "monash"
   trafficCalifornia:
     url: "https://pems.dot.ca.gov"
   IllnessSurveillance:
     url: "https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html"
   solarEnergy:
     url: "https://zenodo.org/records/4656151/files/solar_weekly_dataset.zip?download=1"
-    dataset: "monash"
+    type: "zip"
+    format: monash
+    separator: ","
+    decimal: "."
+    periodicity:
+      week: 1
+    subdatasets:
+      solarEnergy: ["solar_weekly_dataset.tsf"]
   power:
     url: "https://www.kaggle.com/datasets/dharanikra/electrical-power-demand-in-turkey"
-    dataset: "kaggle"
+    format: "kaggle"
   trafficInstanbul:
     url: "https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html"
-    dataset: "kaggle"
+    format: "kaggle"
+monash:
+  timeFormat: "%Y-%m-%d %H-%M-%S"
 paths:
   data: ["data"]
   datasets: ["data", "datasets"]

@@ -4,6 +4,7 @@ from utils.utils import Utils
 from exceptions.datasetException import DatasetException
 from datasets.datasetDownloader import DatasetDownloader
 from datasets.datasetIterator import DatasetIterator
+from datasets.monashPreparer import MonashPreparer
 
 class Datasets(FileSystem):
     """
@@ -53,7 +54,6 @@ class Datasets(FileSystem):
                 self.__datasets[dataset],
             )
             datasetPath : str = datasetDownloader.downloadDataset()
-
             datasetConfig : dict = {
                 subDataset: os.path.join(
                     datasetPath,
@@ -61,13 +61,21 @@ class Datasets(FileSystem):
                 ) for subDataset in self.__datasets[dataset]["subdatasets"]
             }
 
+            datasetFormat : str = self.__datasets[dataset]["format"]
+            if datasetFormat == "csv":
+                pass
+            elif datasetFormat == "monash":
+                monashPreparer : MonashPreparer = MonashPreparer(dataset)
+                datasetConfig = monashPreparer.prepare(datasetConfig)
+            else:
+                raise DatasetException(f"Format {datasetFormat} is not supported in dataset {dataset}")
+            
             self.__writeDatasetConfig(
                 {dataset : datasetConfig}
             )
-        
+
         return DatasetIterator(
             dataset,
             self.__loadDatasetConfig()[dataset],
-            self.__datasets[dataset]["separator"],
-            self.__datasets[dataset]["decimal"],
+            self.__datasets[dataset],
         )

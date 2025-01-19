@@ -3,14 +3,10 @@ from datasets.datasets import Datasets
 
 dataset : Datasets = Datasets()
 
-iterator = dataset.loadDataset("ET", True)
-#iterator.getDatasetSizes()
-#samples : list = iterator.loadSamples("ETTh2", 30, ["HUFL", "HULL"])
-#print(samples)
-
-iterator = dataset.loadDataset("electricityUCI",True)
+iterator = dataset.loadDataset("solarEnergy")
+raise Exception("finished")
 iterator.setSampleSize(16)
-#iterator.getAvailableFeatures("electricity")
+iterator.getAvailableFeatures("electricity")
 startTime = time.perf_counter()
 samples : list = iterator.loadSample("electricity",1 , 20, ["MT_002", "MT_231"])
 

@@ -31,7 +31,7 @@ class DatasetDownloader(FileSystem):
             raise DatasetException(
                 f"Repository {url} could not be cloned, Error: {str(e)}"
             )
-        
+
     def __downloadFile(self, url : str, path : str):
         """
         Method to download file
