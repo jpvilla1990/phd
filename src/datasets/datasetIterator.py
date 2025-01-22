@@ -12,10 +12,10 @@ class DatasetIterator(object):
         self.__name : str = name
         self.__sampleSize : int = 1
 
-        self.__indexIterator : dict = {subDataset : [] for subDataset in self.__datasets}
+        self.__features : dict = {}
+        self.__datasetSizes : dict = {}
 
-        self.__datasetSizes : dict = {subDataset : self.__getDatasetSize(subDataset) for subDataset in self.__datasets}
-        self.__features : dict = {subDataset : self.getAvailableFeatures(subDataset) for subDataset in self.__datasets}
+        self.__indexIterator : dict = {subDataset : [] for subDataset in self.__datasets}
 
     def __str__(self) -> str:
         return self.__name
@@ -55,11 +55,12 @@ class DatasetIterator(object):
         Method to set sample size
         """
         self.__sampleSize = sampleSize
-    
+
     def getDatasetSizes(self) -> dict:
         """
         Method to get sizes of all datasets
         """
+        self.__datasetSizes = {subDataset : self.__getDatasetSize(subDataset) for subDataset in self.__datasets}
         return self.__datasetSizes
 
     def getAvailableFeatures(self, subdataset : str) -> dict:
@@ -92,12 +93,15 @@ class DatasetIterator(object):
         """
         Method to load samples
         """
+        self.__features[subdataset] = self.getAvailableFeatures(subdataset)
+
+        self.__datasetSizes[subdataset] = self.__getDatasetSize(subdataset)
         sample : pd.core.frame.DataFrame = None
         featuresIndices : list = None
         maxNumberSamples : int = self.__datasetSizes[subdataset]["numberObservations"]
 
         if len(features) == 0:
-            featuresIndices = [value for _, value in enumerate(self.__features[subdataset])]
+            featuresIndices = [self.__features[subdataset][key] for key in self.__features[subdataset]]
         else:
             featuresIndices = [self.__features[subdataset][feature] for feature in features]
 
@@ -137,15 +141,16 @@ class DatasetIterator(object):
             sample.index = sampleIndices
 
         return sample
-    
+
     def resetIteration(self, subdataset : str, randomOrder : bool = False):
         """
         Method to reset dataset iteration
         """
+        self.__datasetSizes[subdataset] = self.__getDatasetSize(subdataset)
         self.__indexIterator[subdataset] = []
         maxNumberSamples : int = self.__datasetSizes[subdataset]["numberObservations"]
 
-        indexIterator : list = [index for index in range(1, maxNumberSamples + 1, self.__sampleSize)]
+        indexIterator : list = [index for index in range(1, maxNumberSamples - self.__sampleSize + 2)]
 
         if randomOrder:
             random.shuffle(indexIterator)

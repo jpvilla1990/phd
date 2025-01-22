@@ -31,7 +31,7 @@ class Datasets(FileSystem):
             self._getFiles()["datasets"],
             self.__loadDatasetConfig() | entry,
         )
-    
+
     def __verifyDatasetIsDownloaded(self, dataset : str) -> bool:
         """
         Method to verify if dataset is already downloaded
@@ -69,7 +69,7 @@ class Datasets(FileSystem):
                 datasetConfig = monashPreparer.prepare(datasetConfig)
             else:
                 raise DatasetException(f"Format {datasetFormat} is not supported in dataset {dataset}")
-            
+
             self.__writeDatasetConfig(
                 {dataset : datasetConfig}
             )

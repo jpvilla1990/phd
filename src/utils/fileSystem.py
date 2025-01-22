@@ -92,7 +92,7 @@ class FileSystem(object):
         Public method to get files
         """
         return self.__files
-    
+
     def _getPaths(self) -> dict:
         """
         Public method to get paths

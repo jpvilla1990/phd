@@ -3,7 +3,14 @@ from datasets.datasets import Datasets
 
 dataset : Datasets = Datasets()
 
-iterator = dataset.loadDataset("solarEnergy")
+iterator = dataset.loadDataset("m4-monthly")
+iterator.setSampleSize(16)
+iterator.resetIteration("T1", True)
+while True:
+    a = iterator.iterateDataset("T1")
+    print(a)
+    if a is None:
+        break
 raise Exception("finished")
 iterator.setSampleSize(16)
 iterator.getAvailableFeatures("electricity")

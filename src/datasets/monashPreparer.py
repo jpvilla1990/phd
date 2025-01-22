@@ -21,7 +21,7 @@ class MonashPreparer(FileSystem):
 
         for subdataset in datasetConfig:
             datasetLineFound = False
-            with open(datasetConfig[subdataset], "r") as datasetFile:
+            with open(datasetConfig[subdataset], "r", encoding="utf-8", errors="replace") as datasetFile:
                 while True:
                     nextLine : str = datasetFile.readline()
                     if nextLine is None:
@@ -56,7 +56,7 @@ class MonashPreparer(FileSystem):
                         })
 
         return newDatasetConfig
-                        
+
 
 
 
