@@ -46,10 +46,16 @@ datasets:
       solarEnergy: ["solar_weekly_dataset.tsf"]
   power:
     url: "https://www.kaggle.com/datasets/dharanikra/electrical-power-demand-in-turkey"
-    format: "kaggle"
+    type: "kaggle"
+    datasetName: "dharanikra/electrical-power-demand-in-turkey"
+    format: "csv"
+    separator: ","
+    decimal: "."
+    subdatasets:
+      power : ["power Generation and consumption.csv"]
   trafficInstanbul:
     url: "https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html"
-    format: "kaggle"
+    type: "kaggle"
 monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 paths:

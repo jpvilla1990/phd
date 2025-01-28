@@ -61,6 +61,12 @@ class FileSystem(object):
         Private method to check if file exists
         """
         return os.path.exists(filePath)
+    
+    def _moveFolder(self, folderPath : str, destinationPath : str):
+        """
+        Private method to move folder from one location to other
+        """
+        shutil.move(folderPath, destinationPath)
 
     def _deleteFileFromFiles(self, fileKey : str):
         """

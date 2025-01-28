@@ -1,7 +1,7 @@
 import os
 import requests
-import zipfile
 from git import Repo
+import kagglehub
 from utils.fileSystem import FileSystem
 from exceptions.datasetException import DatasetException
 
@@ -11,7 +11,7 @@ class DatasetDownloader(FileSystem):
     """
     def __init__(self, datasetName : str, datasetParams : dict):
         super().__init__()
-        self.__url : str = datasetParams["url"]
+        self.__datasetParams : dict = datasetParams
         self.__datasetName : str = datasetName
         self.__typeDataset : str = datasetParams["type"]
         self.__datasetPath : str = self._createPath(
@@ -58,6 +58,14 @@ class DatasetDownloader(FileSystem):
         self._unzipFile(zipFile, self.__datasetPath)
         self._deleteFile(zipFile)
 
+    def __downloadKaggle(self, url : str):
+        """
+        Method to download kaggle dataset
+        """
+        self._deleteFolder(self.__datasetPath)
+        path : str = kagglehub.dataset_download(self.__datasetParams["datasetName"])
+        self._moveFolder(path, self.__datasetPath)
+
     def downloadDataset(self) -> str:
         """
         Method to download dataset
@@ -65,9 +73,11 @@ class DatasetDownloader(FileSystem):
         return str path where dataset is downloaded
         """
         if self.__typeDataset == "gitRepository":
-            self.__prepareGitRepository(self.__url)
+            self.__prepareGitRepository(self.__datasetParams["url"])
         elif self.__typeDataset == "zip":
-            self.__downloadZip(self.__url)
+            self.__downloadZip(self.__datasetParams["url"])
+        elif self.__typeDataset == "kaggle":
+            self.__downloadKaggle(self.__datasetParams["url"])
         else:
             raise DatasetException(
                 f"Type {self.__typeDataset} on dataset {self.__datasetName} is not supported"

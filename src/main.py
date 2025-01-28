@@ -3,11 +3,11 @@ from datasets.datasets import Datasets
 
 dataset : Datasets = Datasets()
 
-iterator = dataset.loadDataset("m4-monthly")
+iterator = dataset.loadDataset("power")
 iterator.setSampleSize(16)
-iterator.resetIteration("T1", True)
+iterator.resetIteration("power", True)
 while True:
-    a = iterator.iterateDataset("T1")
+    a = iterator.iterateDataset("power")
     print(a)
     if a is None:
         break

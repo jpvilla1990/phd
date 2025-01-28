@@ -16,6 +16,7 @@ class TestDataset(object):
             "electricityUCI",
             "solarEnergy",
             "m4-monthly",
+            "power",
         ]
         self.__fileSystem : FileSystem = FileSystem()
         datasetConfig : dict = Utils.readYaml(
