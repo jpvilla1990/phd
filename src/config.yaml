@@ -18,8 +18,6 @@ datasets:
     decimal: ","
     subdatasets:
       electricity: ["LD2011_2014.txt"]
-  weatherMaxPlanckInstitut:
-    url: "https://www.bgc-jena.mpg.de/wetter"
   m4-monthly:
     url: "https://zenodo.org/records/4656480/files/m4_monthly_dataset.zip?download=1"
     type: "zip"
@@ -30,10 +28,6 @@ datasets:
       month: 1
     subdatasets:
       m4-monthly: ["m4_monthly_dataset.tsf"]
-  trafficCalifornia:
-    url: "https://pems.dot.ca.gov"
-  IllnessSurveillance:
-    url: "https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html"
   solarEnergy:
     url: "https://zenodo.org/records/4656151/files/solar_weekly_dataset.zip?download=1"
     type: "zip"
@@ -53,9 +47,6 @@ datasets:
     decimal: "."
     subdatasets:
       power : ["power Generation and consumption.csv"]
-  trafficInstanbul:
-    url: "https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html"
-    type: "kaggle"
 monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 paths:
