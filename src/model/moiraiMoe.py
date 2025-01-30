@@ -10,6 +10,10 @@ from uni2ts.eval_util.plot import plot_single
 from gluonts.torch import PyTorchPredictor
 from uni2ts.model.moirai import MoiraiForecast, MoiraiModule
 from uni2ts.model.moirai_moe import MoiraiMoEForecast, MoiraiMoEModule
+from gluonts.dataset.common import ListDataset
+from gluonts.model.forecast import SampleForecast
+
+from exceptions.modelException import ModelException
 
 class MoiraiMoE(object):
     """
@@ -25,9 +29,12 @@ class MoiraiMoE(object):
         targetDim : int = 1,
         featDynamicRealDim : int = 0,
         pastFeatDynamicRealDim : int = 0,
+        batchSize : int = 32,
+        freq : str = "H",
     ):
+        self.__freq : str = freq
         self.__model : MoiraiMoEForecast = MoiraiMoEForecast(
-            module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{SIZE}"),
+            module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
             prediction_length=predictionLength,
             context_length=contextLenght,
             patch_size=patchSize,
@@ -37,57 +44,36 @@ class MoiraiMoE(object):
             past_feat_dynamic_real_dim=pastFeatDynamicRealDim,
         )
 
-    def createPredictor(self, batchSize : int = 32) -> PyTorchPredictor:
+        self.__predictor : PyTorchPredictor = self.__model.create_predictor(batch_size=batchSize)
+
+    def predictOne(self, sample : pd.core.frame.DataFrame) -> SampleForecast:
         """
-        Method to create predictor
+        Method to predict one sample
         """
-        return self.__model.create_predictor(batch_size=batchSize)
+        if len(sample.columns) > 2:
+            raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
+        sample.columns = ["datetime", "value"]
+        sampleGluonts : ListDataset = ListDataset(
+            [{"start": sample["datetime"].iloc[0], "target": sample["value"].tolist()}],
+            freq=self.__freq  # Set frequency to hourly
+        )
+        return next(iter(self.__predictor.predict(sampleGluonts)))
 
-MODEL = "moirai-moe"  # model name: choose from {'moirai', 'moirai-moe'}
-SIZE = "small"  # model size: choose from {'small', 'base', 'large'}
-PDT = 20  # prediction length: any positive integer
-CTX = 200  # context length: any positive integer
-BSZ = 32  # batch size: any positive integer
-TEST = 100  # test set length: any positive integer
 
-# Read data into pandas DataFrame
-url = (
-    "https://gist.githubusercontent.com/rsnirwan/c8c8654a98350fadd229b00167174ec4"
-    "/raw/a42101c7786d4bc7695228a0f2c8cea41340e18f/ts_wide.csv"
-)
-df = pd.read_csv(url, index_col=0, parse_dates=True)
+#predictor = model.createPredictor(batchSize=32)
+#forecasts = predictor.predict(test_data.input)
 
-# Convert into GluonTS dataset
-ds = PandasDataset(dict(df))
+#input_it = iter(test_data.input)
+#label_it = iter(test_data.label)
+#forecast_it = iter(forecasts)
 
-# Split into train/test set
-train, test_template = split(
-    ds, offset=-TEST
-)  # assign last TEST time steps as test set
+#inp = next(input_it)
+#label = next(label_it)
+#forecast = next(forecast_it)
 
-# Construct rolling window evaluation
-test_data = test_template.generate_instances(
-    prediction_length=PDT,  # number of time steps for each prediction
-    windows=TEST // PDT,  # number of windows in rolling window evaluation
-    distance=PDT,  # number of time steps between each window - distance=PDT for non-overlapping windows
-)
-
-model : MoiraiMoE = MoiraiMoE()
-
-predictor = model.createPredictor(batchSize=BSZ)
-forecasts = predictor.predict(test_data.input)
-
-input_it = iter(test_data.input)
-label_it = iter(test_data.label)
-forecast_it = iter(forecasts)
-
-inp = next(input_it)
-label = next(label_it)
-forecast = next(forecast_it)
-
-print(inp)
-print(label)
-print(forecast)
+#print(inp)
+#print(label)
+#print(forecast)
 
 #plot_single(
 #    inp, 

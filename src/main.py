@@ -1,14 +1,26 @@
 import time
+import pandas as pd
 from datasets.datasets import Datasets
+from model.moiraiMoe import MoiraiMoE
+from gluonts.dataset.common import ListDataset
+
+CONTEXT : int = 200
+PREDICTION : int = 20
 
 dataset : Datasets = Datasets()
+model : MoiraiMoE = MoiraiMoE(
+    predictionLength = CONTEXT,
+    contextLenght = PREDICTION,
+)
 
 iterator = dataset.loadDataset("power")
-iterator.setSampleSize(16)
+iterator.setSampleSize(CONTEXT)
 iterator.resetIteration("power", True)
 while True:
-    a = iterator.iterateDataset("power")
-    print(a)
+    sample : pd.core.frame.DataFrame = iterator.iterateDataset("power", ["Date_Time", "Natural Gas"])
+    print(sample)
+    print(model.predictOne(sample))
+    break
     if a is None:
         break
 raise Exception("finished")
