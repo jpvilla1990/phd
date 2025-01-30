@@ -1,5 +1,6 @@
 import random
 import pandas as pd
+from gluonts.dataset.pandas import PandasDataset
 from exceptions.datasetException import DatasetException
 
 class DatasetIterator(object):
