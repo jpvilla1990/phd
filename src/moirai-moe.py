@@ -72,6 +72,8 @@ forecast_it = iter(forecasts)
 inp = next(input_it)
 label = next(label_it)
 forecast = next(forecast_it)
+#<class 'gluonts.model.forecast.SampleForecast'>
+print(type(forecast))
 
 plot_single(
     inp, 

@@ -2,26 +2,27 @@ import time
 import pandas as pd
 from datasets.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
-from gluonts.dataset.common import ListDataset
+from uni2ts.eval_util.plot import plot_single
 
 CONTEXT : int = 200
 PREDICTION : int = 20
 
 dataset : Datasets = Datasets()
 model : MoiraiMoE = MoiraiMoE(
-    predictionLength = CONTEXT,
-    contextLenght = PREDICTION,
+    predictionLength = PREDICTION,
+    contextLenght = CONTEXT,
 )
 
 iterator = dataset.loadDataset("power")
-iterator.setSampleSize(CONTEXT)
+iterator.setSampleSize(CONTEXT + PREDICTION)
 iterator.resetIteration("power", True)
 while True:
     sample : pd.core.frame.DataFrame = iterator.iterateDataset("power", ["Date_Time", "Natural Gas"])
-    print(sample)
-    print(model.predictOne(sample))
-    break
-    if a is None:
+    model.plotSample(
+        sample.iloc[:CONTEXT],
+        sample.iloc[CONTEXT:CONTEXT+PREDICTION],
+    )
+    if sample is None:
         break
 raise Exception("finished")
 iterator.setSampleSize(16)
