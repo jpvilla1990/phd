@@ -50,7 +50,7 @@ class MoiraiMoE(object):
         """
         Method to predict one sample
         """
-        if len(sample.columns) > 2:
+        if len(sample.columns) != 2:
             raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
         sample.columns = ["datetime", "value"]
         sampleGluonts : ListDataset = ListDataset(
@@ -63,7 +63,7 @@ class MoiraiMoE(object):
         """
         Method to plot sample
         """
-        if len(sample.columns) > 2 or len(groundTruth.columns) > 2:
+        if len(sample.columns) != 2 or len(groundTruth.columns) != 2:
             raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
         sample.columns = ["datetime", "value"]
         groundTruth.columns = ["datetime", "value"]

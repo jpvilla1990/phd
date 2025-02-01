@@ -1,16 +1,19 @@
 import time
 import pandas as pd
+from gluonts.model.forecast import SampleForecast
 from datasets.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
-from uni2ts.eval_util.plot import plot_single
 
 CONTEXT : int = 200
 PREDICTION : int = 20
+NUMBER_SAMPLES : int = 100
 
 dataset : Datasets = Datasets()
 model : MoiraiMoE = MoiraiMoE(
+    
     predictionLength = PREDICTION,
     contextLenght = CONTEXT,
+    numSamples = NUMBER_SAMPLES,
 )
 
 iterator = dataset.loadDataset("power")
@@ -18,6 +21,11 @@ iterator.setSampleSize(CONTEXT + PREDICTION)
 iterator.resetIteration("power", True)
 while True:
     sample : pd.core.frame.DataFrame = iterator.iterateDataset("power", ["Date_Time", "Natural Gas"])
+    pred : SampleForecast = model.inference(sample)
+    print(len(pred.samples))
+    print(type(pred.samples))
+    print(len(pred.samples[0]))
+    print(len(pred.samples[1]))
     model.plotSample(
         sample.iloc[:CONTEXT],
         sample.iloc[CONTEXT:CONTEXT+PREDICTION],
