@@ -50,7 +50,7 @@ class MonashPreparer(FileSystem):
                                 period,
                             )
 
-                        df.to_csv(subdatasetPath, sep=separator, decimal=decimal)
+                        df.to_csv(subdatasetPath, sep=separator, decimal=decimal, index=False)
                         newDatasetConfig.update({
                             feature : subdatasetPath,
                         })

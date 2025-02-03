@@ -21,6 +21,13 @@ class TestModel(object):
             "m4-monthly",
             "power",
         ]
+        self.__timeformats : dict = {
+            "ET" : "%Y-%m-%d %H:%M:%S",
+            "electricityUCI" : "%Y-%m-%d %H:%M:%S",
+            "power" : "%d.%m.%Y %H:%M",
+            "m4-monthly" : "%Y-%m-%d %H-%M-%S",
+            "solarEnergy" : "%Y-%m-%d %H-%M-%S",
+        }
         self.__fileSystem : FileSystem = FileSystem()
         datasetConfig : dict = Utils.readYaml(
             self.__fileSystem._getFiles()["datasets"]
@@ -38,23 +45,31 @@ class TestModel(object):
         """
         Test function to get sample works
         """
-        CONTEXT : int = 200
-        PREDICTION_LENGHT : int = 20
+        CONTEXT : int = 20
+        PREDICTION_LENGHT : int = 2
         NUMBER_SAMPLES : int = 50
+        FREQUENCY : str = "H"
         dataset : Datasets = Datasets()
 
-        model : MoiraiMoE = MoiraiMoE(
-            predictionLength = PREDICTION_LENGHT,
-            contextLenght = CONTEXT,
-            numSamples = NUMBER_SAMPLES,
-        )
-        iterator : DatasetIterator = dataset.loadDataset("power")
-        sample : pd.core.frame.DataFrame = iterator.loadSample("power", 1, CONTEXT, ["Date_Time", "Natural Gas"])
+        for element in self.__datasets:
+            iterator : DatasetIterator = dataset.loadDataset(element, True)
+            for subdataset in self.__datasets[element]:
+                features : dict = iterator.getAvailableFeatures(subdataset)
+                sample : pd.core.frame.DataFrame = iterator.loadSample(subdataset, 1, CONTEXT, list(features.keys())[0:2])
 
-        prediction : pd.ndarray = model.inference(
-            sample,
-        ).samples
+                if element == "m4-monthly":
+                    FREQUENCY = "M"
 
-        assert type(prediction) == np.ndarray
-        assert prediction.shape[0] == NUMBER_SAMPLES
-        assert prediction.shape[1] == PREDICTION_LENGHT
+                model : MoiraiMoE = MoiraiMoE(
+                    predictionLength = PREDICTION_LENGHT,
+                    contextLenght = CONTEXT,
+                    numSamples = NUMBER_SAMPLES,
+                )
+                prediction : pd.ndarray = model.inference(
+                    sample,
+                    self.__timeformats[element],
+                ).samples
+
+                assert type(prediction) == np.ndarray
+                assert prediction.shape[0] == NUMBER_SAMPLES
+                assert prediction.shape[1] == PREDICTION_LENGHT

@@ -4,9 +4,19 @@ from gluonts.model.forecast import SampleForecast
 from datasets.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
 
-CONTEXT : int = 200
-PREDICTION : int = 20
+CONTEXT : int = 20
+PREDICTION : int = 5
 NUMBER_SAMPLES : int = 100
+DATASET : str = "m4-monthly"
+SUBDATASET : str = "T1"
+
+timeformats : dict = {
+    "ET" : "%Y-%m-%d %H:%M:%S",
+    "electricityUCI" : "%Y-%m-%d %H:%M:%S",
+    "power" : "%d.%m.%Y %H:%M",
+    "m4-monthly" : "%Y-%m-%d %H-%M-%S",
+    "solarEnergy" : "%Y-%m-%d %H-%M-%S",
+}
 
 dataset : Datasets = Datasets()
 model : MoiraiMoE = MoiraiMoE(
@@ -16,19 +26,17 @@ model : MoiraiMoE = MoiraiMoE(
     numSamples = NUMBER_SAMPLES,
 )
 
-iterator = dataset.loadDataset("power")
+iterator = dataset.loadDataset(DATASET)
+features = list(iterator.getAvailableFeatures(SUBDATASET).keys())[0:2]
 iterator.setSampleSize(CONTEXT + PREDICTION)
-iterator.resetIteration("power", True)
+iterator.resetIteration(SUBDATASET, True)
 while True:
-    sample : pd.core.frame.DataFrame = iterator.iterateDataset("power", ["Date_Time", "Natural Gas"])
-    pred : SampleForecast = model.inference(sample)
-    print(len(pred.samples))
-    print(type(pred.samples))
-    print(len(pred.samples[0]))
-    print(len(pred.samples[1]))
+    sample : pd.core.frame.DataFrame = iterator.iterateDataset(SUBDATASET, features)
+    pred : SampleForecast = model.inference(sample, timeformats[DATASET])
     model.plotSample(
         sample.iloc[:CONTEXT],
         sample.iloc[CONTEXT:CONTEXT+PREDICTION],
+        timeformats[DATASET],
     )
     if sample is None:
         break

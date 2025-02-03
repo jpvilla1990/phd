@@ -1,8 +1,4 @@
-import torch
 import pandas as pd
-from gluonts.dataset.pandas import PandasDataset
-from gluonts.dataset.split import split
-from huggingface_hub import hf_hub_download
 
 import matplotlib.pyplot as plt
 from uni2ts.eval_util.plot import plot_single
@@ -11,6 +7,8 @@ from gluonts.torch import PyTorchPredictor
 from uni2ts.model.moirai_moe import MoiraiMoEForecast, MoiraiMoEModule
 from gluonts.dataset.common import ListDataset
 from gluonts.model.forecast import SampleForecast
+
+from utils.timeManager import TimeManager
 
 from exceptions.modelException import ModelException
 
@@ -29,9 +27,18 @@ class MoiraiMoE(object):
         featDynamicRealDim : int = 0,
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
-        freq : str = "H",
     ):
-        self.__freq : str = freq
+        self.__timestampFormat : str = "%d-%m-%Y %H:%M:%S"
+        self.__timeDiffsSeconds : dict = {
+            "S" : 1,
+            "T" : 60,
+            "H" : 60 * 60,
+            "D" : 60 * 60 * 24,
+            "W" : 60 * 60 * 24 * 7,
+            "M" : 60 * 60 * 24 * 30,
+            "Y" : 60 * 60 * 24 * 365,
+        }
+
         self.__contextLenght : int = contextLenght
         self.__model : MoiraiMoEForecast = MoiraiMoEForecast(
             module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
@@ -46,33 +53,52 @@ class MoiraiMoE(object):
 
         self.__predictor : PyTorchPredictor = self.__model.create_predictor(batch_size=batchSize)
 
-    def inference(self, sample : pd.core.frame.DataFrame) -> SampleForecast:
+    def __getFrequency(self, timestamps : pd.core.frame.DataFrame, timestampFormat : str) -> str:
         """
-        Method to predict one sample
+        Method to get frequency from the timestamps
+        """
+        timeDiffSeconds : int = TimeManager.timeDiffSeconds(timestamps.iloc[0], timestamps.iloc[1], timestampFormat)
+
+        distances : dict = {abs(self.__timeDiffsSeconds[key] - timeDiffSeconds) : key for key in self.__timeDiffsSeconds}
+
+        return distances[sorted(distances.keys())[0]]
+
+    def inference(self, sample : pd.core.frame.DataFrame, timestampFormat : str) -> SampleForecast:
+        """
+        Method to predict one sample, first columns must be the timestamp and second is the timeseries
         """
         if len(sample.columns) != 2:
             raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
         sample.columns = ["datetime", "value"]
         sampleGluonts : ListDataset = ListDataset(
-            [{"start": sample["datetime"].iloc[0], "target": sample["value"].tolist()}],
-            freq=self.__freq  # Set frequency to hourly
+            [{
+                "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+                "target": sample["value"].tolist(),
+            }],
+            freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
         )
         return next(iter(self.__predictor.predict(sampleGluonts)))
     
-    def plotSample(self, sample : pd.core.frame.DataFrame, groundTruth : pd.core.frame.DataFrame):
+    def plotSample(self, sample : pd.core.frame.DataFrame, groundTruth : pd.core.frame.DataFrame, timestampFormat : str):
         """
-        Method to plot sample
+        Method to plot sample, first columns must be the timestamp and second is the timeseries
         """
         if len(sample.columns) != 2 or len(groundTruth.columns) != 2:
             raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
         sample.columns = ["datetime", "value"]
         groundTruth.columns = ["datetime", "value"]
 
-        sampleDict : dict = {"start": sample["datetime"].iloc[0], "target": sample["value"].tolist()}
-        groundTruthDict : dict = {"start": groundTruth["datetime"].iloc[0], "target": groundTruth["value"].tolist()}
+        sampleDict : dict = {
+            "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+            "target": sample["value"].tolist(),
+        }
+        groundTruthDict : dict = {
+            "start": TimeManager.convertTimeFormat(groundTruth["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+            "target": groundTruth["value"].tolist()
+        }
         sampleGluonts : ListDataset = ListDataset(
             [sampleDict],
-            freq=self.__freq  # Set frequency to hourly
+            freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat),
         )
 
         prediction : SampleForecast = next(iter(self.__predictor.predict(sampleGluonts)))
@@ -86,29 +112,3 @@ class MoiraiMoE(object):
             show_label=True,
         )
         plt.show()
-
-
-#predictor = model.createPredictor(batchSize=32)
-#forecasts = predictor.predict(test_data.input)
-
-#input_it = iter(test_data.input)
-#label_it = iter(test_data.label)
-#forecast_it = iter(forecasts)
-
-#inp = next(input_it)
-#label = next(label_it)
-#forecast = next(forecast_it)
-
-#print(inp)
-#print(label)
-#print(forecast)
-
-#plot_single(
-#    inp, 
-#    label, 
-#    forecast, 
-#    context_length=200,
-#    name="pred",
-#    show_label=True,
-#)
-#plt.show()

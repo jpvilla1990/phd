@@ -26,10 +26,28 @@ class TimeManager(object):
                 periodicitySeconds += periodicity[key] * 60 * 60 * 24 * 365
 
         return periodicitySeconds
+    
+    def timeDiffSeconds(startStr : str, endStr : str, timestampFormart : str) -> int:
+        """
+        Method to get timediff in seconds
+        """
+        return abs(int((
+            datetime.strptime(startStr, timestampFormart) - datetime.strptime(endStr, timestampFormart)
+        ).total_seconds()))
 
     def nextTimeStamp(timestamp : str, formatTime : str, period : int) -> str:
         """
         Method to add period to timestamp to generate next timestamp
         """
         return (datetime.strptime(timestamp, formatTime) + timedelta(seconds=period)).strftime(formatTime)
+    
+    def convertTimeFormat(timestamp : str, originalFormat : str, targetFormat : str) -> str:
+        """
+        Method to conver time stamp
+        """
+        try:
+            dt : datetime = datetime.strptime(timestamp, originalFormat)
+            return dt.strftime(targetFormat)
+        except ValueError as e:
+            raise Exception(f"Invalid date format: {timestamp} - {e}")
 
