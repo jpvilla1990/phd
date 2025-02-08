@@ -125,22 +125,22 @@ class EvaluationMoiraiMoE(FileSystem):
                         reportNMAE = np.append(reportNMAE, [nmae])
 
             reports : dict = self.__loadReports()
-            reports.update({
-                dataset : {
-                    f"{contextLenght},{predictionLength}" : {
-                        element : {
-                            "MASE" : {
-                                "mean" : float(reportMASE.mean()),
-                                "median" : float(np.median(reportMASE)),
-                            },
-                            "normalizedMAE" : {
-                                "mean" : float(reportNMAE.mean()),
-                                "median" : float(np.median(reportNMAE)),
-                            },
-                        },
-                    },
+
+            if dataset not in reports:
+                reports[dataset] = dict()
+            if f"{contextLenght},{predictionLength}" not in reports[dataset]:
+                reports[dataset][f"{contextLenght},{predictionLength}"] = dict()
+
+            reports[dataset][f"{contextLenght},{predictionLength}"][element] = {
+                "MASE" : {
+                    "mean" : float(reportMASE.mean()),
+                    "median" : float(np.median(reportMASE)),
                 },
-            })
+                "normalizedMAE" : {
+                    "mean" : float(reportNMAE.mean()),
+                    "median" : float(np.median(reportNMAE)),
+                },
+            }
 
             self.__writeReports(reports)
 
