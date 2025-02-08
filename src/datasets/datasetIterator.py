@@ -1,5 +1,6 @@
 import random
 import pandas as pd
+import numpy as np
 from gluonts.dataset.pandas import PandasDataset
 from exceptions.datasetException import DatasetException
 
@@ -21,35 +22,44 @@ class DatasetIterator(object):
     def __str__(self) -> str:
         return self.__name
 
-    def __getDatasetSize(self, subdataset : str) -> dict:
+    def __getDatasetMetada(self, subdataset : str) -> dict:
         """
         Method to get available features
         """
-        datasetSize : dict = {
+        datasetMetadata : dict = {
             "numberFeatures" : 0,
             "numberObservations" : 0,
+            "mean" : 0.0,
+            "std" : 0.0,
         }
 
         if subdataset not in self.__datasets:
             raise DatasetException(
                 f"Subdataset {subdataset} does not exists in dataset {self}"
             )
-
-        datasetSize["numberFeatures"] = len(pd.read_csv(
+        
+        features : list = pd.read_csv(
             self.__datasets[subdataset],
             nrows=0,
             sep=self.__datasetConfig["separator"],
             decimal=self.__datasetConfig["decimal"],
-        ).columns.tolist())
+        ).columns.tolist()
+
+        datasetMetadata["numberFeatures"] = len(features)
         for chunk in pd.read_csv(
             self.__datasets[subdataset],
             sep=self.__datasetConfig["separator"],
             decimal=self.__datasetConfig["decimal"],
             chunksize=10000,
         ):
-            datasetSize["numberObservations"] += len(chunk)
+            datasetMetadata["numberObservations"] += len(chunk)
+            datasetMetadata["mean"] += chunk[features[1:]].values.mean() * len(chunk)
+            datasetMetadata["std"] += chunk[features[1:]].values.std() * len(chunk)
 
-        return datasetSize
+        datasetMetadata["mean"] /= datasetMetadata["numberObservations"]
+        datasetMetadata["std"] /= datasetMetadata["numberObservations"]
+
+        return datasetMetadata
 
     def setSampleSize(self, sampleSize : int):
         """
@@ -57,12 +67,25 @@ class DatasetIterator(object):
         """
         self.__sampleSize = sampleSize
 
-    def getDatasetSizes(self) -> dict:
+    def getDatasetMetadata(self) -> dict:
         """
         Method to get sizes of all datasets
         """
-        self.__datasetSizes = {subDataset : self.__getDatasetSize(subDataset) for subDataset in self.__datasets}
-        return self.__datasetSizes
+        self.__datasetMetadata = {subDataset : self.__getDatasetMetada(subDataset) for subDataset in self.__datasets}
+        self.__datasetMetadata["mean"] = 0.0
+        self.__datasetMetadata["std"] = 0.0
+
+        totalSamples : int = 0
+        for subDataset in self.__datasets:
+            samples : int = self.__datasetMetadata[subDataset]["numberFeatures"] * self.__datasetMetadata[subDataset]["numberObservations"]
+            self.__datasetMetadata["mean"] += self.__datasetMetadata[subDataset]["mean"] * samples
+            self.__datasetMetadata["std"] += self.__datasetMetadata[subDataset]["std"] * samples
+            totalSamples += samples
+
+        self.__datasetMetadata["mean"] /= totalSamples
+        self.__datasetMetadata["std"] /= totalSamples
+
+        return self.__datasetMetadata
 
     def getAvailableFeatures(self, subdataset : str) -> dict:
         """
@@ -96,7 +119,7 @@ class DatasetIterator(object):
         """
         self.__features[subdataset] = self.getAvailableFeatures(subdataset)
 
-        self.__datasetSizes[subdataset] = self.__getDatasetSize(subdataset)
+        self.__datasetSizes[subdataset] = self.__getDatasetMetada(subdataset)
         sample : pd.core.frame.DataFrame = None
         featuresIndices : list = None
         maxNumberSamples : int = self.__datasetSizes[subdataset]["numberObservations"]
@@ -147,7 +170,7 @@ class DatasetIterator(object):
         """
         Method to reset dataset iteration
         """
-        self.__datasetSizes[subdataset] = self.__getDatasetSize(subdataset)
+        self.__datasetSizes[subdataset] = self.__getDatasetMetada(subdataset)
         self.__indexIterator[subdataset] = []
         maxNumberSamples : int = self.__datasetSizes[subdataset]["numberObservations"]
 

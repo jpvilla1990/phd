@@ -45,10 +45,9 @@ class TestModel(object):
         """
         Test function to get sample works
         """
-        CONTEXT : int = 20
-        PREDICTION_LENGHT : int = 2
+        CONTEXT : int = 32
+        PREDICTION_LENGHT : int = 16
         NUMBER_SAMPLES : int = 50
-        FREQUENCY : str = "H"
         dataset : Datasets = Datasets()
 
         for element in self.__datasets:
@@ -56,9 +55,6 @@ class TestModel(object):
             for subdataset in self.__datasets[element]:
                 features : dict = iterator.getAvailableFeatures(subdataset)
                 sample : pd.core.frame.DataFrame = iterator.loadSample(subdataset, 1, CONTEXT, list(features.keys())[0:2])
-
-                if element == "m4-monthly":
-                    FREQUENCY = "M"
 
                 model : MoiraiMoE = MoiraiMoE(
                     predictionLength = PREDICTION_LENGHT,

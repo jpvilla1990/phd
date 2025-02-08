@@ -1,26 +1,31 @@
 import time
+import numpy as np
 import pandas as pd
 from gluonts.model.forecast import SampleForecast
 from datasets.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
+from evaluation.evaluation import EvaluationMoiraiMoE
 
-CONTEXT : int = 20
-PREDICTION : int = 5
+CONTEXT : int = 32
+PREDICTION : int = 16
 NUMBER_SAMPLES : int = 100
-DATASET : str = "m4-monthly"
-SUBDATASET : str = "T1"
+DATASET : str = "ET"
 
-timeformats : dict = {
-    "ET" : "%Y-%m-%d %H:%M:%S",
-    "electricityUCI" : "%Y-%m-%d %H:%M:%S",
-    "power" : "%d.%m.%Y %H:%M",
-    "m4-monthly" : "%Y-%m-%d %H-%M-%S",
-    "solarEnergy" : "%Y-%m-%d %H-%M-%S",
-}
+evaluationMoiraiMoE : EvaluationMoiraiMoE = EvaluationMoiraiMoE()
+
+report : dict = evaluationMoiraiMoE.evaluate(
+    CONTEXT,
+    PREDICTION,
+    NUMBER_SAMPLES,
+    DATASET,
+)
+
+print(report)
+
+raise Exception("finished")
 
 dataset : Datasets = Datasets()
 model : MoiraiMoE = MoiraiMoE(
-    
     predictionLength = PREDICTION,
     contextLenght = CONTEXT,
     numSamples = NUMBER_SAMPLES,
@@ -32,15 +37,15 @@ iterator.setSampleSize(CONTEXT + PREDICTION)
 iterator.resetIteration(SUBDATASET, True)
 while True:
     sample : pd.core.frame.DataFrame = iterator.iterateDataset(SUBDATASET, features)
-    pred : SampleForecast = model.inference(sample, timeformats[DATASET])
+    pred : SampleForecast = model.inference(sample, DATASET)
     model.plotSample(
         sample.iloc[:CONTEXT],
         sample.iloc[CONTEXT:CONTEXT+PREDICTION],
-        timeformats[DATASET],
+        DATASET,
     )
     if sample is None:
         break
-raise Exception("finished")
+
 iterator.setSampleSize(16)
 iterator.getAvailableFeatures("electricity")
 startTime = time.perf_counter()

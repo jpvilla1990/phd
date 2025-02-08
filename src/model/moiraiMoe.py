@@ -9,10 +9,11 @@ from gluonts.dataset.common import ListDataset
 from gluonts.model.forecast import SampleForecast
 
 from utils.timeManager import TimeManager
+from utils.fileSystem import FileSystem
 
 from exceptions.modelException import ModelException
 
-class MoiraiMoE(object):
+class MoiraiMoE(FileSystem):
     """
     Class to handle MoiraiMoe
     """
@@ -28,6 +29,8 @@ class MoiraiMoE(object):
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
     ):
+        super().__init__()
+        self.__datasetsConfig : dict = self._getConfig()["datasets"]
         self.__timestampFormat : str = "%d-%m-%Y %H:%M:%S"
         self.__timeDiffsSeconds : dict = {
             "S" : 1,
@@ -63,12 +66,15 @@ class MoiraiMoE(object):
 
         return distances[sorted(distances.keys())[0]]
 
-    def inference(self, sample : pd.core.frame.DataFrame, timestampFormat : str) -> SampleForecast:
+    def inference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
         """
         if len(sample.columns) != 2:
             raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
+
+        timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
+
         sample.columns = ["datetime", "value"]
         sampleGluonts : ListDataset = ListDataset(
             [{
@@ -79,12 +85,15 @@ class MoiraiMoE(object):
         )
         return next(iter(self.__predictor.predict(sampleGluonts)))
     
-    def plotSample(self, sample : pd.core.frame.DataFrame, groundTruth : pd.core.frame.DataFrame, timestampFormat : str):
+    def plotSample(self, sample : pd.core.frame.DataFrame, groundTruth : pd.core.frame.DataFrame, dataset : str):
         """
         Method to plot sample, first columns must be the timestamp and second is the timeseries
         """
         if len(sample.columns) != 2 or len(groundTruth.columns) != 2:
             raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
+
+        timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
+
         sample.columns = ["datetime", "value"]
         groundTruth.columns = ["datetime", "value"]
 

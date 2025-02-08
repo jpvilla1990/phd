@@ -64,13 +64,13 @@ class TestDataset(object):
 
         for element in self.__datasets:
             iterator : DatasetIterator = dataset.loadDataset(element)
-            sizeDict : dict = iterator.getDatasetSizes()
+            datasetDatadata : dict = iterator.getDatasetMetadata()
             for subdataset in self.__datasets[element]:
-                assert type(sizeDict[subdataset]) == dict
-                assert type(sizeDict[subdataset]["numberFeatures"]) == int
-                assert type(sizeDict[subdataset]["numberObservations"]) == int
-                assert sizeDict[subdataset]["numberFeatures"] > 0
-                assert sizeDict[subdataset]["numberObservations"] > 0
+                assert type(datasetDatadata[subdataset]) == dict
+                assert type(datasetDatadata[subdataset]["numberFeatures"]) == int
+                assert type(datasetDatadata[subdataset]["numberObservations"]) == int
+                assert datasetDatadata[subdataset]["numberFeatures"] > 0
+                assert datasetDatadata[subdataset]["numberObservations"] > 0
 
     def testGetFeatures(self, setup):
         """
