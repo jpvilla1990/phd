@@ -53,15 +53,25 @@ class EvaluationMoiraiMoE(FileSystem):
 
         return meanAbsoluteError / meanAbsoluteDeviation
     
-    def __getNMAE(self, groundTruth : np.ndarray, prediction : np.ndarray) -> float:
+    def __getMAE(self, groundTruth : np.ndarray, prediction : np.ndarray) -> float:
         """
-        Method to calculate NORMALIZED MEAN ABSOLUTE ERROR
+        Method to calculate MEAN ABSOLUTE ERROR
         """
-        normalizedMeanAbsoluteError : float = np.mean(
-            abs((prediction - groundTruth) / self.__datasetMetadata["std"]),
+        meanAbsoluteError : float = np.mean(
+            abs((prediction - groundTruth)),
         )
 
-        return normalizedMeanAbsoluteError
+        return meanAbsoluteError
+    
+    def __getMSE(self, groundTruth : np.ndarray, prediction : np.ndarray) -> float:
+        """
+        Method to calculate MEAN SQUARED ERROR
+        """
+        meanAbsoluteError : float = np.mean(
+            (prediction - groundTruth) ** 2,
+        )
+
+        return meanAbsoluteError
 
     def evaluate(
             self,
@@ -95,8 +105,12 @@ class EvaluationMoiraiMoE(FileSystem):
 
         for element in subdatasets:
             print(f"Subdataset {element}")
+            reportMAE : np.ndarray = np.array([])
             reportNMAE : np.ndarray = np.array([])
+            reportMSE : np.ndarray = np.array([])
+            reportNMSE : np.ndarray = np.array([])
             reportMASE : np.ndarray = np.array([])
+            iterations : int = 0
             iterator.resetIteration(element, True)
             features : list = list(iterator.getAvailableFeatures(element).keys())
 
@@ -114,15 +128,26 @@ class EvaluationMoiraiMoE(FileSystem):
                         pred.quantile(0.5),
                     )
 
-                    nmae : float = self.__getNMAE(
+                    mae : float = self.__getMAE(
+                        sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                        pred.quantile(0.5),
+                    )
+
+                    mse : float = self.__getMSE(
                         sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
                         pred.quantile(0.5),
                     )
 
                     if mase:
                         reportMASE = np.append(reportMASE, [mase])
-                    if nmae:
-                        reportNMAE = np.append(reportNMAE, [nmae])
+                    if mae:
+                        reportMAE = np.append(reportMAE, [mae])
+                        reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
+                    if mse:
+                        reportMSE = np.append(reportMSE, [mse])
+                        reportNMSE = np.append(reportNMSE, [abs(mse / self.__datasetMetadata["std"])])
+
+                    iterations += 1
 
             reports : dict = self.__loadReports()
 
@@ -136,10 +161,23 @@ class EvaluationMoiraiMoE(FileSystem):
                     "mean" : float(reportMASE.mean()),
                     "median" : float(np.median(reportMASE)),
                 },
+                "MAE" : {
+                    "mean" : float(reportMAE.mean()),
+                    "median" : float(np.median(reportMAE)),
+                },
                 "normalizedMAE" : {
                     "mean" : float(reportNMAE.mean()),
                     "median" : float(np.median(reportNMAE)),
                 },
+                "MSE" : {
+                    "mean" : float(reportMSE.mean()),
+                    "median" : float(np.median(reportMSE)),
+                },
+                "normalizedMSE" : {
+                    "mean" : float(reportNMSE.mean()),
+                    "median" : float(np.median(reportNMSE)),
+                },
+                "numberIterations" : iterations,
             }
 
             self.__writeReports(reports)
