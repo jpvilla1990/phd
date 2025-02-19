@@ -3,11 +3,12 @@ import numpy as np
 from gluonts.model.forecast import SampleForecast
 from datasets.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
+from model.chatTime import ChatTime
 from utils.fileSystem import FileSystem
 from utils.utils import Utils
 from datasets.datasetIterator import DatasetIterator
 
-class EvaluationMoiraiMoE(FileSystem):
+class Evaluation(FileSystem):
     """
     Class to evaluate models
     """
@@ -73,7 +74,7 @@ class EvaluationMoiraiMoE(FileSystem):
 
         return meanAbsoluteError
 
-    def evaluate(
+    def evaluateMoiraiMoE(
             self,
             contextLenght : int,
             predictionLength : int,
@@ -87,6 +88,117 @@ class EvaluationMoiraiMoE(FileSystem):
         print(f"Evaluating Dataset {dataset}")
         subdatasets : list = []
         model : MoiraiMoE = MoiraiMoE(
+            predictionLength = predictionLength,
+            contextLenght = contextLenght,
+            numSamples = numberSamples,
+        )
+        iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
+        self.__datasetMetadata = iterator.getDatasetMetadata()
+        iterator.setSampleSize(contextLenght + predictionLength)
+
+        if subdataset == "":
+            datasetConfig : dict = Utils.readYaml(
+                self._getFiles()["datasets"]
+            )
+            subdatasets = list(datasetConfig[dataset].keys())
+        else:
+            subdatasets.append(subdataset)
+
+        for element in subdatasets:
+            print(f"Subdataset {element}")
+            reportMAE : np.ndarray = np.array([])
+            reportNMAE : np.ndarray = np.array([])
+            reportMSE : np.ndarray = np.array([])
+            reportNMSE : np.ndarray = np.array([])
+            reportMASE : np.ndarray = np.array([])
+            iterations : int = 0
+            iterator.resetIteration(element, True)
+            features : list = list(iterator.getAvailableFeatures(element).keys())
+
+            while True:
+                sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
+                if sample is None:
+                    break
+
+                for index in range(1,len(features)):
+                    pred : SampleForecast = model.inference(sample[[0, index]], dataset)
+
+                    mase : float = self.__getMASE(
+                        sample[index].iloc[:contextLenght].values,
+                        sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                        pred.quantile(0.5),
+                    )
+
+                    mae : float = self.__getMAE(
+                        sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                        pred.quantile(0.5),
+                    )
+
+                    mse : float = self.__getMSE(
+                        sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                        pred.quantile(0.5),
+                    )
+
+                    if mase:
+                        reportMASE = np.append(reportMASE, [mase])
+                    if mae:
+                        reportMAE = np.append(reportMAE, [mae])
+                        reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
+                    if mse:
+                        reportMSE = np.append(reportMSE, [mse])
+                        reportNMSE = np.append(reportNMSE, [abs(mse / self.__datasetMetadata["std"])])
+
+                    iterations += 1
+
+            reports : dict = self.__loadReports()
+
+            if dataset not in reports:
+                reports[dataset] = dict()
+            if f"{contextLenght},{predictionLength}" not in reports[dataset]:
+                reports[dataset][f"{contextLenght},{predictionLength}"] = dict()
+
+            reports[dataset][f"{contextLenght},{predictionLength}"][element] = {
+                "MASE" : {
+                    "mean" : float(reportMASE.mean()),
+                    "median" : float(np.median(reportMASE)),
+                },
+                "MAE" : {
+                    "mean" : float(reportMAE.mean()),
+                    "median" : float(np.median(reportMAE)),
+                },
+                "normalizedMAE" : {
+                    "mean" : float(reportNMAE.mean()),
+                    "median" : float(np.median(reportNMAE)),
+                },
+                "MSE" : {
+                    "mean" : float(reportMSE.mean()),
+                    "median" : float(np.median(reportMSE)),
+                },
+                "normalizedMSE" : {
+                    "mean" : float(reportNMSE.mean()),
+                    "median" : float(np.median(reportNMSE)),
+                },
+                "numberIterations" : iterations,
+            }
+
+            self.__writeReports(reports)
+
+        return reports
+    
+    def evaluateChatTimes(
+            self,
+            contextLenght : int,
+            predictionLength : int,
+            numberSamples : int,
+            dataset : str,
+            subdataset : str = "",
+        ) -> dict:
+        """
+        Method to evaluate model
+        """
+        print(f"Evaluating Dataset {dataset}")
+        subdatasets : list = []
+        model : ChatTime = ChatTime(
             predictionLength = predictionLength,
             contextLenght = contextLenght,
             numSamples = numberSamples,

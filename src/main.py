@@ -4,16 +4,16 @@ import pandas as pd
 from gluonts.model.forecast import SampleForecast
 from datasets.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
-from evaluation.evaluation import EvaluationMoiraiMoE
+from evaluation.evaluation import Evaluation
 
-CONTEXT : int = 32
+CONTEXT : int = 128
 PREDICTION : int = 16
 NUMBER_SAMPLES : int = 100
-DATASET : str = "ET"
+DATASET : str = "electricityUCI"
 
-evaluationMoiraiMoE : EvaluationMoiraiMoE = EvaluationMoiraiMoE()
+evaluation : Evaluation = Evaluation()
 
-report : dict = evaluationMoiraiMoE.evaluate(
+report : dict = evaluation.evaluateMoiraiMoE(
     CONTEXT,
     PREDICTION,
     NUMBER_SAMPLES,
