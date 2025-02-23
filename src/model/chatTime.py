@@ -51,6 +51,6 @@ class ChatTimeModel(FileSystem):
         plt.plot(histX, sample["value"].values, color='#000000')
         plt.plot(predX, groundTruth["value"].values, color='#000000', label='true')
         plt.plot(predX, prediction, color='#FF7F0E', label='pred')
-        plt.axvline(hist_len, color='red')
+        plt.axvline(self.__contextLenght, color='red')
         plt.legend(loc="upper left")
         plt.show()
