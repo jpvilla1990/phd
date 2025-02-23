@@ -7,4 +7,11 @@ DATASET : str = "ET"
 
 evaluation : Evaluation = Evaluation()
 
-report : dict = evaluation.compileReports()
+report : dict = evaluation.evaluateMoiraiMoE(
+    CONTEXT,
+    PREDICTION,
+    NUMBER_SAMPLES,
+    DATASET,
+)
+
+print(report)

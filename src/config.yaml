@@ -60,3 +60,4 @@ paths:
 files:
   datasets: ["data", "datasets", "datasets.yaml"]
   evaluationReports: ["data", "reports.yaml"]
+  evaluationFinalReport: ["data" ,"reports.pdf"]

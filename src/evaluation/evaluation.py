@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 from gluonts.model.forecast import SampleForecast
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
 from datasets.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
 from model.chatTime import ChatTime
@@ -107,30 +110,43 @@ class Evaluation(FileSystem):
                                 reports[dataset][scenario][subdataset][metric]["mean"],
                             )
                         else:
-                            tables[scenario]["scenario"][metric][-1] += reports[dataset][scenario][subdataset][metric]["mean"] * reports[dataset][scenario][subdataset]["numberIterations"]
-        
-        print(tables)
-        """
-        ET:
-  128,16:
-    ETTh1:
-      MAE:
-        mean: 2.713830714750401
-        median: 1.2220036685466766
-      MASE:
-        mean: 1.7466749257610454
-        median: 1.6631743962960615
-      MSE:
-        mean: 29.01229773812218
-        median: 2.0925267172823894
-      normalizedMAE:
-        mean: 0.21322683745292131
-        median: 0.09601334975827358
-      normalizedMSE:
-        mean: 2.279508615006335
-        median: 0.16441071721487388
-      numberIterations: 120939
-      """
+                            tables[scenario]["scenario"][metric][-1] = ((tables[scenario]["scenario"][metric][-1] * totalIterations) + (reports[dataset][scenario][subdataset][metric]["mean"] * reports[dataset][scenario][subdataset]["numberIterations"])) / (totalIterations + reports[dataset][scenario][subdataset]["numberIterations"])
+                    totalIterations += reports[dataset][scenario][subdataset]["numberIterations"]
+
+                if "numberIterations" not in tables[scenario]["scenario"]:
+                    tables[scenario]["scenario"].update({
+                        "numberIterations" : [],
+                    })
+
+                tables[scenario]["scenario"]["numberIterations"].append(totalIterations)
+
+        elements : list = []
+        doc : SimpleDocTemplate = SimpleDocTemplate(self._getFiles()["evaluationFinalReport"], pagesize=letter)
+        for scenario in tables:
+            df : pd.core.frame.DataFrame = pd.DataFrame(tables[scenario]["scenario"], index=tables[scenario]["indices"]).round(6)
+            elements.append(Table([[f"Context Lenght, Prediction Lenght = {scenario}"]], colWidths=[400]))
+
+            tableData = [["Index"] + df.columns.tolist()]
+            for index, row in df.iterrows():
+                tableData.append([index] + row.tolist())
+
+            table : Table = Table(tableData)
+
+            style = TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ])
+            table.setStyle(style)
+
+            elements.append(table)
+            elements.append(Table([[""]], colWidths=[400]))  # Add space between tables
+
+        doc.build(elements)
 
     def evaluateMoiraiMoE(
             self,
