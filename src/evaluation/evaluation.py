@@ -44,9 +44,8 @@ class Evaluation(FileSystem):
             abs(prediction - groundTruth),
         )
 
-        mean : float = np.mean(np.append(context,groundTruth))
         meanAbsoluteDeviation : float = np.mean(
-            abs(prediction - mean)
+            abs(context[:-1] - context[1:])
         )
 
         if meanAbsoluteDeviation == 0:
@@ -73,6 +72,65 @@ class Evaluation(FileSystem):
         )
 
         return meanAbsoluteError
+    
+    def compileReports(self):
+        """
+        Method to compile results in a human readable report
+        """
+        reports : dict = self.__loadReports()
+
+        tables : dict = {}
+
+        for dataset in reports:
+            for scenario in reports[dataset]:
+                if scenario not in tables:
+                    tables.update({
+                        scenario : {
+                            "scenario" : {},
+                            "indices" : [],
+                        },
+                    })
+                if dataset not in tables[scenario]["indices"]:
+                    tables[scenario]["indices"].append(dataset)
+
+                totalIterations : int = 0
+                for subdataset in reports[dataset][scenario]:
+                    for metric in reports[dataset][scenario][subdataset]:
+                        if metric == "numberIterations":
+                            continue
+                        if metric not in tables[scenario]["scenario"]:
+                            tables[scenario]["scenario"].update({
+                                metric : [],
+                            })
+                        if len(tables[scenario]["scenario"][metric]) < len(tables[scenario]["indices"]):
+                            tables[scenario]["scenario"][metric].append(
+                                reports[dataset][scenario][subdataset][metric]["mean"],
+                            )
+                        else:
+                            tables[scenario]["scenario"][metric][-1] += reports[dataset][scenario][subdataset][metric]["mean"] * reports[dataset][scenario][subdataset]["numberIterations"]
+        
+        print(tables)
+        """
+        ET:
+  128,16:
+    ETTh1:
+      MAE:
+        mean: 2.713830714750401
+        median: 1.2220036685466766
+      MASE:
+        mean: 1.7466749257610454
+        median: 1.6631743962960615
+      MSE:
+        mean: 29.01229773812218
+        median: 2.0925267172823894
+      normalizedMAE:
+        mean: 0.21322683745292131
+        median: 0.09601334975827358
+      normalizedMSE:
+        mean: 2.279508615006335
+        median: 0.16441071721487388
+      numberIterations: 120939
+      """
 
     def evaluateMoiraiMoE(
             self,

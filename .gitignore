@@ -1,6 +1,7 @@
 __pycache__
 .pytest_cache
 src/ChatTime
-src/data
+src/data/*
+!src/data/reports.yaml
 src/reports
 .venv

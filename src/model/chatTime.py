@@ -54,27 +54,3 @@ class ChatTimeModel(FileSystem):
         plt.axvline(hist_len, color='red')
         plt.legend(loc="upper left")
         plt.show()
-
-dataset = "Traffic"
-hist_len = 120
-pred_len = 24
-model_path = "ChengsenWang/ChatTime-1-7B-Chat"
-
-df = pd.read_csv(f"./ChatTime/dataset/{dataset}.csv")
-hist_data = np.array(df["Hist"].apply(eval).values.tolist())[:, -hist_len:][0]
-pred_data = np.array(df["Pred"].apply(eval).values.tolist())[:, :pred_len][0]
-
-model = ChatTime(hist_len=hist_len, pred_len=pred_len, model_path=model_path)
-
-out = model.predict(hist_data)
-
-hist_x = np.linspace(0, hist_len-1, hist_len)
-pred_x = np.linspace(hist_len, hist_len+pred_len-1, pred_len)
-
-plt.figure(figsize=(8, 2), dpi=500)
-plt.plot(hist_x, hist_data, color='#000000')
-plt.plot(pred_x, pred_data, color='#000000', label='true')
-plt.plot(pred_x, out, color='#FF7F0E', label='pred')
-plt.axvline(hist_len, color='red')
-plt.legend(loc="upper left")
-plt.show()
