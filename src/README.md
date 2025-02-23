@@ -42,17 +42,6 @@ while True:
         break
 ```
 
-### Evaluation
-
-#### Final Evaluation
-```python
-from evaluation.evaluation import Evaluation
-
-evaluation : Evaluation = Evaluation()
-
-report : dict = evaluation.compileReports() # Reports will be located in src/data/reports.pdf
-```
-
 #### MoiraiMoE
 ```python
 from evaluation.evaluation import Evaluation
@@ -72,4 +61,17 @@ report : dict = evaluation.evaluateMoiraiMoE(
 )
 
 print(report)
+```
+
+### Evaluation
+
+After performing the evaluation for each desired scenario and dataset, the final evaluation will compile all the results in a PDF file
+
+#### Final Evaluation
+```python
+from evaluation.evaluation import Evaluation
+
+evaluation : Evaluation = Evaluation()
+
+report : dict = evaluation.compileReports() # Reports will be located in src/data/reports.pdf
 ```
