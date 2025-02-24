@@ -189,3 +189,22 @@ ET:
         mean: 0.49815075343936654
         median: 0.12362543128245204
       numberIterations: 487207
+power:
+  128,16:
+    power:
+      MAE:
+        mean: 988.1157734304552
+        median: 96.17539333343505
+      MASE:
+        mean: 3.6596282441210097
+        median: 3.049682239377353
+      MSE:
+        mean: 5738799.174728219
+        median: 13897.25077470264
+      normalizedMAE:
+        mean: 0.08980301207344345
+        median: 0.008740716665928735
+      normalizedMSE:
+        mean: 521.5597862444783
+        median: 1.263025055025224
+      numberIterations: 470898
