@@ -57,6 +57,7 @@ monash:
 paths:
   data: ["data"]
   datasets: ["data", "datasets"]
+  vectorDatabase: ["data", "vectorDB"]
 files:
   datasets: ["data", "datasets", "datasets.yaml"]
   evaluationReports: ["data", "reports.yaml"]
