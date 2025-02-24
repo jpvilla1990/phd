@@ -220,7 +220,7 @@ class Evaluation(FileSystem):
                         reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
                     if mse:
                         reportMSE = np.append(reportMSE, [mse])
-                        reportNMSE = np.append(reportNMSE, [abs(mse / self.__datasetMetadata["std"])])
+                        reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
                     iterations += 1
 
