@@ -225,6 +225,24 @@ power:
         mean: 0.0474009635718382
         median: 0.000114787616305039
       numberIterations: 470898
+  32,16:
+    power:
+      MAE:
+        mean: 928.9507932552067
+        median: 89.30706530570984
+      MASE:
+        mean: 3.6241640833836852
+        median: 2.9034333082436916
+      MSE:
+        mean: 5253166.044921514
+        median: 12378.426904364103
+      normalizedMAE:
+        mean: 0.084425916016615
+        median: 0.00811650181035889
+      normalizedMSE:
+        mean: 0.043389762344128925
+        median: 0.00010224253278530329
+      numberIterations: 472626
 solarEnergy:
   32,16:
     T1:
