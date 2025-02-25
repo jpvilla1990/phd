@@ -14,8 +14,8 @@ ET:
         mean: 0.2132168733462708
         median: 0.09598892852996174
       normalizedMSE:
-        mean: 0.355359754385638000
-        median: 0.025593952508976400
+        mean: 0.355359754385638
+        median: 0.0255939525089764
       numberIterations: 120939
     ETTh2:
       MAE:
@@ -31,8 +31,8 @@ ET:
         mean: 0.19980551453919562
         median: 0.1225998850270985
       normalizedMSE:
-        mean: 0.068640150474161700
-        median: 0.014655697762296000
+        mean: 0.0686401504741617
+        median: 0.014655697762296
       numberIterations: 120939
     ETTm1:
       MAE:
@@ -48,8 +48,8 @@ ET:
         mean: 0.10334019039593285
         median: 0.04539405449684661
       normalizedMSE:
-        mean: 0.115642782261185000
-        median: 0.006188581105088410
+        mean: 0.115642782261185
+        median: 0.00618858110508841
       numberIterations: 486759
     ETTm2:
       MAE:
@@ -65,8 +65,8 @@ ET:
         mean: 0.11342791035687307
         median: 0.07921556283304901
       normalizedMSE:
-        mean: 0.024452055433872300
-        median: 0.006110263864908670
+        mean: 0.0244520554338723
+        median: 0.00611026386490867
       numberIterations: 486759
   32,16:
     ETTh1:
@@ -83,8 +83,8 @@ ET:
         mean: 0.19581120586051373
         median: 0.08576112288363232
       normalizedMSE:
-        mean: 0.327282211706231000
-        median: 0.021031176866762100
+        mean: 0.327282211706231
+        median: 0.0210311768667621
       numberIterations: 121611
     ETTh2:
       MAE:
@@ -100,8 +100,8 @@ ET:
         mean: 0.19075932662202308
         median: 0.11950787155721714
       normalizedMSE:
-        mean: 0.065302724940917400
-        median: 0.014262429857410600
+        mean: 0.0653027249409174
+        median: 0.0142624298574106
       numberIterations: 121611
     ETTm1:
       MAE:
@@ -117,8 +117,8 @@ ET:
         mean: 0.10310797446354135
         median: 0.044749655890478725
       normalizedMSE:
-        mean: 0.110985679413455000
-        median: 0.006004812858092620
+        mean: 0.110985679413455
+        median: 0.00600481285809262
       numberIterations: 487431
     ETTm2:
       MAE:
@@ -134,8 +134,8 @@ ET:
         mean: 0.11673953937373725
         median: 0.08089810541092776
       normalizedMSE:
-        mean: 0.025907583813929800
-        median: 0.006440790636348810
+        mean: 0.0259075838139298
+        median: 0.00644079063634881
       numberIterations: 487431
   64,16:
     ETTh1:
@@ -152,8 +152,8 @@ ET:
         mean: 0.20754006324647684
         median: 0.09285548400061713
       normalizedMSE:
-        mean: 0.347026665886496000
-        median: 0.024063552820104800
+        mean: 0.347026665886496
+        median: 0.0240635528201048
       numberIterations: 121387
     ETTh2:
       MAE:
@@ -169,8 +169,8 @@ ET:
         mean: 0.197793770812158
         median: 0.1226046712190486
       normalizedMSE:
-        mean: 0.068026452019935100
-        median: 0.014781878052209700
+        mean: 0.0680264520199351
+        median: 0.0147818780522097
       numberIterations: 121387
     ETTm1:
       MAE:
@@ -186,8 +186,8 @@ ET:
         mean: 0.10467000396645199
         median: 0.047125937117351684
       normalizedMSE:
-        mean: 0.110425417158580000
-        median: 0.006618293343425620
+        mean: 0.11042541715858
+        median: 0.00661829334342562
       numberIterations: 487207
     ETTm2:
       MAE:
@@ -203,8 +203,8 @@ ET:
         mean: 0.11727173263294423
         median: 0.08122837548590009
       normalizedMSE:
-        mean: 0.025918753311318000
-        median: 0.006432223647745990
+        mean: 0.025918753311318
+        median: 0.00643222364774599
       numberIterations: 487207
 power:
   128,16:
@@ -222,6 +222,2440 @@ power:
         mean: 0.08980301207344345
         median: 0.008740716665928735
       normalizedMSE:
-        mean: 0.047400963571838200
+        mean: 0.0474009635718382
         median: 0.000114787616305039
       numberIterations: 470898
+solarEnergy:
+  32,16:
+    T1:
+      MAE:
+        mean: 2773.2717697143553
+        median: 2901.98073425293
+      MASE:
+        mean: 1.383948904126438
+        median: 1.4434416294818566
+      MSE:
+        mean: 11771362.28183087
+        median: 12849802.750224264
+      normalizedMAE:
+        mean: 1.8436896581401347
+        median: 1.9292562403341822
+      normalizedMSE:
+        mean: 5.202564863760122
+        median: 5.679200987446548
+      numberIterations: 4
+    T10:
+      MAE:
+        mean: 1299.2989112854004
+        median: 1297.0388931274415
+      MASE:
+        mean: 1.3969275439891042
+        median: 1.3970320631165052
+      MSE:
+        mean: 2352844.226375533
+        median: 2327306.389744865
+      normalizedMAE:
+        mean: 0.8637826237333978
+        median: 0.8622801485160241
+      normalizedMSE:
+        mean: 1.03988174087004
+        median: 1.0285948355509988
+      numberIterations: 4
+    T100:
+      MAE:
+        mean: 1318.3792922973635
+        median: 1264.9489166259764
+      MASE:
+        mean: 1.3572731772289082
+        median: 1.3232489363358577
+      MSE:
+        mean: 2710715.292564487
+        median: 2426724.2788002687
+      normalizedMAE:
+        mean: 0.8764673889011305
+        median: 0.8409465170804706
+      normalizedMSE:
+        mean: 1.198049282581401
+        median: 1.0725343562322363
+      numberIterations: 4
+    T101:
+      MAE:
+        mean: 916.4366981506348
+        median: 868.996989440918
+      MASE:
+        mean: 1.4880581893266922
+        median: 1.407271375975587
+      MSE:
+        mean: 1143486.9529895473
+        median: 941425.3279675792
+      normalizedMAE:
+        mean: 0.6092532586139034
+        median: 0.5777150223370116
+      normalizedMSE:
+        mean: 0.5053845851787213
+        median: 0.41607982286789225
+      numberIterations: 4
+    T102:
+      MAE:
+        mean: 882.5202865600587
+        median: 817.112257385254
+      MASE:
+        mean: 1.3491862086850719
+        median: 1.2448206823761685
+      MSE:
+        mean: 1062518.4587784472
+        median: 827652.5857571287
+      normalizedMAE:
+        mean: 0.5867054008908897
+        median: 0.5432217047505232
+      normalizedMSE:
+        mean: 0.46959910572708413
+        median: 0.3657959171562022
+      numberIterations: 4
+    T103:
+      MAE:
+        mean: 1258.2196235656738
+        median: 1290.59054107666
+      MASE:
+        mean: 1.411482330288634
+        median: 1.4514958929612074
+      MSE:
+        mean: 2319857.9973156126
+        median: 2386064.3002819065
+      normalizedMAE:
+        mean: 0.8364728379562816
+        median: 0.8579932408577469
+      normalizedMSE:
+        mean: 1.0253028848135946
+        median: 1.0545639488540366
+      numberIterations: 4
+    T104:
+      MAE:
+        mean: 1172.8910736083983
+        median: 1168.4641235351562
+      MASE:
+        mean: 1.325448035106801
+        median: 1.3137616289378777
+      MSE:
+        mean: 2031024.0958496905
+        median: 1966981.4673651196
+      normalizedMAE:
+        mean: 0.7797458460983843
+        median: 0.7768027800216037
+      normalizedMSE:
+        mean: 0.8976475573118027
+        median: 0.8693427680478664
+      numberIterations: 4
+    T105:
+      MAE:
+        mean: 1651.657084655762
+        median: 1584.722915649414
+      MASE:
+        mean: 1.2126291442566899
+        median: 1.1626783794740012
+      MSE:
+        mean: 3887820.8406156683
+        median: 3191443.9647634737
+      normalizedMAE:
+        mean: 1.0980326987886082
+        median: 1.0535344146605012
+      normalizedMSE:
+        mean: 1.7182922093223902
+        median: 1.4105159486396568
+      numberIterations: 4
+    T106:
+      MAE:
+        mean: 1256.927882385254
+        median: 1298.6212097167968
+      MASE:
+        mean: 0.9350651278373772
+        median: 0.9676111852298248
+      MSE:
+        mean: 2515368.779395259
+        median: 2466529.009391479
+      normalizedMAE:
+        mean: 0.8356140797626772
+        median: 0.8633320831888378
+      normalizedMSE:
+        mean: 1.1117123844943422
+        median: 1.0901267714367964
+      numberIterations: 4
+    T107:
+      MAE:
+        mean: 1179.0748390197755
+        median: 1162.7600677490236
+      MASE:
+        mean: 1.4882761559952533
+        median: 1.455285805907221
+      MSE:
+        mean: 1950811.2204085286
+        median: 1867624.662699514
+      normalizedMAE:
+        mean: 0.7838568547856053
+        median: 0.7730106855081149
+      normalizedMSE:
+        mean: 0.8621960371393687
+        median: 0.8254302447092032
+      numberIterations: 4
+    T108:
+      MAE:
+        mean: 1225.6753196716309
+        median: 1180.1677947998046
+      MASE:
+        mean: 1.3871302806254837
+        median: 1.3475672071395313
+      MSE:
+        mean: 2197575.334676652
+        median: 1974634.244046204
+      normalizedMAE:
+        mean: 0.8148371666253766
+        median: 0.7845834591128299
+      normalizedMSE:
+        mean: 0.9712578670101379
+        median: 0.8727250500741928
+      numberIterations: 4
+    T109:
+      MAE:
+        mean: 1027.6146492004393
+        median: 1016.2428878784178
+      MASE:
+        mean: 1.22383999303562
+        median: 1.2159390140148636
+      MSE:
+        mean: 1442262.4831930003
+        median: 1261775.4417117971
+      normalizedMAE:
+        mean: 0.6831651055530323
+        median: 0.6756050824160253
+      normalizedMSE:
+        mean: 0.63743379395951
+        median: 0.5576643061217713
+      numberIterations: 4
+    T11:
+      MAE:
+        mean: 1371.3360275268556
+        median: 1380.4496154785156
+      MASE:
+        mean: 1.4557460833859808
+        median: 1.4669677649552717
+      MSE:
+        mean: 2580011.2013722695
+        median: 2581384.1847018483
+      normalizedMAE:
+        mean: 0.9116733813818229
+        median: 0.9177321557286144
+      normalizedMSE:
+        mean: 1.1402822632589302
+        median: 1.1408890778873457
+      numberIterations: 4
+    T110:
+      MAE:
+        mean: 1342.5404975891113
+        median: 1295.3770416259765
+      MASE:
+        mean: 1.4077767829675647
+        median: 1.3679787675304795
+      MSE:
+        mean: 2612030.04250313
+        median: 2308173.290751132
+      normalizedMAE:
+        mean: 0.8925299201002221
+        median: 0.8611753385006208
+      normalizedMSE:
+        mean: 1.15443356485491
+        median: 1.0201386189996415
+      numberIterations: 4
+    T111:
+      MAE:
+        mean: 1349.275904083252
+        median: 1356.751043701172
+      MASE:
+        mean: 1.3762492920599507
+        median: 1.3903411054351196
+      MSE:
+        mean: 2622149.5717554404
+        median: 2657685.8874284937
+      normalizedMAE:
+        mean: 0.897007663476197
+        median: 0.9019771863903296
+      normalizedMSE:
+        mean: 1.158906072459839
+        median: 1.1746119850706063
+      numberIterations: 4
+    T112:
+      MAE:
+        mean: 1160.7557304382324
+        median: 1085.492547607422
+      MASE:
+        mean: 1.2268507773605493
+        median: 1.1629048837037437
+      MSE:
+        mean: 2019780.481655009
+        median: 1740424.5515178156
+      normalizedMAE:
+        mean: 0.7716781886314348
+        median: 0.7216427202942772
+      normalizedMSE:
+        mean: 0.892678240188566
+        median: 0.7692118722510108
+      numberIterations: 4
+    T113:
+      MAE:
+        mean: 398.7398376464844
+        median: 387.0533905029297
+      MASE:
+        mean: 0.8630712784130085
+        median: 0.831412407788114
+      MSE:
+        mean: 250905.68981784565
+        median: 229418.47803852783
+      normalizedMAE:
+        mean: 0.2650849163019532
+        median: 0.2573156879218611
+      normalizedMSE:
+        mean: 0.11089227352883664
+        median: 0.10139561457409546
+      numberIterations: 4
+    T114:
+      MAE:
+        mean: 1171.7969696044922
+        median: 1142.3442611694336
+      MASE:
+        mean: 1.409553619300432
+        median: 1.371140023555221
+      MSE:
+        mean: 1974586.0378615474
+        median: 1829863.4386080715
+      normalizedMAE:
+        mean: 0.7790184784242312
+        median: 0.7594381204734029
+      normalizedMSE:
+        mean: 0.8727037444855527
+        median: 0.8087409938844333
+      numberIterations: 4
+    T115:
+      MAE:
+        mean: 1298.2005355834963
+        median: 1276.2191879272461
+      MASE:
+        mean: 1.3521118801624463
+        median: 1.3504827933758516
+      MSE:
+        mean: 2457005.898933529
+        median: 2297619.0381058985
+      normalizedMAE:
+        mean: 0.863052416205788
+        median: 0.8484390689715262
+      normalizedMSE:
+        mean: 1.0859178618241248
+        median: 1.0154739775876538
+      numberIterations: 4
+    T116:
+      MAE:
+        mean: 245.40684928894044
+        median: 238.4666633605957
+      MASE:
+        mean: 0.9119477479522575
+        median: 0.8892767793763814
+      MSE:
+        mean: 83078.09779303928
+        median: 75870.63892430639
+      normalizedMAE:
+        mean: 0.16314811805024668
+        median: 0.15853423593404253
+      normalizedMSE:
+        mean: 0.03671785662337697
+        median: 0.03353239079795223
+      numberIterations: 4
+    T117:
+      MAE:
+        mean: 1144.0956382751465
+        median: 1153.6807373046877
+      MASE:
+        mean: 1.2599314997438507
+        median: 1.274121841014424
+      MSE:
+        mean: 1954490.1213137594
+        median: 1877574.4516158025
+      normalizedMAE:
+        mean: 0.7606024477104838
+        median: 0.7669746857817762
+      normalizedMSE:
+        mean: 0.8638219934330044
+        median: 0.8298277325256823
+      numberIterations: 4
+    T118:
+      MAE:
+        mean: 1404.1779617309571
+        median: 1370.0401107788084
+      MASE:
+        mean: 1.4326250619651009
+        median: 1.418501216734458
+      MSE:
+        mean: 2916693.888708033
+        median: 2649869.9546235297
+      normalizedMAE:
+        mean: 0.9335069193374836
+        median: 0.9108118472428767
+      normalizedMSE:
+        mean: 1.2890852205914896
+        median: 1.171157593266577
+      numberIterations: 4
+    T119:
+      MAE:
+        mean: 1287.0863029479979
+        median: 1167.2140686035157
+      MASE:
+        mean: 1.4541273666661496
+        median: 1.3248067884434784
+      MSE:
+        mean: 2236086.367565096
+        median: 1737611.298397227
+      normalizedMAE:
+        mean: 0.8556635998654614
+        median: 0.7759717351255566
+      normalizedMSE:
+        mean: 0.9882785092922785
+        median: 0.7679685045347161
+      numberIterations: 4
+    T12:
+      MAE:
+        mean: 451.42580337524413
+        median: 433.6408126831054
+      MASE:
+        mean: 0.9697501820990455
+        median: 0.9398897973098075
+      MSE:
+        mean: 314635.24188702006
+        median: 287096.70088482375
+      normalizedMAE:
+        mean: 0.30011089940394287
+        median: 0.28828731840214583
+      normalizedMSE:
+        mean: 0.1390586930510713
+        median: 0.12688754052113999
+      numberIterations: 4
+    T120:
+      MAE:
+        mean: 830.5929023742676
+        median: 766.3070602416992
+      MASE:
+        mean: 1.225070908490482
+        median: 1.1245191714969094
+      MSE:
+        mean: 1036048.6731253287
+        median: 825123.910597584
+      normalizedMAE:
+        mean: 0.5521837278824513
+        median: 0.5094460692083238
+      normalizedMSE:
+        mean: 0.45790030880850385
+        median: 0.36467832377814297
+      numberIterations: 4
+    T121:
+      MAE:
+        mean: 1264.0229179382325
+        median: 1234.3223815917968
+      MASE:
+        mean: 1.3686342031230325
+        median: 1.34334321240831
+      MSE:
+        mean: 2335359.940908292
+        median: 2078277.1685053047
+      normalizedMAE:
+        mean: 0.8403309069470934
+        median: 0.8205857913399135
+      normalizedMSE:
+        mean: 1.0321542470539484
+        median: 0.9185319009941183
+      numberIterations: 4
+    T122:
+      MAE:
+        mean: 3443.6565673828127
+        median: 3229.8139526367186
+      MASE:
+        mean: 1.3537013518894987
+        median: 1.2810402711030022
+      MSE:
+        mean: 17354622.877237532
+        median: 15368014.895941772
+      normalizedMAE:
+        mean: 2.289365964347588
+        median: 2.1472019609554405
+      normalizedMSE:
+        mean: 7.670187106914906
+        median: 6.79217004872721
+      numberIterations: 4
+    T123:
+      MAE:
+        mean: 1147.6525550842284
+        median: 1150.8331146240234
+      MASE:
+        mean: 1.250514998014895
+        median: 1.2777798712644048
+      MSE:
+        mean: 2057331.1562540065
+        median: 2058354.2551539452
+      normalizedMAE:
+        mean: 0.7629671098425492
+        median: 0.7650815671397592
+      normalizedMSE:
+        mean: 0.9092744348856551
+        median: 0.9097266118097471
+      numberIterations: 4
+    T124:
+      MAE:
+        mean: 1203.0782417297362
+        median: 1112.4816314697264
+      MASE:
+        mean: 1.2753961506084168
+        median: 1.181017667427334
+      MSE:
+        mean: 2017851.870342961
+        median: 1678074.5367289865
+      normalizedMAE:
+        mean: 0.7998144777707792
+        median: 0.739585244118667
+      normalizedMSE:
+        mean: 0.8918258557994289
+        median: 0.7416551639933806
+      numberIterations: 4
+    T125:
+      MAE:
+        mean: 1565.6011306762696
+        median: 1561.5183502197265
+      MASE:
+        mean: 1.1135355889889471
+        median: 1.1238877207843223
+      MSE:
+        mean: 3570133.648546838
+        median: 3190743.7669404633
+      normalizedMAE:
+        mean: 1.040822123861898
+        median: 1.0381078640528205
+      normalizedMSE:
+        mean: 1.5778846521040557
+        median: 1.410206483642789
+      numberIterations: 4
+    T126:
+      MAE:
+        mean: 1528.335137939453
+        median: 1276.4168640136718
+      MASE:
+        mean: 1.1457492583156115
+        median: 0.9806289291579733
+      MSE:
+        mean: 3699409.123498101
+        median: 2542974.122542451
+      normalizedMAE:
+        mean: 1.0160474421449774
+        median: 0.8485704853585478
+      normalizedMSE:
+        mean: 1.635020268834283
+        median: 1.1239130614313948
+      numberIterations: 4
+    T127:
+      MAE:
+        mean: 593.8034187316895
+        median: 567.659555053711
+      MASE:
+        mean: 1.2912205075625458
+        median: 1.2288638261815432
+      MSE:
+        mean: 469916.0132280965
+        median: 412120.7314007117
+      normalizedMAE:
+        mean: 0.3947644922649013
+        median: 0.37738387648346305
+      normalizedMSE:
+        mean: 0.2076878173320889
+        median: 0.18214415506707038
+      numberIterations: 4
+    T128:
+      MAE:
+        mean: 1212.0424575805664
+        median: 1229.7306533813476
+      MASE:
+        mean: 1.4476388559930005
+        median: 1.495153182894235
+      MSE:
+        mean: 2157394.6912767827
+        median: 2170022.139140711
+      normalizedMAE:
+        mean: 0.805773948543892
+        median: 0.8175331796532243
+      normalizedMSE:
+        mean: 0.953499310391921
+        median: 0.95908023764596
+      numberIterations: 4
+    T129:
+      MAE:
+        mean: 1209.3950729370117
+        median: 1122.7101486206054
+      MASE:
+        mean: 1.4001366777429411
+        median: 1.2937478278822827
+      MSE:
+        mean: 2015773.0163858898
+        median: 1607240.8840562839
+      normalizedMAE:
+        mean: 0.8040139494908805
+        median: 0.7463852308690195
+      normalizedMSE:
+        mean: 0.8909070689763745
+        median: 0.7103489596863737
+      numberIterations: 4
+    T13:
+      MAE:
+        mean: 1154.0343452453612
+        median: 1081.9415130615234
+      MASE:
+        mean: 1.244381755282549
+        median: 1.160008780200841
+      MSE:
+        mean: 1916739.103487913
+        median: 1539327.2294386998
+      normalizedMAE:
+        mean: 0.7672097667105102
+        median: 0.7192819687301975
+      normalizedMSE:
+        mean: 0.8471372534505236
+        median: 0.6803333009356154
+      numberIterations: 4
+    T130:
+      MAE:
+        mean: 291.28610935211185
+        median: 238.52786483764652
+      MASE:
+        mean: 1.0787155129629955
+        median: 0.9011238340951871
+      MSE:
+        mean: 131893.17344532785
+        median: 86195.26127017479
+      normalizedMAE:
+        mean: 0.1936489576092572
+        median: 0.15857492308613982
+      normalizedMSE:
+        mean: 0.05829255556900216
+        median: 0.0380955429771283
+      numberIterations: 4
+    T131:
+      MAE:
+        mean: 940.3847160339353
+        median: 771.135220336914
+      MASE:
+        mean: 1.1608045409260737
+        median: 0.9712779145851143
+      MSE:
+        mean: 1289753.6288258936
+        median: 884807.2545102026
+      normalizedMAE:
+        mean: 0.6251740613951412
+        median: 0.5126558623965006
+      normalizedMSE:
+        mean: 0.5700297681427792
+        median: 0.39105644897362424
+      numberIterations: 4
+    T132:
+      MAE:
+        mean: 1330.6781837463377
+        median: 1330.5545471191406
+      MASE:
+        mean: 1.4959067668241715
+        median: 1.49562784970346
+      MSE:
+        mean: 2527678.1222554296
+        median: 2481993.382706832
+      normalizedMAE:
+        mean: 0.8846437743598834
+        median: 0.8845615799015472
+      normalizedMSE:
+        mean: 1.117152719531787
+        median: 1.0969615288186763
+      numberIterations: 4
+    T133:
+      MAE:
+        mean: 1261.003524017334
+        median: 1273.7124221801757
+      MASE:
+        mean: 1.3681593345519976
+        median: 1.3799890604186298
+      MSE:
+        mean: 2273849.172033338
+        median: 2225989.2530772286
+      normalizedMAE:
+        mean: 0.8383235936334095
+        median: 0.8467725543032831
+      normalizedMSE:
+        mean: 1.0049684585929437
+        median: 0.9838159082948542
+      numberIterations: 4
+    T134:
+      MAE:
+        mean: 1270.1929557800295
+        median: 1206.34070892334
+      MASE:
+        mean: 1.1974131168034237
+        median: 1.154046136089515
+      MSE:
+        mean: 2458504.9125471143
+        median: 2166955.173215895
+      normalizedMAE:
+        mean: 0.8444327894540595
+        median: 0.8019833878251617
+      normalizedMSE:
+        mean: 1.0865803777988794
+        median: 0.9577247370015335
+      numberIterations: 4
+    T135:
+      MAE:
+        mean: 1216.2590797424316
+        median: 1113.7847564697265
+      MASE:
+        mean: 1.3338659020006594
+        median: 1.2196005481688004
+      MSE:
+        mean: 2161879.2818758925
+        median: 1739009.942021392
+      normalizedMAE:
+        mean: 0.8085771872156344
+        median: 0.7404515703518193
+      normalizedMSE:
+        mean: 0.9554813557083999
+        median: 0.7685866601909425
+      numberIterations: 4
+    T136:
+      MAE:
+        mean: 1473.354535675049
+        median: 1383.547009277344
+      MASE:
+        mean: 1.3335396285457328
+        median: 1.2567104431585023
+      MSE:
+        mean: 3210512.4400980263
+        median: 2805661.587226292
+      normalizedMAE:
+        mean: 0.9794959692961268
+        median: 0.9197913238838779
+      normalizedMSE:
+        mean: 1.418943603604804
+        median: 1.2400125018524752
+      numberIterations: 4
+    T137:
+      MAE:
+        mean: 1325.69405670166
+        median: 1281.9616302490233
+      MASE:
+        mean: 1.1122788943349844
+        median: 1.0667936839372216
+      MSE:
+        mean: 2444240.9975836775
+        median: 2039221.9504830898
+      normalizedMAE:
+        mean: 0.88133029329846
+        median: 0.8522566831111665
+      normalizedMSE:
+        mean: 1.080276184534606
+        median: 0.9012707463236442
+      numberIterations: 4
+    T14:
+      MAE:
+        mean: 1253.8421745300293
+        median: 1277.368310546875
+      MASE:
+        mean: 1.3415080278118268
+        median: 1.3613172386380517
+      MSE:
+        mean: 2287678.4830133715
+        median: 2242863.0645852783
+      normalizedMAE:
+        mean: 0.833562680501037
+        median: 0.84920301339013
+      normalizedMSE:
+        mean: 1.0110805708253392
+        median: 0.9912735921862923
+      numberIterations: 4
+    T15:
+      MAE:
+        mean: 1040.5139877319336
+        median: 1006.0567901611328
+      MASE:
+        mean: 1.16212431935075
+        median: 1.108160505912783
+      MSE:
+        mean: 1458104.3136224318
+        median: 1292306.3891734462
+      normalizedMAE:
+        mean: 0.6917406722562603
+        median: 0.6688332963894082
+      normalizedMSE:
+        mean: 0.6444353752885479
+        median: 0.5711580064020227
+      numberIterations: 4
+    T16:
+      MAE:
+        mean: 783.4256340026856
+        median: 713.5354354858398
+      MASE:
+        mean: 1.2170003840910986
+        median: 1.1290762077340286
+      MSE:
+        mean: 964036.8578392924
+        median: 839870.3538939538
+      normalizedMAE:
+        mean: 0.5208266117681647
+        median: 0.47436313941105723
+      normalizedMSE:
+        mean: 0.4260733943857795
+        median: 0.37119577910084095
+      numberIterations: 4
+    T17:
+      MAE:
+        mean: 1219.522730255127
+        median: 1104.4239379882813
+      MASE:
+        mean: 1.3127888508792362
+        median: 1.1797259888012581
+      MSE:
+        mean: 2106115.6942059337
+        median: 1647087.5408830321
+      normalizedMAE:
+        mean: 0.8107468839484794
+        median: 0.7342284354919619
+      normalizedMSE:
+        mean: 0.9308356371464346
+        median: 0.7279599049433321
+      numberIterations: 4
+    T18:
+      MAE:
+        mean: 1243.6880630493165
+        median: 1158.5699615478516
+      MASE:
+        mean: 1.4433201251412755
+        median: 1.3410163291070836
+      MSE:
+        mean: 2247956.6179038044
+        median: 1940473.0004421207
+      normalizedMAE:
+        mean: 0.8268121591388553
+        median: 0.7702250748247432
+      normalizedMSE:
+        mean: 0.9935247795078783
+        median: 0.8576268752477094
+      numberIterations: 4
+    T19:
+      MAE:
+        mean: 1275.9155517578124
+        median: 1275.459370422363
+      MASE:
+        mean: 1.3042839834229807
+        median: 1.312044807279237
+      MSE:
+        mean: 2307210.432333408
+        median: 2183496.1514812047
+      normalizedMAE:
+        mean: 0.8482372096112083
+        median: 0.8479339372022114
+      normalizedMSE:
+        mean: 1.0197130664380185
+        median: 0.9650353192667782
+      numberIterations: 4
+    T2:
+      MAE:
+        mean: 1316.8362457275389
+        median: 1255.2866409301757
+      MASE:
+        mean: 1.3299470089574812
+        median: 1.2874355063871685
+      MSE:
+        mean: 2624313.528871882
+        median: 2397530.4965776606
+      normalizedMAE:
+        mean: 0.8754415612004769
+        median: 0.8345229714442342
+      normalizedMSE:
+        mean: 1.1598624721518322
+        median: 1.0596316401323302
+      numberIterations: 4
+    T20:
+      MAE:
+        mean: 1236.9519874572754
+        median: 1229.4610885620118
+      MASE:
+        mean: 1.324012330986437
+        median: 1.322689334350798
+      MSE:
+        mean: 2062038.108514555
+        median: 2072049.185638937
+      normalizedMAE:
+        mean: 0.8223339709421119
+        median: 0.8173539711547873
+      normalizedMSE:
+        mean: 0.9113547569299372
+        median: 0.9157793321701448
+      numberIterations: 4
+    T21:
+      MAE:
+        mean: 1351.5473144531252
+        median: 1277.4351425170898
+      MASE:
+        mean: 1.4193640789221769
+        median: 1.3385757195175514
+      MSE:
+        mean: 2647089.61175247
+        median: 2287641.040088797
+      normalizedMAE:
+        mean: 0.8985177123123984
+        median: 0.8492474437318167
+      normalizedMSE:
+        mean: 1.169928770825821
+        median: 1.0110640222526994
+      numberIterations: 4
+    T22:
+      MAE:
+        mean: 1273.2411590576173
+        median: 1211.533319091797
+      MASE:
+        mean: 1.5298285347542764
+        median: 1.4467363784054699
+      MSE:
+        mean: 2189868.3023697217
+        median: 1822997.7934188345
+      normalizedMAE:
+        mean: 0.8464592554211425
+        median: 0.8054354698644649
+      normalizedMSE:
+        mean: 0.9678516057360467
+        median: 0.8057065987504308
+      numberIterations: 4
+    T23:
+      MAE:
+        mean: 1725.937897491455
+        median: 1691.3337707519531
+      MASE:
+        mean: 1.2676079109473661
+        median: 1.25575248154238
+      MSE:
+        mean: 4499465.682388062
+        median: 4270593.941997897
+      normalizedMAE:
+        mean: 1.1474150809694632
+        median: 1.1244100256065837
+      normalizedMSE:
+        mean: 1.9886196265506224
+        median: 1.8874656524945033
+      numberIterations: 4
+    T24:
+      MAE:
+        mean: 2411.264776611328
+        median: 2153.9042541503904
+      MASE:
+        mean: 1.0647396489268974
+        median: 0.9599033244228206
+      MSE:
+        mean: 8585405.066529188
+        median: 5958909.980767964
+      normalizedMAE:
+        mean: 1.6030249830631575
+        median: 1.4319299829782417
+      normalizedMSE:
+        mean: 3.794473882535684
+        median: 2.6336472321562976
+      numberIterations: 4
+    T25:
+      MAE:
+        mean: 1272.7619758605956
+        median: 1139.430844116211
+      MASE:
+        mean: 1.3686466944873308
+        median: 1.2341036434740618
+      MSE:
+        mean: 2321871.6415395183
+        median: 1881743.5376609075
+      normalizedMAE:
+        mean: 0.8461406912204207
+        median: 0.7575012612915748
+      normalizedMSE:
+        mean: 1.026192851024521
+        median: 0.8316703349410148
+      numberIterations: 4
+    T26:
+      MAE:
+        mean: 1137.6882720947265
+        median: 1126.010675048828
+      MASE:
+        mean: 1.3284989307632298
+        median: 1.324915665107403
+      MSE:
+        mean: 1918161.328305073
+        median: 1930082.181314281
+      normalizedMAE:
+        mean: 0.7563427877334978
+        median: 0.7485794429576383
+      normalizedMSE:
+        mean: 0.8477658312382912
+        median: 0.8530344662124675
+      numberIterations: 4
+    T27:
+      MAE:
+        mean: 1283.1343353271486
+        median: 1269.6032669067386
+      MASE:
+        mean: 1.381826037497925
+        median: 1.373626886954682
+      MSE:
+        mean: 2342330.398120175
+        median: 2266654.934081454
+      normalizedMAE:
+        mean: 0.8530363053062213
+        median: 0.8440407603391782
+      normalizedMSE:
+        mean: 1.0352349657428008
+        median: 1.0017888359890441
+      numberIterations: 4
+    T28:
+      MAE:
+        mean: 1428.8687217712402
+        median: 1412.5688339233398
+      MASE:
+        mean: 1.434815514777847
+        median: 1.4398965562964885
+      MSE:
+        mean: 2960855.1292371526
+        median: 2780862.8939676406
+      normalizedMAE:
+        mean: 0.9499215020823182
+        median: 0.9390852274040836
+      normalizedMSE:
+        mean: 1.308603073565183
+        median: 1.2290522742147818
+      numberIterations: 4
+    T29:
+      MAE:
+        mean: 2297.3694183349608
+        median: 2026.0343749999997
+      MASE:
+        mean: 1.1059817858438912
+        median: 1.01107385259292
+      MSE:
+        mean: 8101185.433381556
+        median: 6253524.280092249
+      normalizedMAE:
+        mean: 1.5273065855885632
+        median: 1.3469212303735567
+      normalizedMSE:
+        mean: 3.5804643236212446
+        median: 2.7638573102533446
+      numberIterations: 4
+    T3:
+      MAE:
+        mean: 1449.042301940918
+        median: 1451.4899520874023
+      MASE:
+        mean: 1.4420462683075868
+        median: 1.4322002350110046
+      MSE:
+        mean: 2864265.6721110386
+        median: 2863742.4541366687
+      normalizedMAE:
+        mean: 0.963333033376392
+        median: 0.9649602475971906
+      normalizedMSE:
+        mean: 1.265913629147215
+        median: 1.2656823835713529
+      numberIterations: 4
+    T30:
+      MAE:
+        mean: 1238.4555603027343
+        median: 1249.694039916992
+      MASE:
+        mean: 1.311407752110686
+        median: 1.3201908383216394
+      MSE:
+        mean: 2184267.697194223
+        median: 2069533.036941221
+      normalizedMAE:
+        mean: 0.8233335562462664
+        median: 0.8308049728107383
+      normalizedMSE:
+        mean: 0.9653763177443738
+        median: 0.9146672750867487
+      numberIterations: 4
+    T31:
+      MAE:
+        mean: 1128.6574295043945
+        median: 1072.6988342285156
+      MASE:
+        mean: 1.1573582170196168
+        median: 1.0909159101350747
+      MSE:
+        mean: 1792474.561785027
+        median: 1415161.7872241766
+      normalizedMAE:
+        mean: 0.7503390230574519
+        median: 0.7131373739003577
+      normalizedMSE:
+        mean: 0.7922163086187979
+        median: 0.6254561549016695
+      numberIterations: 4
+    T32:
+      MAE:
+        mean: 2033.5803726196286
+        median: 1747.945880126953
+      MASE:
+        mean: 1.169837965033585
+        median: 1.0180787481117437
+      MSE:
+        mean: 6332774.184317667
+        median: 4427761.367445079
+      normalizedMAE:
+        mean: 1.3519378601620948
+        median: 1.1620461353164284
+      normalizedMSE:
+        mean: 2.798883228011046
+        median: 1.9569286174243337
+      numberIterations: 4
+    T33:
+      MAE:
+        mean: 1193.6123794555665
+        median: 1157.073226928711
+      MASE:
+        mean: 1.38844779458013
+        median: 1.3598220649795507
+      MSE:
+        mean: 2081467.0153330388
+        median: 1813520.6763606789
+      normalizedMAE:
+        mean: 0.7935215090935467
+        median: 0.769230035619273
+      normalizedMSE:
+        mean: 0.9199417110593782
+        median: 0.8015180167464087
+      numberIterations: 4
+    T34:
+      MAE:
+        mean: 1105.7668350219726
+        median: 996.1210784912109
+      MASE:
+        mean: 1.3762617220563318
+        median: 1.2487566534301218
+      MSE:
+        mean: 1804823.4553084644
+        median: 1359902.435961789
+      normalizedMAE:
+        mean: 0.7351212024396524
+        median: 0.6622279686850903
+      normalizedMSE:
+        mean: 0.7976741237818326
+        median: 0.6010332926713889
+      numberIterations: 4
+    T35:
+      MAE:
+        mean: 1230.3265701293944
+        median: 1242.0971603393555
+      MASE:
+        mean: 1.421579636988491
+        median: 1.441545511955955
+      MSE:
+        mean: 2158488.256456592
+        median: 2125484.5301248273
+      normalizedMAE:
+        mean: 0.8179293491009807
+        median: 0.8257545163555213
+      normalizedMSE:
+        mean: 0.9539826311533157
+        median: 0.9393960418634915
+      numberIterations: 4
+    T36:
+      MAE:
+        mean: 644.2943122863769
+        median: 632.4423751831055
+      MASE:
+        mean: 0.959412034133899
+        median: 0.9528744938806624
+      MSE:
+        mean: 634261.5459932385
+        median: 627180.3967600368
+      normalizedMAE:
+        mean: 0.4283311766748536
+        median: 0.4204519294604778
+      normalizedMSE:
+        mean: 0.2803232756426014
+        median: 0.27719363462793656
+      numberIterations: 4
+    T37:
+      MAE:
+        mean: 1250.744652557373
+        median: 1196.0536529541014
+      MASE:
+        mean: 1.3591274213467348
+        median: 1.3073383033623784
+      MSE:
+        mean: 2226540.4216362545
+        median: 1938944.7070429844
+      normalizedMAE:
+        mean: 0.8315034271349537
+        median: 0.7951444840760541
+      normalizedMSE:
+        mean: 0.9840595071333357
+        median: 0.8569514185461401
+      numberIterations: 4
+    T38:
+      MAE:
+        mean: 818.4425628662109
+        median: 756.6595397949219
+      MASE:
+        mean: 1.2333445326876253
+        median: 1.1421788793529963
+      MSE:
+        mean: 959212.7627899554
+        median: 783165.9978205537
+      normalizedMAE:
+        mean: 0.5441061007495711
+        median: 0.5030323329605233
+      normalizedMSE:
+        mean: 0.42394129898320587
+        median: 0.3461342710555946
+      numberIterations: 4
+    T39:
+      MAE:
+        mean: 1219.9995170593263
+        median: 1159.803955078125
+      MASE:
+        mean: 1.3895543856104908
+        median: 1.3193379476122404
+      MSE:
+        mean: 2019137.7212112343
+        median: 1670794.4042078494
+      normalizedMAE:
+        mean: 0.811063855011193
+        median: 0.7710454419935229
+      normalizedMSE:
+        mean: 0.8923941606724884
+        median: 0.7384375787427384
+      numberIterations: 4
+    T4:
+      MAE:
+        mean: 1357.9387321472168
+        median: 1346.650260925293
+      MASE:
+        mean: 1.4279105863129304
+        median: 1.4116025719857674
+      MSE:
+        mean: 2681367.38057262
+        median: 2406702.6580071803
+      normalizedMAE:
+        mean: 0.9027667696287913
+        median: 0.8952621183085145
+      normalizedMSE:
+        mean: 1.1850784460632453
+        median: 1.0636854415221326
+      numberIterations: 4
+    T40:
+      MAE:
+        mean: 1314.2986518859864
+        median: 1289.9734176635743
+      MASE:
+        mean: 1.4158064644689734
+        median: 1.3827598703959563
+      MSE:
+        mean: 2465862.1333963578
+        median: 2295354.937951643
+      normalizedMAE:
+        mean: 0.8737545518084213
+        median: 0.8575829730769517
+      normalizedMSE:
+        mean: 1.089832033619912
+        median: 1.0144733178824688
+      numberIterations: 4
+    T41:
+      MAE:
+        mean: 2373.855828857422
+        median: 2193.904681396484
+      MASE:
+        mean: 0.9523162152984515
+        median: 0.8805965787761927
+      MSE:
+        mean: 8312069.149435514
+        median: 6328894.427197098
+      normalizedMAE:
+        mean: 1.5781552638928342
+        median: 1.4585225350822881
+      normalizedMSE:
+        mean: 3.6736681674257055
+        median: 2.797168499707547
+      numberIterations: 4
+    T42:
+      MAE:
+        mean: 1384.361508178711
+        median: 1383.406071472168
+      MASE:
+        mean: 1.4398059831507142
+        median: 1.4407933694796027
+      MSE:
+        mean: 2708089.1872125757
+        median: 2655601.9487835104
+      normalizedMAE:
+        mean: 0.9203328082120336
+        median: 0.9196976274864741
+      normalizedMSE:
+        mean: 1.1968886281808926
+        median: 1.1736909509784554
+      numberIterations: 4
+    T43:
+      MAE:
+        mean: 1143.5784324645997
+        median: 1141.2823120117187
+      MASE:
+        mean: 1.2747506943362346
+        median: 1.283622123867355
+      MSE:
+        mean: 2006774.6799065643
+        median: 1910681.7169119786
+      normalizedMAE:
+        mean: 0.7602586058214743
+        median: 0.7587321295564898
+      normalizedMSE:
+        mean: 0.8869300926435766
+        median: 0.8444600827194171
+      numberIterations: 4
+    T44:
+      MAE:
+        mean: 1242.3926376342774
+        median: 1246.459046936035
+      MASE:
+        mean: 1.3410979354341606
+        median: 1.3484102171632255
+      MSE:
+        mean: 2193433.981320636
+        median: 2150234.7562117595
+      normalizedMAE:
+        mean: 0.8259509516413854
+        median: 0.8286543277970472
+      normalizedMSE:
+        mean: 0.9694275215545671
+        median: 0.9503348485646277
+      numberIterations: 4
+    T45:
+      MAE:
+        mean: 1968.764808654785
+        median: 2083.2080169677733
+      MASE:
+        mean: 1.1963086184613383
+        median: 1.2565922949075963
+      MSE:
+        mean: 5493389.01115115
+        median: 5836705.26236731
+      normalizedMAE:
+        mean: 1.308848038863834
+        median: 1.3849306507143004
+      normalizedMSE:
+        mean: 2.427901883241993
+        median: 2.579636663208108
+      numberIterations: 4
+    T46:
+      MAE:
+        mean: 1306.4083236694337
+        median: 1236.6654586791992
+      MASE:
+        mean: 1.3292402017735272
+        median: 1.2773207619429816
+      MSE:
+        mean: 2582119.6495206626
+        median: 2325898.0308527844
+      normalizedMAE:
+        mean: 0.8685090087314484
+        median: 0.8221434846902171
+      normalizedMSE:
+        mean: 1.1412141297660736
+        median: 1.0279723860577221
+      numberIterations: 4
+    T47:
+      MAE:
+        mean: 815.372388458252
+        median: 781.0680252075194
+      MASE:
+        mean: 1.2751305350704039
+        median: 1.2309160391116079
+      MSE:
+        mean: 915229.3580010363
+        median: 804781.3607837216
+      normalizedMAE:
+        mean: 0.5420650282277735
+        median: 0.5192592576411525
+      normalizedMSE:
+        mean: 0.40450204370715653
+        median: 0.35568756872643204
+      numberIterations: 4
+    T48:
+      MAE:
+        mean: 987.8267036437987
+        median: 892.4696914672851
+      MASE:
+        mean: 1.075230784833994
+        median: 0.973689333364877
+      MSE:
+        mean: 1477818.7993916094
+        median: 1143049.3712021653
+      normalizedMAE:
+        mean: 0.6567138127001229
+        median: 0.5933198319511358
+      normalizedMSE:
+        mean: 0.6531485461615685
+        median: 0.5051911880529214
+      numberIterations: 4
+    T49:
+      MAE:
+        mean: 1327.7280601501466
+        median: 1267.8582031249998
+      MASE:
+        mean: 1.382675101358842
+        median: 1.339576287018923
+      MSE:
+        mean: 2610599.701352102
+        median: 2298168.104916592
+      normalizedMAE:
+        mean: 0.8826825124222936
+        median: 0.8428806302421853
+      normalizedMSE:
+        mean: 1.1538013999076961
+        median: 1.0157166475207322
+      numberIterations: 4
+    T5:
+      MAE:
+        mean: 2351.7670684814448
+        median: 2260.852899169922
+      MASE:
+        mean: 1.2019997388554726
+        median: 1.1682561338327324
+      MSE:
+        mean: 8634265.400681064
+        median: 8000507.625132681
+      normalizedMAE:
+        mean: 1.5634705079626507
+        median: 1.5030301589249069
+      normalizedMSE:
+        mean: 3.8160685842876196
+        median: 3.5359679590361157
+      numberIterations: 4
+    T50:
+      MAE:
+        mean: 1227.7719024658204
+        median: 1149.5300537109374
+      MASE:
+        mean: 1.341010271002828
+        median: 1.260343997619554
+      MSE:
+        mean: 2139347.278427481
+        median: 1747096.2553698749
+      normalizedMAE:
+        mean: 0.8162309889176216
+        median: 0.7642152835120168
+      normalizedMSE:
+        mean: 0.9455229323208397
+        median: 0.7721605515296794
+      numberIterations: 4
+    T51:
+      MAE:
+        mean: 1225.8811515808106
+        median: 1137.7369842529297
+      MASE:
+        mean: 1.4076631377133593
+        median: 1.296721840508068
+      MSE:
+        mean: 2098782.288331974
+        median: 1730054.8443030552
+      normalizedMAE:
+        mean: 0.8149740050580229
+        median: 0.7563751719027256
+      normalizedMSE:
+        mean: 0.9275945067812223
+        median: 0.7646287940047263
+      numberIterations: 4
+    T52:
+      MAE:
+        mean: 1289.4769493103026
+        median: 1309.4136428833008
+      MASE:
+        mean: 1.39296179263243
+        median: 1.414290314955997
+      MSE:
+        mean: 2322493.560753373
+        median: 2281077.9601074755
+      normalizedMAE:
+        mean: 0.8572529175885152
+        median: 0.8705069650855737
+      normalizedMSE:
+        mean: 1.0264677193849223
+        median: 1.0081633512435697
+      numberIterations: 4
+    T53:
+      MAE:
+        mean: 1296.2186080932618
+        median: 1195.1369171142578
+      MASE:
+        mean: 1.3748826070708238
+        median: 1.296426321388249
+      MSE:
+        mean: 2556192.6908728015
+        median: 2245085.15515446
+      normalizedMAE:
+        mean: 0.8617348175279976
+        median: 0.794535031946038
+      normalizedMSE:
+        mean: 1.1297552449865504
+        median: 0.9922556850012556
+      numberIterations: 4
+    T54:
+      MAE:
+        mean: 1210.8852424621582
+        median: 1079.7336181640624
+      MASE:
+        mean: 1.4243613197466187
+        median: 1.2604067721731917
+      MSE:
+        mean: 2047838.559843348
+        median: 1551242.6560856553
+      normalizedMAE:
+        mean: 0.8050046241778661
+        median: 0.7178141454057172
+      normalizedMSE:
+        mean: 0.9050790115039301
+        median: 0.6855995376315878
+      numberIterations: 4
+    T55:
+      MAE:
+        mean: 851.8939208984375
+        median: 862.2572052001954
+      MASE:
+        mean: 1.0687074861014803
+        median: 1.0804711490263306
+      MSE:
+        mean: 1087651.32585169
+        median: 1096738.4428581344
+      normalizedMAE:
+        mean: 0.5663447877503447
+        median: 0.5732343686057704
+      normalizedMSE:
+        mean: 0.48070702748076505
+        median: 0.4847232419611889
+      numberIterations: 4
+    T56:
+      MAE:
+        mean: 1319.0993293762208
+        median: 1194.2904861450195
+      MASE:
+        mean: 1.4581048686359477
+        median: 1.325644055803701
+      MSE:
+        mean: 2572373.067469848
+        median: 2011022.7550726181
+      normalizedMAE:
+        mean: 0.8769460743766271
+        median: 0.7939723189651623
+      normalizedMSE:
+        mean: 1.136906452871481
+        median: 0.8888076057188165
+      numberIterations: 4
+    T57:
+      MAE:
+        mean: 1180.092783355713
+        median: 1054.5385620117188
+      MASE:
+        mean: 1.3519345268888836
+        median: 1.2038837106702087
+      MSE:
+        mean: 1952473.5899827955
+        median: 1422898.5301017298
+      normalizedMAE:
+        mean: 0.7845335910020936
+        median: 0.7010643032259439
+      normalizedMSE:
+        mean: 0.862930751213288
+        median: 0.6288755472957708
+      numberIterations: 4
+    T58:
+      MAE:
+        mean: 1252.7304450988768
+        median: 1253.719186401367
+      MASE:
+        mean: 1.4819818732543828
+        median: 1.4804524438183075
+      MSE:
+        mean: 2163375.5725215403
+        median: 2069728.406803411
+      normalizedMAE:
+        mean: 0.8328235953247304
+        median: 0.8334809171688731
+      normalizedMSE:
+        mean: 0.9561426682185954
+        median: 0.9147536223043545
+      numberIterations: 4
+    T59:
+      MAE:
+        mean: 1027.5072189331054
+        median: 934.3397827148438
+      MASE:
+        mean: 1.1122734433412047
+        median: 1.0064377688357502
+      MSE:
+        mean: 1609698.9622916146
+        median: 1280510.779854951
+      normalizedMAE:
+        mean: 0.6830936851913433
+        median: 0.6211553492132824
+      normalizedMSE:
+        mean: 0.7114353514865177
+        median: 0.5659447251251593
+      numberIterations: 4
+    T6:
+      MAE:
+        mean: 2824.893380737305
+        median: 2542.9758117675783
+      MASE:
+        mean: 1.0540546511128939
+        median: 0.9407913345831516
+      MSE:
+        mean: 12087239.071579527
+        median: 8929428.231087828
+      normalizedMAE:
+        mean: 1.878008051100716
+        median: 1.6905873619228111
+      normalizedMSE:
+        mean: 5.342172281175202
+        median: 3.9465210955430434
+      numberIterations: 4
+    T60:
+      MAE:
+        mean: 1260.6475349426269
+        median: 1177.7892974853517
+      MASE:
+        mean: 1.3441019041981725
+        median: 1.2604585137084043
+      MSE:
+        mean: 2252182.658512591
+        median: 1946144.2534445848
+      normalizedMAE:
+        mean: 0.8380869297108124
+        median: 0.7830022181582073
+      normalizedMSE:
+        mean: 0.9953925540149998
+        median: 0.8601333873146819
+      numberIterations: 4
+    T61:
+      MAE:
+        mean: 794.1045013427733
+        median: 758.2898666381835
+      MASE:
+        mean: 1.298868447134885
+        median: 1.2352325748271538
+      MSE:
+        mean: 917537.5477990723
+        median: 784449.7172489155
+      normalizedMAE:
+        mean: 0.527925994342415
+        median: 0.5041161851718842
+      normalizedMSE:
+        mean: 0.4055221896218471
+        median: 0.34670163390052455
+      numberIterations: 4
+    T62:
+      MAE:
+        mean: 1194.4355575561524
+        median: 1163.1453247070312
+      MASE:
+        mean: 1.332296516735188
+        median: 1.3173297785130291
+      MSE:
+        mean: 2097546.9577406812
+        median: 1940864.2748339344
+      normalizedMAE:
+        mean: 0.7940687634115084
+        median: 0.7732668069156747
+      normalizedMSE:
+        mean: 0.927048530251445
+        median: 0.857799805988791
+      numberIterations: 4
+    T63:
+      MAE:
+        mean: 1274.095262145996
+        median: 1279.3657501220703
+      MASE:
+        mean: 1.409770580313415
+        median: 1.412905265876759
+      MSE:
+        mean: 2257972.5343468455
+        median: 2179331.3823415954
+      normalizedMAE:
+        mean: 0.847027068878239
+        median: 0.8505309246059596
+      normalizedMSE:
+        mean: 0.9979514935718361
+        median: 0.9631946247853204
+      numberIterations: 4
+    T64:
+      MAE:
+        mean: 1122.6709289550781
+        median: 1067.0589584350587
+      MASE:
+        mean: 1.3909877797355255
+        median: 1.3281468410262907
+      MSE:
+        mean: 1812481.2165716426
+        median: 1521481.954079463
+      normalizedMAE:
+        mean: 0.7463591573725388
+        median: 0.7093879466761147
+      normalizedMSE:
+        mean: 0.8010586088336917
+        median: 0.6724462611567623
+      numberIterations: 4
+    T65:
+      MAE:
+        mean: 1288.0378166198732
+        median: 1219.9186477661133
+      MASE:
+        mean: 1.3903669438584376
+        median: 1.3441964333076415
+      MSE:
+        mean: 2598988.581537073
+        median: 2292581.6461731
+      normalizedMAE:
+        mean: 0.8562961725312827
+        median: 0.8110100925631034
+      normalizedMSE:
+        mean: 1.1486696570785915
+        median: 1.0132476117986222
+      numberIterations: 4
+    T66:
+      MAE:
+        mean: 1272.6143798828125
+        median: 1266.012921142578
+      MASE:
+        mean: 1.4069161809805477
+        median: 1.3829201862529898
+      MSE:
+        mean: 2259515.3306050757
+        median: 2078022.0494032567
+      normalizedMAE:
+        mean: 0.8460425684252465
+        median: 0.841653874413746
+      normalizedMSE:
+        mean: 0.9986333600723172
+        median: 0.918419146527421
+      numberIterations: 4
+    T67:
+      MAE:
+        mean: 1296.0088920593262
+        median: 1266.08484954834
+      MASE:
+        mean: 1.3836026785567177
+        median: 1.3556879971761733
+      MSE:
+        mean: 2464271.902745291
+        median: 2211682.123795115
+      normalizedMAE:
+        mean: 0.8615953969031833
+        median: 0.841701692899939
+      normalizedMSE:
+        mean: 1.0891292026380397
+        median: 0.9774926156867177
+      numberIterations: 4
+    T68:
+      MAE:
+        mean: 1338.0756385803222
+        median: 1258.316209411621
+      MASE:
+        mean: 1.3924707121518145
+        median: 1.3285482741993306
+      MSE:
+        mean: 2679553.918781969
+        median: 2271742.401514778
+      normalizedMAE:
+        mean: 0.8895616519090358
+        median: 0.8365370488739566
+      normalizedMSE:
+        mean: 1.1842769540720954
+        median: 1.0040373335444197
+      numberIterations: 4
+    T69:
+      MAE:
+        mean: 3139.589573669434
+        median: 3086.791473388672
+      MASE:
+        mean: 1.3877086889276242
+        median: 1.3583322322956133
+      MSE:
+        mean: 13570668.792771865
+        median: 12356477.422943657
+      normalizedMAE:
+        mean: 2.087220189161314
+        median: 2.0521196582576615
+      normalizedMSE:
+        mean: 5.997800674946153
+        median: 5.4611670035571445
+      numberIterations: 4
+    T7:
+      MAE:
+        mean: 872.865633392334
+        median: 850.9255645751953
+      MASE:
+        mean: 1.0376902922019948
+        median: 1.0108875504603074
+      MSE:
+        mean: 1167502.6058578843
+        median: 1057438.1227062005
+      normalizedMAE:
+        mean: 0.5802869227624021
+        median: 0.5657010179770201
+      normalizedMSE:
+        mean: 0.5159987340598511
+        median: 0.4673537600047492
+      numberIterations: 4
+    T70:
+      MAE:
+        mean: 1946.9899642944335
+        median: 1622.1525024414063
+      MASE:
+        mean: 1.0922716604491165
+        median: 0.9243867354045849
+      MSE:
+        mean: 5641032.635550479
+        median: 3723912.3694357257
+      normalizedMAE:
+        mean: 1.2943719764046087
+        median: 1.0784178548016607
+      normalizedMSE:
+        mean: 2.493155633340548
+        median: 1.6458499182249846
+      numberIterations: 4
+    T71:
+      MAE:
+        mean: 978.1875366210938
+        median: 893.6529174804688
+      MASE:
+        mean: 0.8118853457546467
+        median: 0.7279637430636413
+      MSE:
+        mean: 1548759.8917399962
+        median: 1286734.9073486382
+      normalizedMAE:
+        mean: 0.6503056298646278
+        median: 0.5941064485343255
+      normalizedMSE:
+        mean: 0.6845022353618531
+        median: 0.5686955899979702
+      numberIterations: 4
+    T72:
+      MAE:
+        mean: 872.2912712097168
+        median: 815.1674758911132
+      MASE:
+        mean: 1.3117724914656992
+        median: 1.2382482908666317
+      MSE:
+        mean: 1093638.4821393483
+        median: 902756.4940001431
+      normalizedMAE:
+        mean: 0.5799050829341954
+        median: 0.5419288009798773
+      normalizedMSE:
+        mean: 0.4833531586752903
+        median: 0.3989894375662628
+      numberIterations: 4
+    T73:
+      MAE:
+        mean: 1208.2106773376463
+        median: 1147.8546997070312
+      MASE:
+        mean: 1.374916851427368
+        median: 1.333942434582104
+      MSE:
+        mean: 2221379.482561622
+        median: 1984049.5491600009
+      normalizedMAE:
+        mean: 0.803226555358959
+        median: 0.7631014969425008
+      normalizedMSE:
+        mean: 0.9817785374672221
+        median: 0.8768863131798426
+      numberIterations: 4
+    T74:
+      MAE:
+        mean: 4763.552615356446
+        median: 4287.480798339844
+      MASE:
+        mean: 1.2934027990544303
+        median: 1.1716415567882992
+      MSE:
+        mean: 33937858.96822645
+        median: 28052092.480756283
+      normalizedMAE:
+        mean: 3.166841702587144
+        median: 2.850345968144249
+      normalizedMSE:
+        mean: 14.999445976772638
+        median: 12.398125824450691
+      numberIterations: 4
+    T75:
+      MAE:
+        mean: 1346.1728210449216
+        median: 1243.1714675903318
+      MASE:
+        mean: 1.3896452165327036
+        median: 1.291424698109401
+      MSE:
+        mean: 2649990.4538553106
+        median: 2278635.5547617143
+      normalizedMAE:
+        mean: 0.8949447130763851
+        median: 0.8264687230156549
+      normalizedMSE:
+        mean: 1.1712108500650988
+        median: 1.0070838863583091
+      numberIterations: 4
+    T76:
+      MAE:
+        mean: 1262.9148551940918
+        median: 1190.3211959838868
+      MASE:
+        mean: 1.4864219501696705
+        median: 1.4011536010578243
+      MSE:
+        mean: 2249663.587603937
+        median: 1936953.9500574428
+      normalizedMAE:
+        mean: 0.8395942594088852
+        median: 0.7913335082650513
+      normalizedMSE:
+        mean: 0.9942792054080238
+        median: 0.8560715677610486
+      numberIterations: 4
+    T77:
+      MAE:
+        mean: 1119.916667175293
+        median: 1097.5254638671875
+      MASE:
+        mean: 1.2122573878246077
+        median: 1.1745571098699925
+      MSE:
+        mean: 1730406.7276641806
+        median: 1528010.114608733
+      normalizedMAE:
+        mean: 0.7445281056831028
+        median: 0.7296422836647581
+      normalizedMSE:
+        mean: 0.764784315172702
+        median: 0.6753314988872321
+      numberIterations: 4
+    T78:
+      MAE:
+        mean: 1276.7359191894532
+        median: 1297.302671813965
+      MASE:
+        mean: 1.4094664600955145
+        median: 1.4257809662955547
+      MSE:
+        mean: 2248275.2228493127
+        median: 2274016.7692059376
+      normalizedMAE:
+        mean: 0.8487825953776192
+        median: 0.8624555103545903
+      normalizedMSE:
+        mean: 0.9936655926827033
+        median: 1.0050425311718483
+      numberIterations: 4
+    T79:
+      MAE:
+        mean: 1181.8373687744138
+        median: 1168.727227783203
+      MASE:
+        mean: 1.3054359726399631
+        median: 1.3162206629747883
+      MSE:
+        mean: 2104041.5167051503
+        median: 1978867.0741961328
+      normalizedMAE:
+        mean: 0.7856934030801332
+        median: 0.776977693488951
+      normalizedMSE:
+        mean: 0.9299189171671816
+        median: 0.8745958253408986
+      numberIterations: 4
+    T8:
+      MAE:
+        mean: 1133.653113555908
+        median: 1113.0045043945313
+      MASE:
+        mean: 1.3787148996891598
+        median: 1.3573457285897794
+      MSE:
+        mean: 1810878.1293266513
+        median: 1670152.8836835623
+      normalizedMAE:
+        mean: 0.7536601872944715
+        median: 0.7399328535432146
+      normalizedMSE:
+        mean: 0.8003500956493504
+        median: 0.7381540472313355
+      numberIterations: 4
+    T80:
+      MAE:
+        mean: 1241.6972068786622
+        median: 1227.3197158813477
+      MASE:
+        mean: 1.370910451440089
+        median: 1.3828425917025442
+      MSE:
+        mean: 2411706.8935309015
+        median: 2287602.5583166485
+      normalizedMAE:
+        mean: 0.8254886246144845
+        median: 0.8159303722458456
+      normalizedMSE:
+        mean: 1.0658971532409944
+        median: 1.0110470145427266
+      numberIterations: 4
+    T81:
+      MAE:
+        mean: 1337.6998397827147
+        median: 1285.1905090332032
+      MASE:
+        mean: 1.0039122392779412
+        median: 0.9587020660993113
+      MSE:
+        mean: 2646083.8621977745
+        median: 2191050.796667478
+      normalizedMAE:
+        mean: 0.8893118183498957
+        median: 0.8544032633658647
+      normalizedMSE:
+        mean: 1.1694842617562906
+        median: 0.9683742303174512
+      numberIterations: 4
+    T82:
+      MAE:
+        mean: 1210.9116302490233
+        median: 1213.7223083496094
+      MASE:
+        mean: 1.2803771822668888
+        median: 1.2906188377815517
+      MSE:
+        mean: 2106577.218443839
+        median: 2017310.23434109
+      normalizedMAE:
+        mean: 0.8050221669554172
+        median: 0.8068907245930068
+      normalizedMSE:
+        mean: 0.9310396160680252
+        median: 0.8915864700456975
+      numberIterations: 4
+    T83:
+      MAE:
+        mean: 902.4509315490723
+        median: 953.1677612304686
+      MASE:
+        mean: 1.1097206493190335
+        median: 1.168697941613354
+      MSE:
+        mean: 1275764.124296824
+        median: 1354261.1915630195
+      normalizedMAE:
+        mean: 0.5999554272487796
+        median: 0.633672315509924
+      normalizedMSE:
+        mean: 0.5638468554958131
+        median: 0.5985400434454924
+      numberIterations: 4
+    T84:
+      MAE:
+        mean: 924.1458351135253
+        median: 917.7639282226562
+      MASE:
+        mean: 1.3888707045009685
+        median: 1.3683135806060336
+      MSE:
+        mean: 1179567.8536150106
+        median: 1089661.906727776
+      normalizedMAE:
+        mean: 0.6143783445311524
+        median: 0.6101356100604803
+      normalizedMSE:
+        mean: 0.521331186884846
+        median: 0.48159563979013364
+      numberIterations: 4
+    T85:
+      MAE:
+        mean: 1232.5828392028807
+        median: 1222.5578353881835
+      MASE:
+        mean: 1.2847964565184544
+        median: 1.277822355488878
+      MSE:
+        mean: 2208170.6001615627
+        median: 2193418.4710385473
+      normalizedMAE:
+        mean: 0.8194293319018717
+        median: 0.812764642181298
+      normalizedMSE:
+        mean: 0.975940634782827
+        median: 0.9694206665069787
+      numberIterations: 4
+    T86:
+      MAE:
+        mean: 1074.3832168579102
+        median: 1012.8768936157227
+      MASE:
+        mean: 1.4093837496169292
+        median: 1.336760161436597
+      MSE:
+        mean: 1609224.2982672711
+        median: 1336968.1325515737
+      normalizedMAE:
+        mean: 0.7142571627606054
+        median: 0.6733673468723035
+      normalizedMSE:
+        mean: 0.7112255652004434
+        median: 0.5908970655941741
+      numberIterations: 4
+    T87:
+      MAE:
+        mean: 1192.0143394470215
+        median: 1123.727572631836
+      MASE:
+        mean: 1.4720206900665291
+        median: 1.381644835368625
+      MSE:
+        mean: 1948864.8235021185
+        median: 1623911.7862134944
+      normalizedMAE:
+        mean: 0.792459121386282
+        median: 0.7470616211701557
+      normalizedMSE:
+        mean: 0.8613357920875406
+        median: 0.7177169641478587
+      numberIterations: 4
+    T88:
+      MAE:
+        mean: 1091.8429084777833
+        median: 1020.3185256958009
+      MASE:
+        mean: 1.324609021557235
+        median: 1.2451984206242965
+      MSE:
+        mean: 1664746.7064864212
+        median: 1295785.1434938144
+      normalizedMAE:
+        mean: 0.7258644827591036
+        median: 0.6783145937507216
+      normalizedMSE:
+        mean: 0.7357646901748018
+        median: 0.5726955043197222
+      numberIterations: 4
+    T89:
+      MAE:
+        mean: 1192.6850914001466
+        median: 1213.0475692749023
+      MASE:
+        mean: 1.5049288283689173
+        median: 1.5276573559387079
+      MSE:
+        mean: 2069369.6956396974
+        median: 2132146.56203373
+      normalizedMAE:
+        mean: 0.7929050417798976
+        median: 0.806442153534243
+      normalizedMSE:
+        mean: 0.9145950834664618
+        median: 0.9423404464532648
+      numberIterations: 4
+    T9:
+      MAE:
+        mean: 1224.9112915039063
+        median: 1138.873306274414
+      MASE:
+        mean: 1.3029738961940542
+        median: 1.2131557302204836
+      MSE:
+        mean: 2116436.457640334
+        median: 1721842.4890396828
+      normalizedMAE:
+        mean: 0.8143292355791862
+        median: 0.7571306063978971
+      normalizedMSE:
+        mean: 0.9353970838104174
+        median: 0.7609991961791729
+      numberIterations: 4
+    T90:
+      MAE:
+        mean: 1083.012996673584
+        median: 1005.6746719360351
+      MASE:
+        mean: 1.3523676626483723
+        median: 1.2603703908402561
+      MSE:
+        mean: 1630412.522750988
+        median: 1274292.1350446662
+      normalizedMAE:
+        mean: 0.7199942982162565
+        median: 0.6685792616325217
+      normalizedMSE:
+        mean: 0.7205900813528849
+        median: 0.5631962834226956
+      numberIterations: 4
+    T91:
+      MAE:
+        mean: 800.8091148376463
+        median: 729.8058670043945
+      MASE:
+        mean: 1.2446422475635437
+        median: 1.1342014132287008
+      MSE:
+        mean: 959355.3868329778
+        median: 732196.3376418698
+      normalizedMAE:
+        mean: 0.5323832663261114
+        median: 0.4851798313241351
+      normalizedMSE:
+        mean: 0.4240043342392103
+        median: 0.323607314802391
+      numberIterations: 4
+    T92:
+      MAE:
+        mean: 1022.6107551574707
+        median: 900.4891235351563
+      MASE:
+        mean: 1.1082239159658815
+        median: 0.9705712007902995
+      MSE:
+        mean: 1646112.8112906755
+        median: 1203032.789540972
+      normalizedMAE:
+        mean: 0.6798384832586727
+        median: 0.5986512041336804
+      normalizedMSE:
+        mean: 0.7275291057029851
+        median: 0.53170193652758
+      numberIterations: 4
+    T93:
+      MAE:
+        mean: 1262.4733947753907
+        median: 1192.8494842529296
+      MASE:
+        mean: 1.261327139399245
+        median: 1.1890183956715596
+      MSE:
+        mean: 2305337.1657822477
+        median: 1965937.7472253097
+      normalizedMAE:
+        mean: 0.8393007735639977
+        median: 0.7930143312501392
+      normalizedMSE:
+        mean: 1.0188851426594288
+        median: 0.8688814771966489
+      numberIterations: 4
+    T94:
+      MAE:
+        mean: 1014.1449226379394
+        median: 873.4348175048827
+      MASE:
+        mean: 1.1521602702456935
+        median: 0.9939490878306474
+      MSE:
+        mean: 1536947.4412318561
+        median: 1068245.4566882136
+      normalizedMAE:
+        mean: 0.6742103410642226
+        median: 0.5806653201749254
+      normalizedMSE:
+        mean: 0.6792815108189163
+        median: 0.47213025525649494
+      numberIterations: 4
+    T95:
+      MAE:
+        mean: 1148.1732261657712
+        median: 1086.1658309936522
+      MASE:
+        mean: 1.399769858547893
+        median: 1.319540462277781
+      MSE:
+        mean: 1913411.78902333
+        median: 1624217.3363696327
+      normalizedMAE:
+        mean: 0.7633132554669401
+        median: 0.722090323601586
+      normalizedMSE:
+        mean: 0.8456666870955285
+        median: 0.7178520075241802
+      numberIterations: 4
+    T96:
+      MAE:
+        mean: 1262.323156738281
+        median: 1221.918489074707
+      MASE:
+        mean: 1.384622021457522
+        median: 1.3642142612795811
+      MSE:
+        mean: 2430119.5493532037
+        median: 2152498.5337683856
+      normalizedMAE:
+        mean: 0.839200894310077
+        median: 0.812339600467392
+      normalizedMSE:
+        mean: 1.074034957000333
+        median: 0.9513353656919995
+      numberIterations: 4
+    T97:
+      MAE:
+        mean: 1259.3178886413573
+        median: 1212.0852142333983
+      MASE:
+        mean: 1.2108509045786415
+        median: 1.1722065206291115
+      MSE:
+        mean: 2283111.837481371
+        median: 2005090.9136263104
+      normalizedMAE:
+        mean: 0.8372029719388384
+        median: 0.8058023734532369
+      normalizedMSE:
+        mean: 1.009062259858332
+        median: 0.8861859219113619
+      numberIterations: 4
+    T98:
+      MAE:
+        mean: 1068.586996459961
+        median: 1037.2015869140625
+      MASE:
+        mean: 1.3354258685127711
+        median: 1.2957655194861961
+      MSE:
+        mean: 1638196.6954819101
+        median: 1440898.7600085675
+      normalizedMAE:
+        mean: 0.7104037965955214
+        median: 0.6895385659938247
+      normalizedMSE:
+        mean: 0.7240304362220784
+        median: 0.6368310720184669
+      numberIterations: 4
+    T99:
+      MAE:
+        mean: 1212.0033889770507
+        median: 1238.8869659423826
+      MASE:
+        mean: 1.4413285347643656
+        median: 1.4777125936299882
+      MSE:
+        mean: 2140795.1705273916
+        median: 2219628.9057221618
+      normalizedMAE:
+        mean: 0.8057479754744487
+        median: 0.8236203576066556
+      normalizedMSE:
+        mean: 0.9461628542249625
+        median: 0.9810048386090751
+      numberIterations: 4
+  64,16:
+    T1:
+      MAE:
+        mean: .nan
+        median: .nan
+      MASE:
+        mean: .nan
+        median: .nan
+      MSE:
+        mean: .nan
+        median: .nan
+      normalizedMAE:
+        mean: .nan
+        median: .nan
+      normalizedMSE:
+        mean: .nan
+        median: .nan
+      numberIterations: 0
+    T10:
+      MAE:
+        mean: .nan
+        median: .nan
+      MASE:
+        mean: .nan
+        median: .nan
+      MSE:
+        mean: .nan
+        median: .nan
+      normalizedMAE:
+        mean: .nan
+        median: .nan
+      normalizedMSE:
+        mean: .nan
+        median: .nan
+      numberIterations: 0
+    T100:
+      MAE:
+        mean: .nan
+        median: .nan
+      MASE:
+        mean: .nan
+        median: .nan
+      MSE:
+        mean: .nan
+        median: .nan
+      normalizedMAE:
+        mean: .nan
+        median: .nan
+      normalizedMSE:
+        mean: .nan
+        median: .nan
+      numberIterations: 0
+    T101:
+      MAE:
+        mean: .nan
+        median: .nan
+      MASE:
+        mean: .nan
+        median: .nan
+      MSE:
+        mean: .nan
+        median: .nan
+      normalizedMAE:
+        mean: .nan
+        median: .nan
+      normalizedMSE:
+        mean: .nan
+        median: .nan
+      numberIterations: 0
+    T102:
+      MAE:
+        mean: .nan
+        median: .nan
+      MASE:
+        mean: .nan
+        median: .nan
+      MSE:
+        mean: .nan
+        median: .nan
+      normalizedMAE:
+        mean: .nan
+        median: .nan
+      normalizedMSE:
+        mean: .nan
+        median: .nan
+      numberIterations: 0
+    T103:
+      MAE:
+        mean: .nan
+        median: .nan
+      MASE:
+        mean: .nan
+        median: .nan
+      MSE:
+        mean: .nan
+        median: .nan
+      normalizedMAE:
+        mean: .nan
+        median: .nan
+      normalizedMSE:
+        mean: .nan
+        median: .nan
+      numberIterations: 0
