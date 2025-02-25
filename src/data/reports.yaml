@@ -295,7 +295,7 @@ solarEnergy:
       normalizedMSE:
         mean: 1.198049282581401
         median: 1.0725343562322363
-      numberIterations: 4https://paccar-jenkins.ebgroup.elektrobit.com/job/PACCAR_CT/job/HARDWARE/job/AOSP-CT-Chain/job/AOSP-Continuous-Testing-Pipeline-T3/job/paccar_s_0/441/console
+      numberIterations: 4
     T101:
       MAE:
         mean: 916.4366981506348
