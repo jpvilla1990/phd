@@ -124,7 +124,7 @@ class Evaluation(FileSystem):
         doc : SimpleDocTemplate = SimpleDocTemplate(self._getFiles()["evaluationFinalReport"], pagesize=letter)
         for scenario in tables:
             df : pd.core.frame.DataFrame = pd.DataFrame(tables[scenario]["scenario"], index=tables[scenario]["indices"]).round(6)
-            elements.append(Table([[f"Context Lenght, Prediction Lenght = {scenario}"]], colWidths=[400]))
+            elements.append(Table([[f"MoiraiMoE Context Lenght, Prediction Lenght = {scenario}"]], colWidths=[400]))
 
             tableData = [["Index"] + df.columns.tolist()]
             for index, row in df.iterrows():

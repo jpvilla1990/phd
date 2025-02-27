@@ -61,4 +61,4 @@ paths:
 files:
   datasets: ["data", "datasets", "datasets.yaml"]
   evaluationReportsMoiraiMoE: ["data", "reportsMoiraiMoE.yaml"]
-  evaluationFinalReportMoiraiMoE: ["data" ,"reports.pdf"]
+  evaluationFinalReport: ["data" ,"reports.pdf"]
