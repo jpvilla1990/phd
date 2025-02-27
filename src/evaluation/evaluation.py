@@ -179,83 +179,88 @@ class Evaluation(FileSystem):
             subdatasets.append(subdataset)
 
         for element in subdatasets:
-            print(f"Subdataset {element}")
-            reportMAE : np.ndarray = np.array([])
-            reportNMAE : np.ndarray = np.array([])
-            reportMSE : np.ndarray = np.array([])
-            reportNMSE : np.ndarray = np.array([])
-            reportMASE : np.ndarray = np.array([])
-            iterations : int = 0
-            iterator.resetIteration(element, True)
-            features : list = list(iterator.getAvailableFeatures(element).keys())
+            try:
+                print(f"Subdataset {element}")
+                reportMAE : np.ndarray = np.array([])
+                reportNMAE : np.ndarray = np.array([])
+                reportMSE : np.ndarray = np.array([])
+                reportNMSE : np.ndarray = np.array([])
+                reportMASE : np.ndarray = np.array([])
+                iterations : int = 0
+                iterator.resetIteration(element, True)
+                features : list = list(iterator.getAvailableFeatures(element).keys())
 
-            while True:
-                sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
-                if sample is None:
-                    break
+                while True:
+                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
+                    if sample is None:
+                        break
 
-                for index in range(1,len(features)):
-                    pred : SampleForecast = model.inference(sample[[0, index]], dataset)
+                    for index in range(1,len(features)):
+                        pred : SampleForecast = model.inference(sample[[0, index]], dataset)
 
-                    mase : float = self.__getMASE(
-                        sample[index].iloc[:contextLenght].values,
-                        sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
-                        pred.quantile(0.5),
-                    )
+                        mase : float = self.__getMASE(
+                            sample[index].iloc[:contextLenght].values,
+                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            pred.quantile(0.5),
+                        )
 
-                    mae : float = self.__getMAE(
-                        sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
-                        pred.quantile(0.5),
-                    )
+                        mae : float = self.__getMAE(
+                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            pred.quantile(0.5),
+                        )
 
-                    mse : float = self.__getMSE(
-                        sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
-                        pred.quantile(0.5),
-                    )
+                        mse : float = self.__getMSE(
+                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            pred.quantile(0.5),
+                        )
 
-                    if mase:
-                        reportMASE = np.append(reportMASE, [mase])
-                    if mae:
-                        reportMAE = np.append(reportMAE, [mae])
-                        reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
-                    if mse:
-                        reportMSE = np.append(reportMSE, [mse])
-                        reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
+                        if mase:
+                            reportMASE = np.append(reportMASE, [mase])
+                        if mae:
+                            reportMAE = np.append(reportMAE, [mae])
+                            reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
+                        if mse:
+                            reportMSE = np.append(reportMSE, [mse])
+                            reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
-                    iterations += 1
+                        iterations += 1
 
-            reports : dict = self.__loadReports()
+                reports : dict = self.__loadReports()
 
-            if dataset not in reports:
-                reports[dataset] = dict()
-            if f"{contextLenght},{predictionLength}" not in reports[dataset]:
-                reports[dataset][f"{contextLenght},{predictionLength}"] = dict()
+                if dataset not in reports:
+                    reports[dataset] = dict()
+                if f"{contextLenght},{predictionLength}" not in reports[dataset]:
+                    reports[dataset][f"{contextLenght},{predictionLength}"] = dict()
 
-            reports[dataset][f"{contextLenght},{predictionLength}"][element] = {
-                "MASE" : {
-                    "mean" : float(reportMASE.mean()),
-                    "median" : float(np.median(reportMASE)),
-                },
-                "MAE" : {
-                    "mean" : float(reportMAE.mean()),
-                    "median" : float(np.median(reportMAE)),
-                },
-                "normalizedMAE" : {
-                    "mean" : float(reportNMAE.mean()),
-                    "median" : float(np.median(reportNMAE)),
-                },
-                "MSE" : {
-                    "mean" : float(reportMSE.mean()),
-                    "median" : float(np.median(reportMSE)),
-                },
-                "normalizedMSE" : {
-                    "mean" : float(reportNMSE.mean()),
-                    "median" : float(np.median(reportNMSE)),
-                },
-                "numberIterations" : iterations,
-            }
+                reports[dataset][f"{contextLenght},{predictionLength}"][element] = {
+                    "MASE" : {
+                        "mean" : float(reportMASE.mean()),
+                        "median" : float(np.median(reportMASE)),
+                    },
+                    "MAE" : {
+                        "mean" : float(reportMAE.mean()),
+                        "median" : float(np.median(reportMAE)),
+                    },
+                    "normalizedMAE" : {
+                        "mean" : float(reportNMAE.mean()),
+                        "median" : float(np.median(reportNMAE)),
+                    },
+                    "MSE" : {
+                        "mean" : float(reportMSE.mean()),
+                        "median" : float(np.median(reportMSE)),
+                    },
+                    "normalizedMSE" : {
+                        "mean" : float(reportNMSE.mean()),
+                        "median" : float(np.median(reportNMSE)),
+                    },
+                    "numberIterations" : iterations,
+                }
 
-            self.__writeReports(reports)
+                self.__writeReports(reports)
+
+            except Exception as e:
+                print("Exception: " + e)
+                continue
 
         return reports
     

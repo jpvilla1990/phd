@@ -1,11 +1,12 @@
 from evaluation.evaluation import Evaluation
 
-CONTEXT : int = 64
+CONTEXT : int = 32
 PREDICTION : int = 16
 NUMBER_SAMPLES : int = 100
-DATASET : str = "power"
+DATASET : str = "m4-monthly"
 
 evaluation : Evaluation = Evaluation()
+evaluation.compileReports()
 
 report : dict = evaluation.evaluateMoiraiMoE(
     CONTEXT,
