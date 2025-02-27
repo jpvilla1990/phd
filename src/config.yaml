@@ -60,5 +60,5 @@ paths:
   vectorDatabase: ["data", "vectorDB"]
 files:
   datasets: ["data", "datasets", "datasets.yaml"]
-  evaluationReports: ["data", "reports.yaml"]
-  evaluationFinalReport: ["data" ,"reports.pdf"]
+  evaluationReportsMoiraiMoE: ["data", "reportsMoiraiMoE.yaml"]
+  evaluationFinalReportMoiraiMoE: ["data" ,"reports.pdf"]

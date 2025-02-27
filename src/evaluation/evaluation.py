@@ -21,22 +21,22 @@ class Evaluation(FileSystem):
         self.__dataset : Datasets = Datasets()
         self.__datasetMetadata : dict = {}
 
-    def __loadReports(self) -> dict:
+    def __loadReport(self, report : str) -> dict:
         """
         Method to load dataset config
         """
         reports : dict = Utils.readYaml(
-            self._getFiles()["evaluationReports"]
+            self._getFiles()[report]
         )
         return reports if type(reports) == dict else dict()
 
-    def __writeReports(self, entry : dict):
+    def __writeReport(self, entry : dict, report : str):
         """
         Method to write in dataset config
         """
         Utils.writeYaml(
-            self._getFiles()["evaluationReports"],
-            self.__loadReports() | entry,
+            self._getFiles()[report],
+            self.__loadReport(report) | entry,
         )
 
     def __getMASE(self, context : np.ndarray, groundTruth : np.ndarray, prediction : np.ndarray) -> float:
@@ -80,12 +80,12 @@ class Evaluation(FileSystem):
         """
         Method to compile results in a human readable report
         """
-        reports : dict = self.__loadReports()
+        report : dict = self.__loadReport("evaluationReportsMoiraiMoE")
 
         tables : dict = {}
 
-        for dataset in reports:
-            for scenario in reports[dataset]:
+        for dataset in report:
+            for scenario in report[dataset]:
                 if scenario not in tables:
                     tables.update({
                         scenario : {
@@ -97,8 +97,8 @@ class Evaluation(FileSystem):
                     tables[scenario]["indices"].append(dataset)
 
                 totalIterations : int = 0
-                for subdataset in reports[dataset][scenario]:
-                    for metric in reports[dataset][scenario][subdataset]:
+                for subdataset in report[dataset][scenario]:
+                    for metric in report[dataset][scenario][subdataset]:
                         if metric == "numberIterations":
                             continue
                         if metric not in tables[scenario]["scenario"]:
@@ -107,11 +107,11 @@ class Evaluation(FileSystem):
                             })
                         if len(tables[scenario]["scenario"][metric]) < len(tables[scenario]["indices"]):
                             tables[scenario]["scenario"][metric].append(
-                                reports[dataset][scenario][subdataset][metric]["mean"],
+                                report[dataset][scenario][subdataset][metric]["mean"],
                             )
                         else:
-                            tables[scenario]["scenario"][metric][-1] = ((tables[scenario]["scenario"][metric][-1] * totalIterations) + (reports[dataset][scenario][subdataset][metric]["mean"] * reports[dataset][scenario][subdataset]["numberIterations"])) / (totalIterations + reports[dataset][scenario][subdataset]["numberIterations"])
-                    totalIterations += reports[dataset][scenario][subdataset]["numberIterations"]
+                            tables[scenario]["scenario"][metric][-1] = ((tables[scenario]["scenario"][metric][-1] * totalIterations) + (report[dataset][scenario][subdataset][metric]["mean"] * report[dataset][scenario][subdataset]["numberIterations"])) / (totalIterations + report[dataset][scenario][subdataset]["numberIterations"])
+                    totalIterations += report[dataset][scenario][subdataset]["numberIterations"]
 
                 if "numberIterations" not in tables[scenario]["scenario"]:
                     tables[scenario]["scenario"].update({
@@ -225,14 +225,14 @@ class Evaluation(FileSystem):
 
                         iterations += 1
 
-                reports : dict = self.__loadReports()
+                report : dict = self.__loadReport("evaluationReportsMoiraiMoE")
 
-                if dataset not in reports:
-                    reports[dataset] = dict()
-                if f"{contextLenght},{predictionLength}" not in reports[dataset]:
-                    reports[dataset][f"{contextLenght},{predictionLength}"] = dict()
+                if dataset not in report:
+                    report[dataset] = dict()
+                if f"{contextLenght},{predictionLength}" not in report[dataset]:
+                    report[dataset][f"{contextLenght},{predictionLength}"] = dict()
 
-                reports[dataset][f"{contextLenght},{predictionLength}"][element] = {
+                report[dataset][f"{contextLenght},{predictionLength}"][element] = {
                     "MASE" : {
                         "mean" : float(reportMASE.mean()),
                         "median" : float(np.median(reportMASE)),
@@ -256,13 +256,13 @@ class Evaluation(FileSystem):
                     "numberIterations" : iterations,
                 }
 
-                self.__writeReports(reports)
+                self.__writeReport(report, "evaluationReportsMoiraiMoE")
 
             except Exception as e:
                 print("Exception: " + e)
                 continue
 
-        return reports
+        return report
     
     def evaluateChatTimes(
             self,
@@ -340,14 +340,17 @@ class Evaluation(FileSystem):
 
                     iterations += 1
 
-            reports : dict = self.__loadReports()
+            if iterations <= 0:
+                continue
 
-            if dataset not in reports:
-                reports[dataset] = dict()
-            if f"{contextLenght},{predictionLength}" not in reports[dataset]:
-                reports[dataset][f"{contextLenght},{predictionLength}"] = dict()
+            report : dict = self.__loadReport("evaluationReportsChatTime")
 
-            reports[dataset][f"{contextLenght},{predictionLength}"][element] = {
+            if dataset not in report:
+                report[dataset] = dict()
+            if f"{contextLenght},{predictionLength}" not in report[dataset]:
+                report[dataset][f"{contextLenght},{predictionLength}"] = dict()
+
+            report[dataset][f"{contextLenght},{predictionLength}"][element] = {
                 "MASE" : {
                     "mean" : float(reportMASE.mean()),
                     "median" : float(np.median(reportMASE)),
@@ -371,6 +374,6 @@ class Evaluation(FileSystem):
                 "numberIterations" : iterations,
             }
 
-            self.__writeReports(reports)
+            self.__writeReport(report, "evaluationReportsChatTime")
 
-        return reports
+        return report
