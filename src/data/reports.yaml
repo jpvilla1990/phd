@@ -9408,3 +9408,21 @@ power:
         mean: 0.043389762344128925
         median: 0.00010224253278530329
       numberIterations: 472626
+  64,16:
+    power:
+      MAE:
+        mean: 980.5567357977337
+        median: 95.82957611083984
+      MASE:
+        mean: 3.7211591095414702
+        median: 3.0502101010752862
+      MSE:
+        mean: 5685186.825350249
+        median: 13779.236698575744
+      normalizedMAE:
+        mean: 0.08911602339656183
+        median: 0.008709287729106778
+      normalizedMSE:
+        mean: 0.046958139743630674
+        median: 0.0001138128512447647
+      numberIterations: 472050
