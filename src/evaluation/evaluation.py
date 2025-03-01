@@ -225,6 +225,9 @@ class Evaluation(FileSystem):
 
                         iterations += 1
 
+                if iterations <= 0:
+                    continue
+
                 report : dict = self.__loadReport("evaluationReportsMoiraiMoE")
 
                 if dataset not in report:
@@ -293,88 +296,90 @@ class Evaluation(FileSystem):
             subdatasets.append(subdataset)
 
         for element in subdatasets:
-            print(f"Subdataset {element}")
-            reportMAE : np.ndarray = np.array([])
-            reportNMAE : np.ndarray = np.array([])
-            reportMSE : np.ndarray = np.array([])
-            reportNMSE : np.ndarray = np.array([])
-            reportMASE : np.ndarray = np.array([])
-            iterations : int = 0
-            iterator.resetIteration(element, True)
-            features : list = list(iterator.getAvailableFeatures(element).keys())
+            try:
+                print(f"Subdataset {element}")
+                reportMAE : np.ndarray = np.array([])
+                reportNMAE : np.ndarray = np.array([])
+                reportMSE : np.ndarray = np.array([])
+                reportNMSE : np.ndarray = np.array([])
+                reportMASE : np.ndarray = np.array([])
+                iterations : int = 0
+                iterator.resetIteration(element, True)
+                features : list = list(iterator.getAvailableFeatures(element).keys())
 
-            while True:
-                sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
-                if sample is None:
-                    break
+                while True:
+                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
+                    if sample is None:
+                        break
 
-                for index in range(1,len(features)):
-                    pred : np.ndarray = model.inference(sample[[index]])
+                    for index in range(1,len(features)):
+                        pred : np.ndarray = model.inference(sample[[index]])
 
-                    print(pred)
-                    print(type(pred))
+                        mase : float = self.__getMASE(
+                            sample[index].iloc[:contextLenght].values,
+                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            pred,
+                        )
 
-                    mase : float = self.__getMASE(
-                        sample[index].iloc[:contextLenght].values,
-                        sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
-                        pred,
-                    )
+                        mae : float = self.__getMAE(
+                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            pred,
+                        )
 
-                    mae : float = self.__getMAE(
-                        sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
-                        pred,
-                    )
+                        mse : float = self.__getMSE(
+                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            pred,
+                        )
 
-                    mse : float = self.__getMSE(
-                        sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
-                        pred,
-                    )
+                        if mase:
+                            reportMASE = np.append(reportMASE, [mase])
+                        if mae:
+                            reportMAE = np.append(reportMAE, [mae])
+                            reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
+                        if mse:
+                            reportMSE = np.append(reportMSE, [mse])
+                            reportNMSE = np.append(reportNMSE, [abs(mse / self.__datasetMetadata["std"])])
 
-                    if mase:
-                        reportMASE = np.append(reportMASE, [mase])
-                    if mae:
-                        reportMAE = np.append(reportMAE, [mae])
-                        reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
-                    if mse:
-                        reportMSE = np.append(reportMSE, [mse])
-                        reportNMSE = np.append(reportNMSE, [abs(mse / self.__datasetMetadata["std"])])
+                        iterations += 1
 
-                    iterations += 1
+                if iterations <= 0:
+                    continue
 
-            if iterations <= 0:
+                report : dict = self.__loadReport("evaluationReportsChatTime")
+
+                if dataset not in report:
+                    report[dataset] = dict()
+                if f"{contextLenght},{predictionLength}" not in report[dataset]:
+                    report[dataset][f"{contextLenght},{predictionLength}"] = dict()
+
+                report[dataset][f"{contextLenght},{predictionLength}"][element] = {
+                    "MASE" : {
+                        "mean" : float(reportMASE.mean()),
+                        "median" : float(np.median(reportMASE)),
+                    },
+                    "MAE" : {
+                        "mean" : float(reportMAE.mean()),
+                        "median" : float(np.median(reportMAE)),
+                    },
+                    "normalizedMAE" : {
+                        "mean" : float(reportNMAE.mean()),
+                        "median" : float(np.median(reportNMAE)),
+                    },
+                    "MSE" : {
+                        "mean" : float(reportMSE.mean()),
+                        "median" : float(np.median(reportMSE)),
+                    },
+                    "normalizedMSE" : {
+                        "mean" : float(reportNMSE.mean()),
+                        "median" : float(np.median(reportNMSE)),
+                    },
+                    "numberIterations" : iterations,
+                }
+
+                self.__writeReport(report, "evaluationReportsChatTime")
+
+            except Exception as e:
+                print("Exception: " + e)
                 continue
-
-            report : dict = self.__loadReport("evaluationReportsChatTime")
-
-            if dataset not in report:
-                report[dataset] = dict()
-            if f"{contextLenght},{predictionLength}" not in report[dataset]:
-                report[dataset][f"{contextLenght},{predictionLength}"] = dict()
-
-            report[dataset][f"{contextLenght},{predictionLength}"][element] = {
-                "MASE" : {
-                    "mean" : float(reportMASE.mean()),
-                    "median" : float(np.median(reportMASE)),
-                },
-                "MAE" : {
-                    "mean" : float(reportMAE.mean()),
-                    "median" : float(np.median(reportMAE)),
-                },
-                "normalizedMAE" : {
-                    "mean" : float(reportNMAE.mean()),
-                    "median" : float(np.median(reportNMAE)),
-                },
-                "MSE" : {
-                    "mean" : float(reportMSE.mean()),
-                    "median" : float(np.median(reportMSE)),
-                },
-                "normalizedMSE" : {
-                    "mean" : float(reportNMSE.mean()),
-                    "median" : float(np.median(reportNMSE)),
-                },
-                "numberIterations" : iterations,
-            }
-
-            self.__writeReport(report, "evaluationReportsChatTime")
 
         return report
