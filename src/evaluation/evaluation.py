@@ -194,6 +194,8 @@ class Evaluation(FileSystem):
                     sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
                     if sample is None:
                         break
+                    if len(sample) < predictionLength + contextLenght:
+                        break
 
                     for index in range(1,len(features)):
                         pred : SampleForecast = model.inference(sample[[0, index]], dataset)
@@ -262,7 +264,7 @@ class Evaluation(FileSystem):
                 self.__writeReport(report, "evaluationReportsMoiraiMoE")
 
             except Exception as e:
-                print("Exception: " + e)
+                print("Exception: " + str(e))
                 continue
 
         return report
@@ -310,6 +312,9 @@ class Evaluation(FileSystem):
                 while True:
                     sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
                     if sample is None:
+                        break
+
+                    if len(sample) < predictionLength + contextLenght:
                         break
 
                     for index in range(1,len(features)):
@@ -379,7 +384,7 @@ class Evaluation(FileSystem):
                 self.__writeReport(report, "evaluationReportsChatTime")
 
             except Exception as e:
-                print("Exception: " + e)
+                print("Exception: " + str(e))
                 continue
 
         return report

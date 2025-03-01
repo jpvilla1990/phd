@@ -147,8 +147,10 @@ class DatasetIterator(object):
             sample = pd.read_csv(
                 self.__datasets[subdataset],
                 sep=self.__datasetConfig["separator"],
+                header=None,
                 decimal=self.__datasetConfig["decimal"],
                 usecols=featuresIndices,
+                skiprows=1,
             )
 
         else:
