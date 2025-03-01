@@ -2,6 +2,7 @@ __pycache__
 .pytest_cache
 src/ChatTime
 src/data/*
-!src/data/reports.yaml
+!src/data/reportsMoiraiMoE.yaml
+!src/data/reportsChatTime.yaml
 src/reports
 .venv

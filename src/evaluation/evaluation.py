@@ -6,7 +6,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
 from datasets.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
-from model.chatTime import ChatTime
+from model.chatTime import ChatTimeModel
 from utils.fileSystem import FileSystem
 from utils.utils import Utils
 from datasets.datasetIterator import DatasetIterator
@@ -268,7 +268,6 @@ class Evaluation(FileSystem):
             self,
             contextLenght : int,
             predictionLength : int,
-            numberSamples : int,
             dataset : str,
             subdataset : str = "",
         ) -> dict:
@@ -277,10 +276,9 @@ class Evaluation(FileSystem):
         """
         print(f"Evaluating Dataset {dataset}")
         subdatasets : list = []
-        model : ChatTime = ChatTime(
+        model : ChatTimeModel = ChatTimeModel(
             predictionLength = predictionLength,
             contextLenght = contextLenght,
-            numSamples = numberSamples,
         )
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
         self.__datasetMetadata = iterator.getDatasetMetadata()
@@ -311,22 +309,25 @@ class Evaluation(FileSystem):
                     break
 
                 for index in range(1,len(features)):
-                    pred : SampleForecast = model.inference(sample[[0, index]], dataset)
+                    pred : np.ndarray = model.inference(sample[[index]])
+
+                    print(pred)
+                    print(type(pred))
 
                     mase : float = self.__getMASE(
                         sample[index].iloc[:contextLenght].values,
                         sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
-                        pred.quantile(0.5),
+                        pred,
                     )
 
                     mae : float = self.__getMAE(
                         sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
-                        pred.quantile(0.5),
+                        pred,
                     )
 
                     mse : float = self.__getMSE(
                         sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
-                        pred.quantile(0.5),
+                        pred,
                     )
 
                     if mase:

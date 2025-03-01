@@ -10,25 +10,25 @@ class ChatTimeModel(FileSystem):
     Class to handle chat time model
     """
     def __init__(
-            self,
-            contextLenght : int = 32,
-            predictionlenght : int = 16,
-            modelPath : str = "ChengsenWang/ChatTime-1-7B-Chat",
-        ):
+        self,
+        contextLenght : int = 32,
+        predictionLength : int = 16,
+        modelPath : str = "ChengsenWang/ChatTime-1-7B-Chat",
+    ):
         super().__init__()
-        self.__model : ChatTime = ChatTime(hist_len=contextLenght, pred_len=predictionlenght, model_path=modelPath)
+        self.__model : ChatTime = ChatTime(hist_len=contextLenght, pred_len=predictionLength, model_path=modelPath)
 
         self.__contextLenght : int = contextLenght
-        self.__predictionlenght : int = predictionlenght
+        self.__predictionlength : int = predictionLength
 
     def inference(self, sample : pd.core.frame.DataFrame) -> np.ndarray:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
         """
-        if len(sample.columns) != 2:
-            raise ModelException("ChatTime predictor accepts only two columns, timestamp and timeseries itself")
-        
-        sample.columns = ["datetime", "value"]
+        if len(sample.columns) != 1:
+            raise ModelException("ChatTime predictor accepts only one column")
+
+        sample.columns = ["value"]
 
         return self.__model.predict(sample["value"].values)
 
@@ -45,7 +45,7 @@ class ChatTimeModel(FileSystem):
         prediction : np.ndarray = self.__model.predict(sample["value"].values)
 
         histX : np.ndarray = np.linspace(0, self.__contextLenght-1, self.__contextLenght)
-        predX : np.ndarray = np.linspace(self.__contextLenght, self.__contextLenght+self.__predictionlenght-1, self.__predictionlenght)
+        predX : np.ndarray = np.linspace(self.__contextLenght, self.__contextLenght+self.__predictionlength-1, self.__predictionlength)
 
         plt.figure(figsize=(8, 2), dpi=500)
         plt.plot(histX, sample["value"].values, color='#000000')

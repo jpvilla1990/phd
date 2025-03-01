@@ -42,6 +42,8 @@ while True:
         break
 ```
 
+### Evaluation
+
 #### MoiraiMoE
 ```python
 from evaluation.evaluation import Evaluation
@@ -63,7 +65,24 @@ report : dict = evaluation.evaluateMoiraiMoE(
 print(report)
 ```
 
-### Evaluation
+#### ChatTime
+```python
+from evaluation.evaluation import Evaluation
+
+CONTEXT : int = 32
+PREDICTION : int = 16
+DATASET : str = "ET"
+
+evaluation : Evaluation = Evaluation()
+
+report : dict = evaluation.evaluateChatTimes(
+    CONTEXT,
+    PREDICTION,
+    DATASET,
+)
+
+print(report)
+```
 
 After performing the evaluation for each desired scenario and dataset, the final evaluation will compile all the results in a PDF file
 
