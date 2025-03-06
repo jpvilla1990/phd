@@ -198,7 +198,7 @@ class Evaluation(FileSystem):
                         break
 
                     for index in range(1,len(features)):
-                        pred : SampleForecast = model.inference(sample[[0, index]], dataset)
+                        pred : SampleForecast = model.inference(sample[[0, index]].iloc[:contextLenght], dataset)
 
                         mase : float = self.__getMASE(
                             sample[index].iloc[:contextLenght].values,
@@ -318,7 +318,7 @@ class Evaluation(FileSystem):
                         break
 
                     for index in range(1,len(features)):
-                        pred : np.ndarray = model.inference(sample[[index]])
+                        pred : np.ndarray = model.inference(sample[[index]].iloc[:contextLenght])
 
                         mase : float = self.__getMASE(
                             sample[index].iloc[:contextLenght].values,

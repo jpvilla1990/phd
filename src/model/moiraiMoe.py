@@ -1,6 +1,13 @@
 import pandas as pd
-
+import numpy as np
 import matplotlib.pyplot as plt
+import torch
+import torch.nn.functional as F
+import torch.nn as nn
+import math
+
+from jaxtyping import Bool, Float, Int
+
 from uni2ts.eval_util.plot import plot_single
 
 from gluonts.torch import PyTorchPredictor
@@ -11,7 +18,72 @@ from gluonts.model.forecast import SampleForecast
 from utils.timeManager import TimeManager
 from utils.fileSystem import FileSystem
 
+from vectorDB.vectorDB import vectorDB
 from exceptions.modelException import ModelException
+
+class MoiraiMoEEmbeddings(nn.Module):
+    def __init__(self, moiraRaiModule : MoiraiMoEModule):
+        super().__init__()
+        # Extracting layers from the original model
+        self.scaler = moiraRaiModule.scaler
+        self.inProj = moiraRaiModule.in_proj
+        self.resProj = moiraRaiModule.res_proj
+        self.featProj = moiraRaiModule.feat_proj
+
+    def forward(
+            self,
+            x : np.ndarray,
+            patchSize : int = 16,
+            batchSize : int = 1,
+        ):
+        """
+        Define the forward pass based on the selected layers.
+        Assuming:
+        - `scaler` normalizes input.
+        - `in_proj`, `res_proj`, and `feat_proj` apply transformations.
+        """
+        seqLen : int = math.ceil(len(x) / patchSize) + 1
+        patchSizeTensor : torch.Tensor = torch.full((batchSize, seqLen), patchSize)
+        target : torch.Tensor = F.pad(
+            torch.tensor(x, dtype=torch.float32).reshape(batchSize, seqLen - 1, patchSize),
+            (0, 0, 0, 1),
+            value=0,
+        )
+        observedMask : torch.Tensor = torch.ones((batchSize, seqLen, patchSize), dtype=torch.bool)
+        predictionMask : torch.Tensor = torch.zeros((batchSize, seqLen), dtype=torch.bool)
+        predictionMask[0][:][-1] = True
+        sampleId : torch.Tensor = torch.ones((batchSize, seqLen), dtype=torch.int32)
+        variateId : torch.Tensor = torch.zeros((batchSize, seqLen), dtype=torch.int32)
+
+        loc, scale = self.scaler(
+            target,
+            observedMask * ~predictionMask.unsqueeze(-1),
+            sampleId,
+            variateId,
+        )
+        scaledTarget = (target - loc) / scale
+        inRepr = self.inProj(scaledTarget, patchSizeTensor)
+        inRepr = F.silu(inRepr)
+        inRepr = self.featProj(inRepr, patchSizeTensor)
+        resRepr = self.resProj(scaledTarget, patchSizeTensor)
+
+        # Combine or return outputs depending on your use case
+        return inRepr + resRepr
+    
+    def inference(
+            self,
+            x : np.ndarray,
+            patchSize : int = 16,
+            batchSize : int = 1,
+        ):
+        """
+        Inference
+        """
+        output : torch.Tensor = None
+        with torch.no_grad():
+            output = self(x, patchSize, batchSize)
+
+        return output
 
 class MoiraiMoE(FileSystem):
     """
@@ -28,6 +100,7 @@ class MoiraiMoE(FileSystem):
         featDynamicRealDim : int = 0,
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
+        collectionName : str = "all",
     ):
         super().__init__()
         self.__datasetsConfig : dict = self._getConfig()["datasets"]
@@ -56,6 +129,13 @@ class MoiraiMoE(FileSystem):
 
         self.__predictor : PyTorchPredictor = self.__model.create_predictor(batch_size=batchSize)
 
+        self.__moiraiMoEEmbeddings : MoiraiMoEEmbeddings = MoiraiMoEEmbeddings(self.__model.module)
+        self.__vectorDB : vectorDB = vectorDB()
+        self.__vectorDB.setCollection(
+            self._getConfig()["vectorDatabase"]["collections"]["moiraiMoE"][collectionName],
+            self.__moiraiMoEEmbeddings.inference,
+        )
+
     def __getFrequency(self, timestamps : pd.core.frame.DataFrame, timestampFormat : str) -> str:
         """
         Method to get frequency from the timestamps
@@ -65,6 +145,12 @@ class MoiraiMoE(FileSystem):
         distances : dict = {abs(self.__timeDiffsSeconds[key] - timeDiffSeconds) : key for key in self.__timeDiffsSeconds}
 
         return distances[sorted(distances.keys())[0]]
+
+    def ingestVector(self, sample : np.ndarray, prediction : np.ndarray):
+        """
+        Method to ingest vector
+        """
+        self.__vectorDB.ingestTimeseries(sample, prediction)
 
     def inference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
         """

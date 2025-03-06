@@ -54,10 +54,19 @@ datasets:
       power : ["power Generation and consumption.csv"]
 monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
+vectorDatabase:
+  collections:
+    moiraiMoE:
+      all: moiraiMoE_all
+    chatTime:
+      all: chatTime_all
+  distance:
+    euclidean:
+      hnsw:space: "l2"
 paths:
   data: ["data"]
   datasets: ["data", "datasets"]
-  vectorDatabase: ["data", "vectorDB"]
+  vectorDatabase: ["data", "vectorDatabase"]
 files:
   datasets: ["data", "datasets", "datasets.yaml"]
   evaluationReportsMoiraiMoE: ["data", "reportsMoiraiMoE.yaml"]
