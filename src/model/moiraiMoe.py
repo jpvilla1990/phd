@@ -152,6 +152,12 @@ class MoiraiMoE(FileSystem):
         """
         self.__vectorDB.ingestTimeseries(sample, prediction)
 
+    def queryVector(self, sample : np.ndarray, k : int = 1) -> np.ndarray:
+        """
+        Method to query vector
+        """
+        return self.__vectorDB.queryTimeseries(sample, k)
+
     def inference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries

@@ -97,6 +97,7 @@ report : dict = evaluation.compileReports() # Reports will be located in src/dat
 
 ```python
 import pandas as pd
+import numpy as np
 from gluonts.model.forecast import SampleForecast
 from datasets.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
@@ -119,5 +120,12 @@ features = list(iterator.getAvailableFeatures(SUBDATASET).keys())[0:2] # To effe
 iterator.setSampleSize(CONTEXT + PREDICTION)
 iterator.resetIteration(SUBDATASET, True)
 sample : pd.core.frame.DataFrame = iterator.iterateDataset(SUBDATASET, features)
+sampleCopy = sample.copy()
 model.ingestVector(sample[1].iloc[:CONTEXT].values, sample[1].iloc[CONTEXT:CONTEXT+PREDICTION].values)
+queried : np.ndarray = model.queryVector(sampleCopy[1].iloc[:CONTEXT].values, 1)
+
+print("original")
+print(sample[1].values)
+print("queried")
+print(queried)
 ```
