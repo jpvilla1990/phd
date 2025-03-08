@@ -38,9 +38,9 @@ class vectorDB(FileSystem):
         Method to set collection
         """
         self.__collection : chromadb.api.models.Collection.Collection = self.__chromaClient.get_or_create_collection(
-            name=collection,
+            name=self._getConfig()["vectorDatabase"]["collections"][collection]['name'],
             embedding_function=CustomEmbeddingFunction(embeddingFunction),
-            metadata=self._getConfig()["vectorDatabase"]["distance"]["euclidean"]
+            metadata=self._getConfig()["vectorDatabase"]["collections"][collection]['metric']
         )
 
     def ingestTimeseries(self, context : np.ndarray, prediction : np.ndarray):
@@ -58,22 +58,27 @@ class vectorDB(FileSystem):
             }]
         )
 
-    def queryTimeseries(self, query : np.ndarray, k : int = 1) -> list:
+    def queryTimeseries(self, query : np.ndarray, k : int = 1) -> tuple:
         """
         Method to query element from vector database
 
-        return list[context + prediction]
+        return list[context + prediction], scores
         """
         queryStr : str = ",".join(map(str, query.tolist()))
-        queried = self.__collection.query(
+        queried : dict = self.__collection.query(
             n_results=k,
             query_texts=[queryStr]
         )
         documents : list = queried["documents"][0]
         metadatas : list = queried["metadatas"][0]
+        scores : list = []
+        if self.__collection.metadata["hnsw:space"] == "cosine":
+            scores = [1 - distance for distance in queried["distances"][0]]
+        else:
+            scores = queried["distances"][0]
 
         predictions : list = [metadata["prediction"] for metadata in metadatas]
 
         output : list = [f"{documents[index]},{predictions[index]}" for index in range(len(documents))]
 
-        return [np.array([float(sample) for sample in element.split(",")]) for element in output]
+        return [np.array([float(sample) for sample in element.split(",")]) for element in output], scores

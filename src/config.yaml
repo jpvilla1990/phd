@@ -56,13 +56,18 @@ monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
   collections:
-    moiraiMoE:
-      all: moiraiMoE_all
-    chatTime:
-      all: chatTime_all
-  distance:
-    euclidean:
-      hnsw:space: "l2"
+    moiraiMoEAllL2:
+      name : moiraiMoE_all_l2
+      metric:
+        hnsw:space: "l2"
+    moiraiMoEAllCosine:
+      name : moiraiMoE_all_cosine
+      metric:
+        hnsw:space: "cosine"
+    chatTimeAllL2:
+      name: chatTime_all_l2
+      metric:
+        hnsw:space: "l2"
 paths:
   data: ["data"]
   datasets: ["data", "datasets"]

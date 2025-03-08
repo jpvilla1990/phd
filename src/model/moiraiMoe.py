@@ -11,6 +11,7 @@ from jaxtyping import Bool, Float, Int
 from uni2ts.eval_util.plot import plot_single
 
 from gluonts.torch import PyTorchPredictor
+import uni2ts
 from uni2ts.model.moirai_moe import MoiraiMoEForecast, MoiraiMoEModule
 from gluonts.dataset.common import ListDataset
 from gluonts.model.forecast import SampleForecast
@@ -24,18 +25,19 @@ from exceptions.modelException import ModelException
 class MoiraiMoEEmbeddings(nn.Module):
     def __init__(self, moiraRaiModule : MoiraiMoEModule):
         super().__init__()
-        # Extracting layers from the original model
-        self.scaler = moiraRaiModule.scaler
-        self.inProj = moiraRaiModule.in_proj
-        self.resProj = moiraRaiModule.res_proj
-        self.featProj = moiraRaiModule.feat_proj
+        # Extracting layers from the original model including first normalization layer before attention module
+        self.scaler : uni2ts.module.packed_scaler.PackedStdScaler = moiraRaiModule.scaler
+        self.inProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.in_proj
+        self.resProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.res_proj
+        self.featProj : uni2ts.module.ts_embed.FeatLinear = moiraRaiModule.feat_proj
+        self.norm : uni2ts.module.norm.RMSNorm = moiraRaiModule.encoder.layers[0].norm1
 
     def forward(
             self,
             x : np.ndarray,
             patchSize : int = 16,
             batchSize : int = 1,
-        ):
+        ) -> torch.Tensor:
         """
         Define the forward pass based on the selected layers.
         Assuming:
@@ -61,21 +63,21 @@ class MoiraiMoEEmbeddings(nn.Module):
             sampleId,
             variateId,
         )
-        scaledTarget = (target - loc) / scale
-        inRepr = self.inProj(scaledTarget, patchSizeTensor)
-        inRepr = F.silu(inRepr)
-        inRepr = self.featProj(inRepr, patchSizeTensor)
-        resRepr = self.resProj(scaledTarget, patchSizeTensor)
+        scaledTarget : torch.Tensor = (target - loc) / scale
+        inRepr : torch.Tensor = self.inProj(scaledTarget, patchSizeTensor)
+        inRepr : torch.Tensor = F.silu(inRepr)
+        inRepr : torch.Tensor = self.featProj(inRepr, patchSizeTensor)
+        resRepr : torch.Tensor = self.resProj(scaledTarget, patchSizeTensor)
 
         # Combine or return outputs depending on your use case
-        return inRepr + resRepr
-    
+        return self.norm(inRepr + resRepr)
+
     def inference(
             self,
             x : np.ndarray,
             patchSize : int = 16,
             batchSize : int = 1,
-        ):
+        ) -> torch.Tensor:
         """
         Inference
         """
@@ -100,7 +102,7 @@ class MoiraiMoE(FileSystem):
         featDynamicRealDim : int = 0,
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
-        collectionName : str = "all",
+        collectionName : str = "moiraiMoEAllCosine",
     ):
         super().__init__()
         self.__datasetsConfig : dict = self._getConfig()["datasets"]
@@ -132,7 +134,7 @@ class MoiraiMoE(FileSystem):
         self.__moiraiMoEEmbeddings : MoiraiMoEEmbeddings = MoiraiMoEEmbeddings(self.__model.module)
         self.__vectorDB : vectorDB = vectorDB()
         self.__vectorDB.setCollection(
-            self._getConfig()["vectorDatabase"]["collections"]["moiraiMoE"][collectionName],
+            collectionName,
             self.__moiraiMoEEmbeddings.inference,
         )
 
@@ -152,7 +154,7 @@ class MoiraiMoE(FileSystem):
         """
         self.__vectorDB.ingestTimeseries(sample, prediction)
 
-    def queryVector(self, sample : np.ndarray, k : int = 1) -> np.ndarray:
+    def queryVector(self, sample : np.ndarray, k : int = 1) -> tuple:
         """
         Method to query vector
         """

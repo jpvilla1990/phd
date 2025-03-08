@@ -15,6 +15,7 @@ model : MoiraiMoE = MoiraiMoE(
     predictionLength = PREDICTION,
     contextLenght = CONTEXT,
     numSamples = NUMBER_SAMPLES,
+    collectionName="moiraiMoEAllCosine",
 )
 
 iterator = dataset.loadDataset(DATASET)

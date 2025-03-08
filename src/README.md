@@ -95,6 +95,7 @@ evaluation : Evaluation = Evaluation()
 report : dict = evaluation.compileReports() # Reports will be located in src/data/reports.pdf
 ```
 
+#### Test vector database ingestion and query
 ```python
 import pandas as pd
 import numpy as np
@@ -113,6 +114,7 @@ model : MoiraiMoE = MoiraiMoE(
     predictionLength = PREDICTION,
     contextLenght = CONTEXT,
     numSamples = NUMBER_SAMPLES,
+    collectionName="moiraiMoEAllCosine",
 )
 
 iterator = dataset.loadDataset(DATASET)
