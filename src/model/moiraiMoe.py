@@ -95,14 +95,14 @@ class MoiraiMoE(FileSystem):
         self,
         modelSize : str = "small",
         predictionLength : int = 20,
-        contextLenght : int = 200,
+        contextLength : int = 200,
         patchSize : int = 16,
         numSamples : int = 100,
         targetDim : int = 1,
         featDynamicRealDim : int = 0,
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
-        collectionName : str = "moiraiMoEAllCosine",
+        collectionName : str = "moiraiMoEAllCosine_128_16",
     ):
         super().__init__()
         self.__datasetsConfig : dict = self._getConfig()["datasets"]
@@ -117,11 +117,11 @@ class MoiraiMoE(FileSystem):
             "Y" : 60 * 60 * 24 * 365,
         }
 
-        self.__contextLenght : int = contextLenght
+        self.__contextLength : int = contextLength
         self.__model : MoiraiMoEForecast = MoiraiMoEForecast(
             module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
             prediction_length=predictionLength,
-            context_length=contextLenght,
+            context_length=contextLength,
             patch_size=patchSize,
             num_samples=numSamples,
             target_dim=targetDim,
@@ -148,11 +148,17 @@ class MoiraiMoE(FileSystem):
 
         return distances[sorted(distances.keys())[0]]
 
-    def ingestVector(self, sample : np.ndarray, prediction : np.ndarray):
+    def ingestVector(self, sample : np.ndarray, prediction : np.ndarray, dataset : str = ""):
         """
         Method to ingest vector
         """
-        self.__vectorDB.ingestTimeseries(sample, prediction)
+        self.__vectorDB.ingestTimeseries(sample, prediction, dataset)
+
+    def deleteDataset(self, dataset : str):
+        """
+        Method to delete dataset from collection
+        """
+        self.__vectorDB.deleteDataset(dataset)
 
     def queryVector(self, sample : np.ndarray, k : int = 1) -> tuple:
         """
@@ -210,7 +216,7 @@ class MoiraiMoE(FileSystem):
             sampleDict,
             groundTruthDict,
             prediction,
-            context_length=self.__contextLenght,
+            context_length=self.__contextLength,
             name="pred",
             show_label=True,
         )

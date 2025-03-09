@@ -150,7 +150,7 @@ class Evaluation(FileSystem):
 
     def evaluateMoiraiMoE(
             self,
-            contextLenght : int,
+            contextLength : int,
             predictionLength : int,
             numberSamples : int,
             dataset : str,
@@ -163,12 +163,12 @@ class Evaluation(FileSystem):
         subdatasets : list = []
         model : MoiraiMoE = MoiraiMoE(
             predictionLength = predictionLength,
-            contextLenght = contextLenght,
+            contextLength = contextLength,
             numSamples = numberSamples,
         )
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
         self.__datasetMetadata = iterator.getDatasetMetadata()
-        iterator.setSampleSize(contextLenght + predictionLength)
+        iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
             datasetConfig : dict = Utils.readYaml(
@@ -194,25 +194,25 @@ class Evaluation(FileSystem):
                     sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
                     if sample is None:
                         break
-                    if len(sample) < predictionLength + contextLenght:
+                    if len(sample) < predictionLength + contextLength:
                         break
 
                     for index in range(1,len(features)):
-                        pred : SampleForecast = model.inference(sample[[0, index]].iloc[:contextLenght], dataset)
+                        pred : SampleForecast = model.inference(sample[[0, index]].iloc[:contextLength], dataset)
 
                         mase : float = self.__getMASE(
-                            sample[index].iloc[:contextLenght].values,
-                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            sample[index].iloc[:contextLength].values,
+                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
                             pred.quantile(0.5),
                         )
 
                         mae : float = self.__getMAE(
-                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
                             pred.quantile(0.5),
                         )
 
                         mse : float = self.__getMSE(
-                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
                             pred.quantile(0.5),
                         )
 
@@ -234,10 +234,10 @@ class Evaluation(FileSystem):
 
                 if dataset not in report:
                     report[dataset] = dict()
-                if f"{contextLenght},{predictionLength}" not in report[dataset]:
-                    report[dataset][f"{contextLenght},{predictionLength}"] = dict()
+                if f"{contextLength},{predictionLength}" not in report[dataset]:
+                    report[dataset][f"{contextLength},{predictionLength}"] = dict()
 
-                report[dataset][f"{contextLenght},{predictionLength}"][element] = {
+                report[dataset][f"{contextLength},{predictionLength}"][element] = {
                     "MASE" : {
                         "mean" : float(reportMASE.mean()),
                         "median" : float(np.median(reportMASE)),
@@ -271,7 +271,7 @@ class Evaluation(FileSystem):
     
     def evaluateChatTimes(
             self,
-            contextLenght : int,
+            contextLength : int,
             predictionLength : int,
             dataset : str,
             subdataset : str = "",
@@ -283,11 +283,11 @@ class Evaluation(FileSystem):
         subdatasets : list = []
         model : ChatTimeModel = ChatTimeModel(
             predictionLength = predictionLength,
-            contextLenght = contextLenght,
+            contextLength = contextLength,
         )
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
         self.__datasetMetadata = iterator.getDatasetMetadata()
-        iterator.setSampleSize(contextLenght + predictionLength)
+        iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
             datasetConfig : dict = Utils.readYaml(
@@ -314,25 +314,25 @@ class Evaluation(FileSystem):
                     if sample is None:
                         break
 
-                    if len(sample) < predictionLength + contextLenght:
+                    if len(sample) < predictionLength + contextLength:
                         break
 
                     for index in range(1,len(features)):
-                        pred : np.ndarray = model.inference(sample[[index]].iloc[:contextLenght])
+                        pred : np.ndarray = model.inference(sample[[index]].iloc[:contextLength])
 
                         mase : float = self.__getMASE(
-                            sample[index].iloc[:contextLenght].values,
-                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            sample[index].iloc[:contextLength].values,
+                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
                             pred,
                         )
 
                         mae : float = self.__getMAE(
-                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
                             pred,
                         )
 
                         mse : float = self.__getMSE(
-                            sample[index].iloc[contextLenght:contextLenght+predictionLength].values,
+                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
                             pred,
                         )
 
@@ -354,10 +354,10 @@ class Evaluation(FileSystem):
 
                 if dataset not in report:
                     report[dataset] = dict()
-                if f"{contextLenght},{predictionLength}" not in report[dataset]:
-                    report[dataset][f"{contextLenght},{predictionLength}"] = dict()
+                if f"{contextLength},{predictionLength}" not in report[dataset]:
+                    report[dataset][f"{contextLength},{predictionLength}"] = dict()
 
-                report[dataset][f"{contextLenght},{predictionLength}"][element] = {
+                report[dataset][f"{contextLength},{predictionLength}"][element] = {
                     "MASE" : {
                         "mean" : float(reportMASE.mean()),
                         "median" : float(np.median(reportMASE)),

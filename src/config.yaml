@@ -56,23 +56,36 @@ monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
   collections:
-    moiraiMoEAllL2:
-      name : moiraiMoE_all_l2
+    moiraiMoEAllL2_128_16:
       metric:
         hnsw:space: "l2"
-    moiraiMoEAllCosine:
-      name : moiraiMoE_all_cosine
+      context: 128
+      prediction: 16
+      datasets: [
+        "ET",
+      ]
+    moiraiMoEAllCosine_128_16:
       metric:
         hnsw:space: "cosine"
-    chatTimeAllL2:
-      name: chatTime_all_l2
+      context: 128
+      prediction: 16
+      datasets: [
+        "ET",
+      ]
+    chatTimeAllL2_128_16:
       metric:
         hnsw:space: "l2"
+      context: 128
+      prediction: 16
+      datasets: [
+        "ET",
+      ]
 paths:
   data: ["data"]
   datasets: ["data", "datasets"]
   vectorDatabase: ["data", "vectorDatabase"]
 files:
   datasets: ["data", "datasets", "datasets.yaml"]
+  databaseTracking: ["data", "databaseTracking.yaml"]
   evaluationReportsMoiraiMoE: ["data", "reportsMoiraiMoE.yaml"]
   evaluationFinalReport: ["data" ,"reports.pdf"]

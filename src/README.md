@@ -95,6 +95,15 @@ evaluation : Evaluation = Evaluation()
 report : dict = evaluation.compileReports() # Reports will be located in src/data/reports.pdf
 ```
 
+#### Ingest datasets to MoiraiMoE collections
+```python
+from vectorDB.vectorDBingestion import VectorDBingestion
+
+vectorDBingestion : VectorDBingestion = VectorDBingestion()
+
+vectorDBingestion.ingestDatasetsMoiraiMoE()
+```
+
 #### Test vector database ingestion and query
 ```python
 import pandas as pd

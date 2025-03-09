@@ -38,12 +38,12 @@ class vectorDB(FileSystem):
         Method to set collection
         """
         self.__collection : chromadb.api.models.Collection.Collection = self.__chromaClient.get_or_create_collection(
-            name=self._getConfig()["vectorDatabase"]["collections"][collection]['name'],
+            name=collection,
             embedding_function=CustomEmbeddingFunction(embeddingFunction),
             metadata=self._getConfig()["vectorDatabase"]["collections"][collection]['metric']
         )
 
-    def ingestTimeseries(self, context : np.ndarray, prediction : np.ndarray):
+    def ingestTimeseries(self, context : np.ndarray, prediction : np.ndarray, dataset : str = ""):
         """
         Method to ingest time series in collection
         """
@@ -55,7 +55,16 @@ class vectorDB(FileSystem):
             documents=[contextStr],
             metadatas=[{
                 "prediction" : predictionStr,
+                "dataset" : dataset,
             }]
+        )
+
+    def deleteDataset(self, dataset : str):
+        """
+        Method to delete dataset from collection
+        """
+        self.__collection.delete(
+            where={"dataset" : dataset}
         )
 
     def queryTimeseries(self, query : np.ndarray, k : int = 1) -> tuple:
