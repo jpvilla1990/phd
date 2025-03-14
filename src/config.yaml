@@ -64,10 +64,26 @@ vectorDatabase:
       datasets: [
         "ET",
       ]
-    moiraiMoEAllCosine_128_16:
+    moiraiMoEAllCosine_32_16:
       metric:
         hnsw:space: "cosine"
       context: 128
+      prediction: 16
+      datasets: [
+        "ET",
+      ]
+    moiraiMoESolarPowerCosine_32_16:
+      metric:
+        hnsw:space: "cosine"
+      context: 32
+      prediction: 16
+      datasets: [
+        "solarEnergy",
+      ]
+    moiraiMoEETCosine_32_16:
+      metric:
+        hnsw:space: "cosine"
+      context: 32
       prediction: 16
       datasets: [
         "ET",
@@ -88,4 +104,6 @@ files:
   datasets: ["data", "datasets", "datasets.yaml"]
   databaseTracking: ["data", "databaseTracking.yaml"]
   evaluationReportsMoiraiMoE: ["data", "reportsMoiraiMoE.yaml"]
+  evaluationReportsMoiraiMoERag: ["data", "reportsMoiraiMoERag.yaml"]
   evaluationFinalReport: ["data" ,"reports.pdf"]
+  evaluationFinalReportRag: ["data", "reportsRag.pdf"]

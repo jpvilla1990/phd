@@ -103,6 +103,7 @@ class MoiraiMoE(FileSystem):
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
         collectionName : str = "moiraiMoEAllCosine_128_16",
+        rag : bool = False
     ):
         super().__init__()
         self.__datasetsConfig : dict = self._getConfig()["datasets"]
@@ -116,6 +117,9 @@ class MoiraiMoE(FileSystem):
             "M" : 60 * 60 * 24 * 30,
             "Y" : 60 * 60 * 24 * 365,
         }
+
+        if rag:
+            contextLength += contextLength + predictionLength
 
         self.__contextLength : int = contextLength
         self.__model : MoiraiMoEForecast = MoiraiMoEForecast(
@@ -180,6 +184,27 @@ class MoiraiMoE(FileSystem):
             [{
                 "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
                 "target": sample["value"].tolist(),
+            }],
+            freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
+        )
+        return next(iter(self.__predictor.predict(sampleGluonts)))
+
+    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
+        """
+        Method to predict one sample, first columns must be the timestamp and second is the timeseries
+        """
+        if len(sample.columns) != 2:
+            raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
+
+        timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
+
+        sample.columns = ["datetime", "value"]
+        queried : np.ndarray = self.queryVector(sample["value"], k=1)
+        newSample : list = queried[0][0].tolist() + sample["value"].tolist()
+        sampleGluonts : ListDataset = ListDataset(
+            [{
+                "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+                "target": newSample,
             }],
             freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
         )

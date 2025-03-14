@@ -5,7 +5,7 @@ from datasets.datasets import Datasets
 from datasets.datasetIterator import DatasetIterator
 from model.moiraiMoe import MoiraiMoE
 
-class VectorDBIngestions(FileSystem):
+class VectorDBIngestion(FileSystem):
     """
     Class to handle vector DB ingestion for all datasets
     """
@@ -89,24 +89,21 @@ class VectorDBIngestions(FileSystem):
         databaseTracking[collectionName][dataset] = iterations
         self.__writeDatabaseTracking(databaseTracking)
 
-    def ingestDatasetsMoiraiMoE(self):
+    def ingestDatasetsMoiraiMoE(self, collection : str):
         """
         Method to ingest all datasets to MoiraiMoE
         """
-        collections : dict = self._getConfig()["vectorDatabase"]["collections"]
-        for collection in collections:
-            if "moiraiMoE" not in collection:
-                continue
+        collections : dict = self._getConfig()["vectorDatabase"]["collections"][collection]
 
-            for dataset in collections[collection]["datasets"]:
-                databaseTracking : dict = self.__loadDatabaseTracking()
-                if collection in databaseTracking:
-                    if dataset in databaseTracking[collection][dataset]: # Skip if the dataset is already ingested in collection
-                        continue
+        for dataset in collections["datasets"]:
+            databaseTracking : dict = self.__loadDatabaseTracking()
+            if collection in databaseTracking:
+                if dataset in databaseTracking[collection]: # Skip if the dataset is already ingested in collection
+                    continue
 
-                self.ingestDatasetMoiraiMoE(
-                    dataset,
-                    collection,
-                    collections[collection]["context"],
-                    collections[collection]["prediction"],
-                )
+            self.ingestDatasetMoiraiMoE(
+                dataset,
+                collection,
+                collections["context"],
+                collections["prediction"],
+            )

@@ -22,7 +22,7 @@ SUBDATASET : str = "ETTh1"
 dataset : Datasets = Datasets()
 model : MoiraiMoE = MoiraiMoE(
     predictionLength = PREDICTION,
-    contextLenght = CONTEXT,
+    contextLength = CONTEXT,
     numSamples = NUMBER_SAMPLES,
 )
 
@@ -65,6 +65,29 @@ report : dict = evaluation.evaluateMoiraiMoE(
 print(report)
 ```
 
+#### MoiraiMoE RAG
+```python
+from evaluation.evaluation import Evaluation
+
+CONTEXT : int = 32
+PREDICTION : int = 16
+NUMBER_SAMPLES : int = 100
+DATASET : str = "solarEnergy"
+COLLECTION : str = "moiraiMoESolarPowerCosine_128_16"
+
+evaluation : Evaluation = Evaluation()
+
+report : dict = evaluation.evaluateMoiraiMoERag(
+    CONTEXT,
+    PREDICTION,
+    NUMBER_SAMPLES,
+    DATASET,
+    COLLECTION,
+)
+
+print(report)
+```
+
 #### ChatTime
 ```python
 from evaluation.evaluation import Evaluation
@@ -101,7 +124,40 @@ from vectorDB.vectorDBingestion import VectorDBingestion
 
 vectorDBingestion : VectorDBingestion = VectorDBingestion()
 
-vectorDBingestion.ingestDatasetsMoiraiMoE()
+vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoESolarPowerCosine_128_16")
+```
+
+#### Inference RAG MoiraiMoE
+```python
+import pandas as pd
+from gluonts.model.forecast import SampleForecast
+from datasets.datasets import Datasets
+from model.moiraiMoe import MoiraiMoE
+
+CONTEXT : int = 32
+PREDICTION : int = 16
+NUMBER_SAMPLES : int = 100
+DATASET : str = "solarEnergy"
+SUBDATASET : str = "T115"
+
+dataset : Datasets = Datasets()
+model : MoiraiMoE = MoiraiMoE(
+    predictionLength = PREDICTION,
+    contextLength = CONTEXT,
+    numSamples = NUMBER_SAMPLES,
+    collectionName="moiraiMoESolarPowerCosine_128_16",
+    rag=True,
+)
+
+iterator = dataset.loadDataset(DATASET)
+features = list(iterator.getAvailableFeatures(SUBDATASET).keys())[0:2] # To effectively predict the model requires the first column is the timestamp
+iterator.setSampleSize(CONTEXT + PREDICTION)
+iterator.resetIteration(SUBDATASET, True)
+while True:
+    sample : pd.core.frame.DataFrame = iterator.iterateDataset(SUBDATASET, features)
+    pred : SampleForecast = model.ragIngerence(sample, DATASET)
+    if sample is None: # Iterate all samples until the iterator returns empty
+        break
 ```
 
 #### Test vector database ingestion and query
