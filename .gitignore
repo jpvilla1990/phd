@@ -4,5 +4,7 @@ src/ChatTime
 src/data/*
 !src/data/reportsMoiraiMoE.yaml
 !src/data/reportsChatTime.yaml
+!src/data/reports.pdf
+!src/data/reportsRag.pdf
 src/reports
 .venv
