@@ -102,7 +102,7 @@ class MoiraiMoE(FileSystem):
         featDynamicRealDim : int = 0,
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
-        collectionName : str = "moiraiMoEAllCosine_128_16",
+        collectionName : str = "moiraiMoEAllCosine_32_16",
         rag : bool = False
     ):
         super().__init__()
