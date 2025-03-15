@@ -187,11 +187,11 @@ class Evaluation(FileSystem):
                 reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
-                iterator.resetIteration(element, True)
+                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
                 while True:
-                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
+                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=False)
                     if sample is None:
                         break
                     if len(sample) < predictionLength + contextLength:
@@ -311,11 +311,11 @@ class Evaluation(FileSystem):
                 reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
-                iterator.resetIteration(element, True)
+                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
                 while True:
-                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
+                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=False)
                     if sample is None:
                         break
                     if len(sample) < predictionLength + contextLength:
@@ -430,11 +430,11 @@ class Evaluation(FileSystem):
                 reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
-                iterator.resetIteration(element, True)
+                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
                 while True:
-                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
+                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=False)
                     if sample is None:
                         break
 

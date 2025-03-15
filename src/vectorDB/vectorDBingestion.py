@@ -56,11 +56,11 @@ class VectorDBIngestion(FileSystem):
         for element in subdatasets:
             try:
                 print(f"Subdataset {element}")
-                iterator.resetIteration(element, True)
+                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
                 while True:
-                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features)
+                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=True)
                     if sample is None:
                         break
                     if len(sample) < predictionLength + contextLength:

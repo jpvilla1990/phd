@@ -1,3 +1,5 @@
+seed: 42
+trainPartition: 0.8
 datasets:
   ET:
     url: "https://github.com/zhouhaoyi/ETDataset"

@@ -1,4 +1,5 @@
 import random
+import math
 import pandas as pd
 import numpy as np
 from gluonts.dataset.pandas import PandasDataset
@@ -8,7 +9,8 @@ class DatasetIterator(object):
     """
     Class to handle iterators on the datasets
     """
-    def __init__(self, name : str, datasets : dict, datasetConfig : dict):
+    def __init__(self, name : str, datasets : dict, datasetConfig : dict, seed : int = 42):
+        random.seed(seed)
         self.__datasets : dict = datasets
         self.__datasetConfig : dict = datasetConfig
         self.__name : str = name
@@ -17,7 +19,7 @@ class DatasetIterator(object):
         self.__features : dict = {}
         self.__datasetSizes : dict = {}
 
-        self.__indexIterator : dict = {subDataset : [] for subDataset in self.__datasets}
+        self.__indexIterator : dict = {subDataset : {} for subDataset in self.__datasets}
 
     def __str__(self) -> str:
         return self.__name
@@ -168,12 +170,12 @@ class DatasetIterator(object):
 
         return sample
 
-    def resetIteration(self, subdataset : str, randomOrder : bool = False):
+    def resetIteration(self, subdataset : str, randomOrder : bool = False, trainPartition : float = 1.0):
         """
         Method to reset dataset iteration
         """
         self.__datasetSizes[subdataset] = self.__getDatasetMetada(subdataset)
-        self.__indexIterator[subdataset] = []
+        self.__indexIterator[subdataset] = {}
         maxNumberSamples : int = self.__datasetSizes[subdataset]["numberObservations"]
 
         indexIterator : list = [index for index in range(1, maxNumberSamples - self.__sampleSize + 2)]
@@ -183,27 +185,37 @@ class DatasetIterator(object):
         else:
             indexIterator.sort(reverse=True)
 
-        self.__indexIterator[subdataset] = indexIterator
+        border : int = math.floor(trainPartition * len(indexIterator))
+
+        self.__indexIterator[subdataset] = {
+            "train" : indexIterator[:border],
+            "test" : indexIterator[border:],
+        }
 
     def iterateDataset(
             self,
             subdataset : str,
             features : list = [],
+            train : bool = True,
         ) -> pd.core.frame.DataFrame:
         """
         Method to iterate through out the whole dataset
         """
-        if len(self.__indexIterator[subdataset]) == 0:
+        category : str = "test"
+        if train:
+            category = "train"
+
+        if len(self.__indexIterator[subdataset][category]) == 0:
             return None
 
         sample : pd.core.frame.Dataframe = self.loadSample(
             subdataset=subdataset,
-            sampleIndex=self.__indexIterator[subdataset][-1],
+            sampleIndex=self.__indexIterator[subdataset][category][-1],
             sampleSize=self.__sampleSize,
             features=features,
         )
 
-        self.__indexIterator[subdataset].pop()
+        self.__indexIterator[subdataset][category].pop()
 
         return sample
 
