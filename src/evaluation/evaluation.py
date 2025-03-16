@@ -81,7 +81,7 @@ class Evaluation(FileSystem):
         """
         Method to compile results in a human readable report
         """
-        report : dict = self.__loadReport("evaluationReportsMoiraiMoERag")
+        report : dict = self.__loadReport("evaluationReportsMoiraiMoE")
 
         tables : dict = {}
 
@@ -122,7 +122,7 @@ class Evaluation(FileSystem):
                 tables[scenario]["scenario"]["numberIterations"].append(totalIterations)
 
         elements : list = []
-        doc : SimpleDocTemplate = SimpleDocTemplate(self._getFiles()["evaluationFinalReportRag"], pagesize=letter)
+        doc : SimpleDocTemplate = SimpleDocTemplate(self._getFiles()["evaluationFinalReport"], pagesize=letter)
         for scenario in tables:
             df : pd.core.frame.DataFrame = pd.DataFrame(tables[scenario]["scenario"], index=tables[scenario]["indices"]).round(6)
             elements.append(Table([[f"MoiraiMoE Context Lenght, Prediction Lenght = {scenario}"]], colWidths=[400]))
