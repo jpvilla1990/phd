@@ -1,4 +1,5 @@
 import pandas as pd
+from utils.utils import Utils
 from utils.fileSystem import FileSystem
 from utils.timeManager import TimeManager
 
@@ -51,12 +52,9 @@ class MonashPreparer(FileSystem):
                             )
 
                         df.to_csv(subdatasetPath, sep=separator, decimal=decimal, index=False)
+                        Utils.savePandasAsArrow(df, subdatasetPath)
                         newDatasetConfig.update({
                             feature : subdatasetPath,
                         })
 
         return newDatasetConfig
-
-
-
-

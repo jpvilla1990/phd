@@ -39,7 +39,7 @@ class DatasetIterator(object):
             raise DatasetException(
                 f"Subdataset {subdataset} does not exists in dataset {self}"
             )
-        
+
         features : list = pd.read_csv(
             self.__datasets[subdataset],
             nrows=0,
@@ -218,4 +218,3 @@ class DatasetIterator(object):
         self.__indexIterator[subdataset][category].pop()
 
         return sample
-

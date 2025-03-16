@@ -1,10 +1,12 @@
 import os
+import pandas as pd
 from utils.fileSystem import FileSystem
 from utils.utils import Utils
 from exceptions.datasetException import DatasetException
 from datasets.datasetDownloader import DatasetDownloader
 from datasets.datasetIterator import DatasetIterator
 from datasets.monashPreparer import MonashPreparer
+from utils.utils import Utils
 
 class Datasets(FileSystem):
     """
@@ -63,7 +65,14 @@ class Datasets(FileSystem):
 
             datasetFormat : str = self.__datasets[dataset]["format"]
             if datasetFormat == "csv":
-                pass
+                for subDataset in datasetConfig:
+                    subDatasetPath : str = datasetConfig[subDataset]
+                    df : pd.core.frame.DataFrame = pd.read_csv(
+                        subDatasetPath,
+                        sep=self.__datasets[dataset]["separator"],
+                        decimal=self.__datasets[dataset]["decimal"],
+                    )
+                    Utils.savePandasAsArrow(df, subDatasetPath)
             elif datasetFormat == "monash":
                 monashPreparer : MonashPreparer = MonashPreparer(dataset)
                 datasetConfig = monashPreparer.prepare(datasetConfig)
