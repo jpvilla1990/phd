@@ -120,11 +120,11 @@ report : dict = evaluation.compileReports() # Reports will be located in src/dat
 
 #### Ingest datasets to MoiraiMoE collections
 ```python
-from vectorDB.vectorDBingestion import VectorDBingestion
+from vectorDB.vectorDBingestion import VectorDBIngestion
 
-vectorDBingestion : VectorDBingestion = VectorDBingestion()
+vectorDBingestion : VectorDBIngestion = VectorDBIngestion()
 
-vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoESolarPowerCosine_128_16")
+vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_32_16")
 ```
 
 #### Inference RAG MoiraiMoE

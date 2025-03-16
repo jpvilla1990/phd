@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import concurrent.futures
 from gluonts.model.forecast import SampleForecast
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
@@ -80,7 +81,7 @@ class Evaluation(FileSystem):
         """
         Method to compile results in a human readable report
         """
-        report : dict = self.__loadReport("evaluationReportsMoiraiMoE")
+        report : dict = self.__loadReport("evaluationReportsMoiraiMoERag")
 
         tables : dict = {}
 
@@ -121,7 +122,7 @@ class Evaluation(FileSystem):
                 tables[scenario]["scenario"]["numberIterations"].append(totalIterations)
 
         elements : list = []
-        doc : SimpleDocTemplate = SimpleDocTemplate(self._getFiles()["evaluationFinalReport"], pagesize=letter)
+        doc : SimpleDocTemplate = SimpleDocTemplate(self._getFiles()["evaluationFinalReportRag"], pagesize=letter)
         for scenario in tables:
             df : pd.core.frame.DataFrame = pd.DataFrame(tables[scenario]["scenario"], index=tables[scenario]["indices"]).round(6)
             elements.append(Table([[f"MoiraiMoE Context Lenght, Prediction Lenght = {scenario}"]], colWidths=[400]))
@@ -191,41 +192,48 @@ class Evaluation(FileSystem):
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
                 while True:
-                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=False)
-                    if sample is None:
-                        break
-                    if len(sample) < predictionLength + contextLength:
-                        break
-
-                    for index in range(1,len(features)):
-                        pred : SampleForecast = model.inference(sample[[0, index]].iloc[:contextLength], dataset)
-
-                        mase : float = self.__getMASE(
-                            sample[index].iloc[:contextLength].values,
-                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                            pred.quantile(0.5),
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                        futureSample : concurrent.futures._base.Future = executor.submit(
+                            iterator.iterateDataset,
+                            element,
+                            features,
+                            False,
                         )
+                        sample : pd.core.frame.DataFrame = futureSample.result()
+                        if sample is None:
+                            break
+                        if len(sample) < predictionLength + contextLength:
+                            break
 
-                        mae : float = self.__getMAE(
-                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                            pred.quantile(0.5),
-                        )
+                        for index in range(1,len(features)):
+                            pred : SampleForecast = model.inference(sample[[0, index]].iloc[:contextLength], dataset)
 
-                        mse : float = self.__getMSE(
-                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                            pred.quantile(0.5),
-                        )
+                            mase : float = self.__getMASE(
+                                sample[index].iloc[:contextLength].values,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred.quantile(0.5),
+                            )
 
-                        if mase:
-                            reportMASE = np.append(reportMASE, [mase])
-                        if mae:
-                            reportMAE = np.append(reportMAE, [mae])
-                            reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
-                        if mse:
-                            reportMSE = np.append(reportMSE, [mse])
-                            reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
+                            mae : float = self.__getMAE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred.quantile(0.5),
+                            )
 
-                        iterations += 1
+                            mse : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred.quantile(0.5),
+                            )
+
+                            if mase:
+                                reportMASE = np.append(reportMASE, [mase])
+                            if mae:
+                                reportMAE = np.append(reportMAE, [mae])
+                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
+                            if mse:
+                                reportMSE = np.append(reportMSE, [mse])
+                                reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
+
+                            iterations += 1
 
                 if iterations <= 0:
                     continue
@@ -315,41 +323,48 @@ class Evaluation(FileSystem):
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
                 while True:
-                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=False)
-                    if sample is None:
-                        break
-                    if len(sample) < predictionLength + contextLength:
-                        break
-
-                    for index in range(1,len(features)):
-                        pred : SampleForecast = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset)
-
-                        mase : float = self.__getMASE(
-                            sample[index].iloc[:contextLength].values,
-                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                            pred.quantile(0.5),
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                        futureSample : concurrent.futures._base.Future = executor.submit(
+                            iterator.iterateDataset,
+                            element,
+                            features,
+                            False,
                         )
+                        sample : pd.core.frame.DataFrame = futureSample.result()
+                        if sample is None:
+                            break
+                        if len(sample) < predictionLength + contextLength:
+                            break
 
-                        mae : float = self.__getMAE(
-                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                            pred.quantile(0.5),
-                        )
+                        for index in range(1,len(features)):
+                            pred : SampleForecast = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset)
 
-                        mse : float = self.__getMSE(
-                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                            pred.quantile(0.5),
-                        )
+                            mase : float = self.__getMASE(
+                                sample[index].iloc[:contextLength].values,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred.quantile(0.5),
+                            )
 
-                        if mase:
-                            reportMASE = np.append(reportMASE, [mase])
-                        if mae:
-                            reportMAE = np.append(reportMAE, [mae])
-                            reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
-                        if mse:
-                            reportMSE = np.append(reportMSE, [mse])
-                            reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
+                            mae : float = self.__getMAE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred.quantile(0.5),
+                            )
 
-                        iterations += 1
+                            mse : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred.quantile(0.5),
+                            )
+
+                            if mase:
+                                reportMASE = np.append(reportMASE, [mase])
+                            if mae:
+                                reportMAE = np.append(reportMAE, [mae])
+                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
+                            if mse:
+                                reportMSE = np.append(reportMSE, [mse])
+                                reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
+
+                            iterations += 1
 
                 if iterations <= 0:
                     continue
@@ -434,42 +449,49 @@ class Evaluation(FileSystem):
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
                 while True:
-                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=False)
-                    if sample is None:
-                        break
-
-                    if len(sample) < predictionLength + contextLength:
-                        break
-
-                    for index in range(1,len(features)):
-                        pred : np.ndarray = model.inference(sample[[index]].iloc[:contextLength])
-
-                        mase : float = self.__getMASE(
-                            sample[index].iloc[:contextLength].values,
-                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                            pred,
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                        futureSample : concurrent.futures._base.Future = executor.submit(
+                            iterator.iterateDataset,
+                            element,
+                            features,
+                            False,
                         )
+                        sample : pd.core.frame.DataFrame = futureSample.result()
+                        if sample is None:
+                            break
 
-                        mae : float = self.__getMAE(
-                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                            pred,
-                        )
+                        if len(sample) < predictionLength + contextLength:
+                            break
 
-                        mse : float = self.__getMSE(
-                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                            pred,
-                        )
+                        for index in range(1,len(features)):
+                            pred : np.ndarray = model.inference(sample[[index]].iloc[:contextLength])
 
-                        if mase:
-                            reportMASE = np.append(reportMASE, [mase])
-                        if mae:
-                            reportMAE = np.append(reportMAE, [mae])
-                            reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
-                        if mse:
-                            reportMSE = np.append(reportMSE, [mse])
-                            reportNMSE = np.append(reportNMSE, [abs(mse / self.__datasetMetadata["std"])])
+                            mase : float = self.__getMASE(
+                                sample[index].iloc[:contextLength].values,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
 
-                        iterations += 1
+                            mae : float = self.__getMAE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            mse : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            if mase:
+                                reportMASE = np.append(reportMASE, [mase])
+                            if mae:
+                                reportMAE = np.append(reportMAE, [mae])
+                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
+                            if mse:
+                                reportMSE = np.append(reportMSE, [mse])
+                                reportNMSE = np.append(reportNMSE, [abs(mse / self.__datasetMetadata["std"])])
+
+                            iterations += 1
 
                 if iterations <= 0:
                     continue

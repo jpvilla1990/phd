@@ -25,6 +25,8 @@ from exceptions.modelException import ModelException
 class MoiraiMoEEmbeddings(nn.Module):
     def __init__(self, moiraRaiModule : MoiraiMoEModule):
         super().__init__()
+        self.__device : str = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.__targetDevice : str = "cpu"
         # Extracting layers from the original model including first normalization layer before attention module
         self.scaler : uni2ts.module.packed_scaler.PackedStdScaler = moiraRaiModule.scaler
         self.inProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.in_proj
@@ -45,17 +47,17 @@ class MoiraiMoEEmbeddings(nn.Module):
         - `in_proj`, `res_proj`, and `feat_proj` apply transformations.
         """
         seqLen : int = math.ceil(len(x) / patchSize) + 1
-        patchSizeTensor : torch.Tensor = torch.full((batchSize, seqLen), patchSize)
+        patchSizeTensor : torch.Tensor = torch.full((batchSize, seqLen), patchSize).to(self.__device)
         target : torch.Tensor = F.pad(
             torch.tensor(x, dtype=torch.float32).reshape(batchSize, seqLen - 1, patchSize),
             (0, 0, 0, 1),
             value=0,
-        )
-        observedMask : torch.Tensor = torch.ones((batchSize, seqLen, patchSize), dtype=torch.bool)
-        predictionMask : torch.Tensor = torch.zeros((batchSize, seqLen), dtype=torch.bool)
+        ).to(self.__device)
+        observedMask : torch.Tensor = torch.ones((batchSize, seqLen, patchSize), dtype=torch.bool).to(self.__device)
+        predictionMask : torch.Tensor = torch.zeros((batchSize, seqLen), dtype=torch.bool).to(self.__device)
         predictionMask[0][:][-1] = True
-        sampleId : torch.Tensor = torch.ones((batchSize, seqLen), dtype=torch.int32)
-        variateId : torch.Tensor = torch.zeros((batchSize, seqLen), dtype=torch.int32)
+        sampleId : torch.Tensor = torch.ones((batchSize, seqLen), dtype=torch.int32).to(self.__device)
+        variateId : torch.Tensor = torch.zeros((batchSize, seqLen), dtype=torch.int32).to(self.__device)
 
         loc, scale = self.scaler(
             target,
@@ -85,7 +87,7 @@ class MoiraiMoEEmbeddings(nn.Module):
         with torch.no_grad():
             output = self(x, patchSize, batchSize)
 
-        return output
+        return output.to(self.__targetDevice)
 
 class MoiraiMoE(FileSystem):
     """

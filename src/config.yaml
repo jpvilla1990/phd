@@ -90,6 +90,34 @@ vectorDatabase:
       datasets: [
         "ET",
       ]
+    moiraiMoECosine_32_16:
+      metric:
+        hnsw:space: "cosine"
+      context: 32
+      prediction: 16
+      datasets: [
+        "ET",
+        "solarEnergy",
+        "power",
+      ]
+    moiraiMoECosine_64_16:
+      metric:
+        hnsw:space: "cosine"
+      context: 64
+      prediction: 16
+      datasets: [
+        "ET",
+        "power",
+      ]
+    moiraiMoECosine_128_16:
+      metric:
+        hnsw:space: "cosine"
+      context: 128
+      prediction: 16
+      datasets: [
+        "ET",
+        "power",
+      ]
     chatTimeAllL2_128_16:
       metric:
         hnsw:space: "l2"

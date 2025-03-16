@@ -43,6 +43,17 @@ class vectorDB(FileSystem):
             metadata=self._getConfig()["vectorDatabase"]["collections"][collection]['metric']
         )
 
+    def deleteCollection(
+            self,
+            collection : str,
+        ):
+        """
+        Method to set collection
+        """
+        self.__chromaClient.delete_collection(
+            name=collection,
+        )
+
     def ingestTimeseries(self, context : np.ndarray, prediction : np.ndarray, dataset : str = ""):
         """
         Method to ingest time series in collection
