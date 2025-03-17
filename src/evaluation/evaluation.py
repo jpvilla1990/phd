@@ -77,11 +77,11 @@ class Evaluation(FileSystem):
 
         return meanAbsoluteError
     
-    def compileReports(self):
+    def compileReports(self, reportOriginName : str = "evaluationReportsMoiraiMoE", reportTargetName : str = "evaluationFinalReport"):
         """
         Method to compile results in a human readable report
         """
-        report : dict = self.__loadReport("evaluationReportsMoiraiMoE")
+        report : dict = self.__loadReport(reportOriginName)
 
         tables : dict = {}
 
@@ -122,7 +122,7 @@ class Evaluation(FileSystem):
                 tables[scenario]["scenario"]["numberIterations"].append(totalIterations)
 
         elements : list = []
-        doc : SimpleDocTemplate = SimpleDocTemplate(self._getFiles()["evaluationFinalReport"], pagesize=letter)
+        doc : SimpleDocTemplate = SimpleDocTemplate(self._getFiles()[reportTargetName], pagesize=letter)
         for scenario in tables:
             df : pd.core.frame.DataFrame = pd.DataFrame(tables[scenario]["scenario"], index=tables[scenario]["indices"]).round(6)
             elements.append(Table([[f"MoiraiMoE Context Lenght, Prediction Lenght = {scenario}"]], colWidths=[400]))
