@@ -82,14 +82,6 @@ vectorDatabase:
       datasets: [
         "solarEnergy",
       ]
-    moiraiMoEETCosine_32_16:
-      metric:
-        hnsw:space: "cosine"
-      context: 32
-      prediction: 16
-      datasets: [
-        "ET",
-      ]
     moiraiMoECosine_32_16:
       metric:
         hnsw:space: "cosine"

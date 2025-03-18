@@ -2,8 +2,8 @@ import random
 import math
 import pandas as pd
 import numpy as np
-from gluonts.dataset.pandas import PandasDataset
 from exceptions.datasetException import DatasetException
+from utils.utils import Utils
 
 class DatasetIterator(object):
     """
@@ -145,27 +145,16 @@ class DatasetIterator(object):
                 f"The sampleSize can not be less than 1"
             )
 
+        if "frame" not in self.__indexIterator[subdataset]:
+            self.__indexIterator[subdataset]["frame"] = Utils.loadPandasFromArrow(self.__datasets[subdataset])
+            self.__indexIterator[subdataset]["frame"].columns = featuresIndices
+
         if sampleSize >= maxNumberSamples:
-            sample = pd.read_csv(
-                self.__datasets[subdataset],
-                sep=self.__datasetConfig["separator"],
-                header=None,
-                decimal=self.__datasetConfig["decimal"],
-                usecols=featuresIndices,
-                skiprows=1,
-            )
+            sample = self.__indexIterator[subdataset]["frame"]
 
         else:
             sampleIndices : list = range(sampleIndex, sampleIndex + sampleSize)
-            sample = pd.read_csv(
-                self.__datasets[subdataset],
-                sep=self.__datasetConfig["separator"],
-                header=None,
-                usecols=featuresIndices,
-                decimal=self.__datasetConfig["decimal"],
-                skiprows=sampleIndex,
-                nrows=sampleSize,
-            )
+            sample = self.__indexIterator[subdataset]["frame"].iloc[sampleIndex-1:sampleIndex + sampleSize-1]
             sample.index = sampleIndices
 
         return sample
@@ -206,6 +195,8 @@ class DatasetIterator(object):
             category = "train"
 
         if len(self.__indexIterator[subdataset][category]) == 0:
+            if "frame" in self.__indexIterator[subdataset]:
+                del self.__indexIterator[subdataset]["frame"]
             return None
 
         sample : pd.core.frame.Dataframe = self.loadSample(

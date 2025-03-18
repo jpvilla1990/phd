@@ -201,8 +201,14 @@ class MoiraiMoE(FileSystem):
         timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
 
         sample.columns = ["datetime", "value"]
-        queried : np.ndarray = self.queryVector(sample["value"], k=1)
-        newSample : list = queried[0][0].tolist() + sample["value"].tolist()
+        queried : np.ndarray = self.queryVector(sample["value"], k=1)[0][0]
+        sampleNp : np.ndarray = sample["value"].to_numpy()
+        queriedMean, queriedStd = np.mean(queried), np.std(queried)
+        sampleMean, sampleStd = np.mean(sampleNp), np.std(sampleNp)
+
+        queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
+        queryDenormed : np.ndarray = (queryNormed * sampleStd) + sampleMean
+        newSample : list = queryDenormed.tolist() + sampleNp.tolist()
         sampleGluonts : ListDataset = ListDataset(
             [{
                 "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
@@ -211,7 +217,7 @@ class MoiraiMoE(FileSystem):
             freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
         )
         return next(iter(self.__predictor.predict(sampleGluonts)))
-    
+
     def plotSample(self, sample : pd.core.frame.DataFrame, groundTruth : pd.core.frame.DataFrame, dataset : str):
         """
         Method to plot sample, first columns must be the timestamp and second is the timeseries

@@ -1,0 +1,75 @@
+from evaluation.evaluation import Evaluation
+
+evaluation : Evaluation = Evaluation()
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="ET",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="ET",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="ET",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="solarEnergy",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="power",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="power",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="power",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="m4-monthly",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="m4-monthly",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="m4-monthly",
+)
+
+report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoE",reportTargetName="evaluationFinalReport")
