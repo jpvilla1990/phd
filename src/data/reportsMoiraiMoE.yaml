@@ -207,6 +207,24 @@ ET:
         median: 0.010606932053613833
       numberIterations: 97447
 m4-monthly:
+  128,16:
+    m4-monthly:
+      MAE:
+        mean: 350.3516019116727
+        median: 141.2646430273437
+      MASE:
+        mean: 2.8107363639489913
+        median: 1.5833890586555106
+      MSE:
+        mean: 891893.6375274906
+        median: 28955.6281670928
+      normalizedMAE:
+        mean: 0.10643285693851803
+        median: 0.0429146019591788
+      normalizedMSE:
+        mean: 0.08231069913564373
+        median: 0.0026722446467409484
+      numberIterations: 1003555
   32,16:
     m4-monthly:
       MAE:

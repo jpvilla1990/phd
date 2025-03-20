@@ -54,6 +54,16 @@ datasets:
     timeformat: "%d.%m.%Y %H:%M"
     subdatasets:
       power : ["power Generation and consumption.csv"]
+  traffic:
+    url: "https://www.kaggle.com/datasets/leonardo00/istanbul-traffic-index"
+    type: "kaggle"
+    datasetName: "leonardo00/istanbul-traffic-index"
+    format: "csv"
+    separator: ","
+    decimal: "."
+    timeformat: "%Y-%m-%d %H:%M:%S"
+    subdatasets:
+      traffic : ["istanbul_traffic.csv"]
 monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
