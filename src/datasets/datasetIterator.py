@@ -28,40 +28,25 @@ class DatasetIterator(object):
         """
         Method to get available features
         """
-        datasetMetadata : dict = {
-            "numberFeatures" : 0,
-            "numberObservations" : 0,
-            "mean" : 0.0,
-            "std" : 0.0,
-        }
 
         if subdataset not in self.__datasets:
             raise DatasetException(
                 f"Subdataset {subdataset} does not exists in dataset {self}"
             )
 
-        features : list = pd.read_csv(
-            self.__datasets[subdataset],
-            nrows=0,
-            sep=self.__datasetConfig["separator"],
-            decimal=self.__datasetConfig["decimal"],
-        ).columns.tolist()
+        dataframe : pd.core.frame.DataFrame = Utils.loadPandasFromArrow(self.__datasets[subdataset])
 
-        datasetMetadata["numberFeatures"] = len(features)
-        for chunk in pd.read_csv(
-            self.__datasets[subdataset],
-            sep=self.__datasetConfig["separator"],
-            decimal=self.__datasetConfig["decimal"],
-            chunksize=10000,
-        ):
-            datasetMetadata["numberObservations"] += len(chunk)
-            datasetMetadata["mean"] += chunk[features[1:]].values.mean() * len(chunk)
-            datasetMetadata["std"] += chunk[features[1:]].values.std() * len(chunk)
+        features : list = dataframe.columns.tolist()
 
-        datasetMetadata["mean"] /= datasetMetadata["numberObservations"]
-        datasetMetadata["std"] /= datasetMetadata["numberObservations"]
+        mean = dataframe[features[1:]].stack().mean()
+        sdt = dataframe[features[1:]].stack().std()
 
-        return datasetMetadata
+        return {
+            "numberFeatures" : len(features),
+            "numberObservations" : len(dataframe),
+            "mean" : mean,
+            "std" : sdt,
+        }
 
     def setSampleSize(self, sampleSize : int):
         """

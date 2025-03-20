@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import concurrent.futures
+import random
 from gluonts.model.forecast import SampleForecast
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
@@ -18,7 +19,7 @@ class Evaluation(FileSystem):
     """
     def __init__(self):
         super().__init__()
-
+        random.seed(self._getConfig()["seed"])
         self.__dataset : Datasets = Datasets()
         self.__datasetMetadata : dict = {}
 
@@ -125,7 +126,7 @@ class Evaluation(FileSystem):
         doc : SimpleDocTemplate = SimpleDocTemplate(self._getFiles()[reportTargetName], pagesize=letter)
         for scenario in tables:
             df : pd.core.frame.DataFrame = pd.DataFrame(tables[scenario]["scenario"], index=tables[scenario]["indices"]).round(6)
-            elements.append(Table([[f"MoiraiMoE Context Lenght, Prediction Lenght = {scenario}"]], colWidths=[400]))
+            elements.append(Table([[f"{reportOriginName} Context Lenght, Prediction Lenght = {scenario}"]], colWidths=[400]))
 
             tableData = [["Index"] + df.columns.tolist()]
             for index, row in df.iterrows():
@@ -205,7 +206,12 @@ class Evaluation(FileSystem):
                         if len(sample) < predictionLength + contextLength:
                             break
 
-                        for index in range(1,len(features)):
+                        indexes : list = [index for index in range(1,len(features))]
+                        random.shuffle(indexes)
+                        for i in range(len(indexes)):
+                            index : int = indexes[i]
+                            if sample[index].isna().any().any():
+                                continue
                             pred : SampleForecast = model.inference(sample[[0, index]].iloc[:contextLength], dataset)
 
                             mase : float = self.__getMASE(
@@ -336,7 +342,12 @@ class Evaluation(FileSystem):
                         if len(sample) < predictionLength + contextLength:
                             break
 
-                        for index in range(1,len(features)):
+                        indexes : list = [index for index in range(1,len(features))]
+                        random.shuffle(indexes)
+                        for i in range(len(indexes)):
+                            index : int = indexes[i]
+                            if sample[index].isna().any().any():
+                                continue
                             pred : SampleForecast = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset)
 
                             mase : float = self.__getMASE(
@@ -463,7 +474,12 @@ class Evaluation(FileSystem):
                         if len(sample) < predictionLength + contextLength:
                             break
 
-                        for index in range(1,len(features)):
+                        indexes : list = [index for index in range(1,len(features))]
+                        random.shuffle(indexes)
+                        for i in range(len(indexes)):
+                            index : int = indexes[i]
+                            if sample[index].isna().any().any():
+                                continue
                             pred : np.ndarray = model.inference(sample[[index]].iloc[:contextLength])
 
                             mase : float = self.__getMASE(

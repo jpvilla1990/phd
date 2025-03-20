@@ -15,12 +15,16 @@ class MonashPreparer(FileSystem):
         """
         Method to prepare csv with monash dataset
         """
-        newDatasetConfig : dict = {}
         separator : str = self.__dataset["separator"]
         decimal : str = self.__dataset["decimal"]
         period : int = TimeManager.getPeriodSeconds(self.__dataset["periodicity"])
 
         for subdataset in datasetConfig:
+            timestamp : str = ""
+            dataframeDict : dict = {
+                "timestamp" : None,
+            }
+            maxLength : int = 0
             datasetLineFound = False
             with open(datasetConfig[subdataset], "r", encoding="utf-8", errors="replace") as datasetFile:
                 while True:
@@ -35,26 +39,30 @@ class MonashPreparer(FileSystem):
                             break
                         feature : str = nextLine.split(":")[0]
                         data : list = nextLine.split(f"{feature}:")[1].split(separator)
-                        timestamp : str = data[0].split(":")[0]
-                        samples : list = data[1:]
+                        timestamp = data[0].split(":")[0]
+                        samples : list = [
+                            float(sample.replace(separator, ".")) for sample in data[1:]
+                        ]
+                        dataframeDict[feature] = pd.Series(samples)
 
-                        subdatasetPath : str = datasetConfig[subdataset].split(".")[0] + f"_{feature}.csv"
+                        if len(samples) > maxLength:
+                            maxLength = len(samples)
 
-                        df : pd.core.frame.DataFrame = pd.DataFrame(columns=["timestamp", feature])
+            timestamps : list = []
+            for _ in range(maxLength):
+                timestamps.append(timestamp)
+                timestamp = TimeManager.nextTimeStamp(
+                    timestamp,
+                    self._getConfig()["monash"]["timeFormat"],
+                    period,
+                )
 
-                        for index in range(len(samples)):
-                            df.loc[index] = [timestamp, float(samples[index].replace(separator, "."))]
+            dataframeDict["timestamp"] = pd.Series(timestamps)
 
-                            timestamp = TimeManager.nextTimeStamp(
-                                timestamp,
-                                self._getConfig()["monash"]["timeFormat"],
-                                period,
-                            )
+            dataframe: pd.core.frame.DataFrame = pd.DataFrame(dataframeDict)
 
-                        df.to_csv(subdatasetPath, sep=separator, decimal=decimal, index=False)
-                        Utils.savePandasAsArrow(df, subdatasetPath)
-                        newDatasetConfig.update({
-                            feature : subdatasetPath,
-                        })
+            datasetConfig[subdataset] = datasetConfig[subdataset].split(".")[0] + ".csv"
+            dataframe.to_csv(datasetConfig[subdataset], sep=separator, decimal=decimal, index=False)
+            Utils.savePandasAsArrow(dataframe, datasetConfig[subdataset])
 
-        return newDatasetConfig
+        return datasetConfig

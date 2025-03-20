@@ -91,6 +91,7 @@ vectorDatabase:
         "ET",
         "solarEnergy",
         "power",
+        "m4-monthly",
       ]
     moiraiMoECosine_64_16:
       metric:
@@ -100,6 +101,7 @@ vectorDatabase:
       datasets: [
         "ET",
         "power",
+        "m4-monthly",
       ]
     moiraiMoECosine_128_16:
       metric:
@@ -109,6 +111,7 @@ vectorDatabase:
       datasets: [
         "ET",
         "power",
+        "m4-monthly",
       ]
     chatTimeAllL2_128_16:
       metric:
