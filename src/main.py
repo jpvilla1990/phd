@@ -2,42 +2,36 @@ from evaluation.evaluation import Evaluation
 
 CONTEXT : int = 32
 PREDICTION : int = 16
-NUMBER_SAMPLES : int = 100
-DATASET : str = "traffic"
+DATASET : str = "ET"
 
 evaluation : Evaluation = Evaluation()
 
-report : dict = evaluation.evaluateMoiraiMoE(
+report : dict = evaluation.evaluateChatTimes(
     CONTEXT,
     PREDICTION,
-    NUMBER_SAMPLES,
     DATASET,
 )
 
 CONTEXT : int = 64
 PREDICTION : int = 16
-NUMBER_SAMPLES : int = 100
-DATASET : str = "traffic"
+DATASET : str = "ET"
 
 evaluation : Evaluation = Evaluation()
 
-report : dict = evaluation.evaluateMoiraiMoE(
+report : dict = evaluation.evaluateChatTimes(
     CONTEXT,
     PREDICTION,
-    NUMBER_SAMPLES,
     DATASET,
 )
 
 CONTEXT : int = 128
 PREDICTION : int = 16
-NUMBER_SAMPLES : int = 100
-DATASET : str = "traffic"
+DATASET : str = "ET"
 
 evaluation : Evaluation = Evaluation()
 
-report : dict = evaluation.evaluateMoiraiMoE(
+report : dict = evaluation.evaluateChatTimes(
     CONTEXT,
     PREDICTION,
-    NUMBER_SAMPLES,
     DATASET,
 )

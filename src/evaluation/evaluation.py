@@ -418,7 +418,7 @@ class Evaluation(FileSystem):
                 continue
 
         return report
-    
+
     def evaluateChatTimes(
             self,
             contextLength : int,

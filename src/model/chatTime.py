@@ -11,14 +11,14 @@ class ChatTimeModel(FileSystem):
     """
     def __init__(
         self,
-        contextLenght : int = 32,
+        contextLength : int = 32,
         predictionLength : int = 16,
         modelPath : str = "ChengsenWang/ChatTime-1-7B-Chat",
     ):
         super().__init__()
-        self.__model : ChatTime = ChatTime(hist_len=contextLenght, pred_len=predictionLength, model_path=modelPath)
+        self.__model : ChatTime = ChatTime(hist_len=contextLength, pred_len=predictionLength, model_path=modelPath)
 
-        self.__contextLenght : int = contextLenght
+        self.__contextLength : int = contextLength
         self.__predictionlength : int = predictionLength
 
     def inference(self, sample : pd.core.frame.DataFrame) -> np.ndarray:
@@ -44,13 +44,13 @@ class ChatTimeModel(FileSystem):
 
         prediction : np.ndarray = self.__model.predict(sample["value"].values)
 
-        histX : np.ndarray = np.linspace(0, self.__contextLenght-1, self.__contextLenght)
-        predX : np.ndarray = np.linspace(self.__contextLenght, self.__contextLenght+self.__predictionlength-1, self.__predictionlength)
+        histX : np.ndarray = np.linspace(0, self.__contextLength-1, self.__contextLength)
+        predX : np.ndarray = np.linspace(self.__contextLength, self.__contextLength+self.__predictionlength-1, self.__predictionlength)
 
         plt.figure(figsize=(8, 2), dpi=500)
         plt.plot(histX, sample["value"].values, color='#000000')
         plt.plot(predX, groundTruth["value"].values, color='#000000', label='true')
         plt.plot(predX, prediction, color='#FF7F0E', label='pred')
-        plt.axvline(self.__contextLenght, color='red')
+        plt.axvline(self.__contextLength, color='red')
         plt.legend(loc="upper left")
         plt.show()
