@@ -67,6 +67,7 @@ datasets:
 monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
+  maxNumberSamplesPerSubdataset: 100000
   collections:
     moiraiMoEAllL2_128_16:
       metric:

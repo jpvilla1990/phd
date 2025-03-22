@@ -35,6 +35,7 @@ class VectorDBIngestion(FileSystem):
         """
         Method to ingest dataset in a collection
         """
+        maxNumberSamplesPerSubdataset : int = self._getConfig()["vectorDB"]["maxNumberSamplesPerSubdataset"]
         model : MoiraiMoE = MoiraiMoE(
             predictionLength = predictionLength,
             contextLength = contextLength,
@@ -56,10 +57,12 @@ class VectorDBIngestion(FileSystem):
         for element in subdatasets:
             try:
                 print(f"Subdataset {element}")
+                sampleNumber : int = 0
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
-                while True:
+                running : bool = True
+                while running:
                     sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=True)
                     if sample is None:
                         break
@@ -74,6 +77,11 @@ class VectorDBIngestion(FileSystem):
                         )
 
                         iterations += 1
+                        sampleNumber += 1
+
+                        if sampleNumber >= maxNumberSamplesPerSubdataset:
+                            running = False
+                            break
 
                 if iterations <= 0:
                     continue
