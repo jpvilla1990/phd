@@ -35,7 +35,7 @@ class VectorDBIngestion(FileSystem):
         """
         Method to ingest dataset in a collection
         """
-        maxNumberSamplesPerSubdataset : int = self._getConfig()["vectorDB"]["maxNumberSamplesPerSubdataset"]
+        maxNumberSamplesPerSubdataset : int = self._getConfig()["vectorDatabase"]["maxNumberSamplesPerSubdataset"]
         model : MoiraiMoE = MoiraiMoE(
             predictionLength = predictionLength,
             contextLength = contextLength,
