@@ -335,3 +335,40 @@ solarEnergy:
         mean: 0.29379124930314265
         median: 0.1879951504122327
       numberIterations: 137
+traffic:
+  32,16:
+    traffic:
+      MAE:
+        mean: 1.6321891425214199
+        median: 1.240143857896328
+      MASE:
+        mean: 8.542591911920471
+        median: 5.673852271503872
+      MSE:
+        mean: 9.302922614726834
+        median: 2.4498910598813666
+      normalizedMAE:
+        mean: 0.06963609730353483
+        median: 0.05290978607138752
+      normalizedMSE:
+        mean: 0.016933521602651932
+        median: 0.004459381734614496
+      numberIterations: 504201
+  64,16:
+    traffic:
+      MAE:
+        mean: 1.5783676630776675
+        median: 1.1955171823501587
+      MASE:
+        mean: 7.992876571797149
+        median: 5.3173588514328
+      MSE:
+        mean: 8.590477096779665
+        median: 2.299309724100567
+      normalizedMAE:
+        mean: 0.06733984518303887
+        median: 0.05100582320353898
+      normalizedMSE:
+        mean: 0.015636702090279248
+        median: 0.004185288053735778
+      numberIterations: 504180
