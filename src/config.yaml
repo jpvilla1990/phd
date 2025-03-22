@@ -102,6 +102,7 @@ vectorDatabase:
         "solarEnergy",
         "power",
         "m4-monthly",
+        "traffic",
       ]
     moiraiMoECosine_64_16:
       metric:
@@ -112,6 +113,7 @@ vectorDatabase:
         "ET",
         "power",
         "m4-monthly",
+        "traffic",
       ]
     moiraiMoECosine_128_16:
       metric:
@@ -122,6 +124,7 @@ vectorDatabase:
         "ET",
         "power",
         "m4-monthly",
+        "traffic",
       ]
     chatTimeAllL2_128_16:
       metric:

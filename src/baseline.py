@@ -58,16 +58,12 @@ report : dict = evaluation.evaluateMoiraiMoE(
     dataset="traffic",
 )
 
-evaluation : Evaluation = Evaluation()
-
 report : dict = evaluation.evaluateMoiraiMoE(
     contextLength=64,
     predictionLength=16,
     numberSamples=100,
     dataset="traffic",
 )
-
-evaluation : Evaluation = Evaluation()
 
 report : dict = evaluation.evaluateMoiraiMoE(
     contextLength=128,
