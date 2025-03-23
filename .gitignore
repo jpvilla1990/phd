@@ -3,6 +3,7 @@ __pycache__
 src/ChatTime
 src/data/*
 !src/data/reportsMoiraiMoE.yaml
+!src/data/reportsMoiraiMoERag.yaml
 !src/data/reportsChatTime.yaml
 !src/data/reports.pdf
 !src/data/reportsRag.pdf

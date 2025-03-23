@@ -49,7 +49,7 @@ class VectorDBIngestion(FileSystem):
             self._getFiles()["datasets"]
         )
         subdatasets : list = list(datasetConfig[dataset].keys())
-        
+
         iterations : int = 0
 
         model.deleteDataset(dataset)

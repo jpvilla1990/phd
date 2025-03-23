@@ -64,6 +64,8 @@ datasets:
     timeformat: "%Y-%m-%d %H:%M:%S"
     subdatasets:
       traffic : ["istanbul_traffic.csv"]
+  cloud:
+    url: https://github.com/BizITObs/BizITObservabilityData/tree/main/Complete/Time%20Series/L2C
 monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
