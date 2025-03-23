@@ -32,13 +32,14 @@ class vectorDB(FileSystem):
     def setCollection(
             self,
             collection : str,
+            dataset : str,
             embeddingFunction : Callable = None,
         ):
         """
         Method to set collection
         """
         self.__collection : chromadb.api.models.Collection.Collection = self.__chromaClient.get_or_create_collection(
-            name=collection,
+            name=f"{collection}_{dataset}",
             embedding_function=CustomEmbeddingFunction(embeddingFunction),
             metadata=self._getConfig()["vectorDatabase"]["collections"][collection]['metric']
         )
@@ -78,17 +79,26 @@ class vectorDB(FileSystem):
             where={"dataset" : dataset}
         )
 
-    def queryTimeseries(self, query : np.ndarray, k : int = 1) -> tuple:
+    def queryTimeseries(self, query : np.ndarray, k : int = 1, metadata : dict = {}) -> tuple:
         """
         Method to query element from vector database
 
         return list[context + prediction], scores
         """
         queryStr : str = ",".join(map(str, query.tolist()))
-        queried : dict = self.__collection.query(
-            n_results=k,
-            query_texts=[queryStr]
-        )
+        queried : dict = {}
+        if metadata:
+            queried = self.__collection.query(
+                n_results=k,
+                query_texts=[queryStr],
+                where=metadata,
+            )
+        else:
+            queried = self.__collection.query(
+                n_results=k,
+                query_texts=[queryStr],
+            )
+
         documents : list = queried["documents"][0]
         metadatas : list = queried["metadatas"][0]
         scores : list = []

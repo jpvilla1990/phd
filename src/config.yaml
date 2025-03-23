@@ -1,5 +1,6 @@
 seed: 42
 trainPartition: 0.8
+maxTestSamples: 10000
 datasets:
   ET:
     url: "https://github.com/zhouhaoyi/ETDataset"
@@ -69,7 +70,7 @@ datasets:
 monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
-  maxNumberSamplesPerSubdataset: 100000
+  maxNumberSamples: 10000
   collections:
     moiraiMoEAllL2_128_16:
       metric:

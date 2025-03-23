@@ -162,6 +162,7 @@ class Evaluation(FileSystem):
         Method to evaluate model
         """
         print(f"Evaluating Dataset {dataset}")
+        maxTestSamples : int = self._getConfig()["maxTestSamples"]
         subdatasets : list = []
         model : MoiraiMoE = MoiraiMoE(
             predictionLength = predictionLength,
@@ -180,6 +181,7 @@ class Evaluation(FileSystem):
         else:
             subdatasets.append(subdataset)
 
+        maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
             try:
                 print(f"Subdataset {element}")
@@ -189,10 +191,11 @@ class Evaluation(FileSystem):
                 reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
+                running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
-                while True:
+                while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
                         futureSample : concurrent.futures._base.Future = executor.submit(
                             iterator.iterateDataset,
@@ -240,6 +243,10 @@ class Evaluation(FileSystem):
                                 reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
                             iterations += 1
+
+                            if iterations >= maxTestSamplesPerSubdataset:
+                                running = False
+                                break
 
                 if iterations <= 0:
                     continue
@@ -296,6 +303,7 @@ class Evaluation(FileSystem):
         Method to evaluate model
         """
         print(f"Evaluating Dataset {dataset}")
+        maxTestSamples : int = self._getConfig()["maxTestSamples"]
         subdatasets : list = []
         model : MoiraiMoE = MoiraiMoE(
             predictionLength = predictionLength,
@@ -304,6 +312,7 @@ class Evaluation(FileSystem):
             rag=True,
             collectionName=collection,
         )
+        model.setRagCollection(collectionName, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
         self.__datasetMetadata = iterator.getDatasetMetadata()
         iterator.setSampleSize(contextLength + predictionLength)
@@ -316,6 +325,7 @@ class Evaluation(FileSystem):
         else:
             subdatasets.append(subdataset)
 
+        maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
             try:
                 print(f"Subdataset {element}")
@@ -325,10 +335,11 @@ class Evaluation(FileSystem):
                 reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
+                running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
-                while True:
+                while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
                         futureSample : concurrent.futures._base.Future = executor.submit(
                             iterator.iterateDataset,
@@ -376,6 +387,10 @@ class Evaluation(FileSystem):
                                 reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
                             iterations += 1
+
+                            if iterations >= maxTestSamplesPerSubdataset:
+                                running = False
+                                break
 
                 if iterations <= 0:
                     continue

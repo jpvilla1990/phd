@@ -35,13 +35,15 @@ class VectorDBIngestion(FileSystem):
         """
         Method to ingest dataset in a collection
         """
-        maxNumberSamplesPerSubdataset : int = self._getConfig()["vectorDatabase"]["maxNumberSamplesPerSubdataset"]
+        print(f"Ingesting dataset {dataset} in collection {collectionName}_{dataset}")
+        maxNumberSamples : int = self._getConfig()["vectorDatabase"]["maxNumberSamples"]
         model : MoiraiMoE = MoiraiMoE(
             predictionLength = predictionLength,
             contextLength = contextLength,
             numSamples = 100,
             collectionName = collectionName,
         )
+        model.setRagCollection(collectionName, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
         iterator.setSampleSize(contextLength + predictionLength)
 
@@ -53,7 +55,7 @@ class VectorDBIngestion(FileSystem):
         iterations : int = 0
 
         model.deleteDataset(dataset)
-
+        maxSamplesPerSubdataset : int = int(maxNumberSamples / len(subdatasets))
         for element in subdatasets:
             try:
                 print(f"Subdataset {element}")
@@ -79,7 +81,7 @@ class VectorDBIngestion(FileSystem):
                         iterations += 1
                         sampleNumber += 1
 
-                        if sampleNumber >= maxNumberSamplesPerSubdataset:
+                        if sampleNumber >= maxSamplesPerSubdataset:
                             running = False
                             break
 
@@ -91,10 +93,10 @@ class VectorDBIngestion(FileSystem):
                 continue
 
         databaseTracking : dict = self.__loadDatabaseTracking()
-        if collectionName not in databaseTracking:
-            databaseTracking[collectionName] = {}
+        if f"{collectionName}_{dataset}" not in databaseTracking:
+            databaseTracking[f"{collectionName}_{dataset}"] = {}
 
-        databaseTracking[collectionName][dataset] = iterations
+        databaseTracking[f"{collectionName}_{dataset}"][dataset] = iterations
         self.__writeDatabaseTracking(databaseTracking)
 
     def ingestDatasetsMoiraiMoE(self, collection : str):
@@ -105,8 +107,9 @@ class VectorDBIngestion(FileSystem):
 
         for dataset in collections["datasets"]:
             databaseTracking : dict = self.__loadDatabaseTracking()
-            if collection in databaseTracking:
-                if dataset in databaseTracking[collection]: # Skip if the dataset is already ingested in collection
+            collectionDataset : str = f"{collection}_{dataset}"
+            if collectionDataset in databaseTracking:
+                if dataset in databaseTracking[collectionDataset]: # Skip if the dataset is already ingested in collection
                     continue
 
             self.ingestDatasetMoiraiMoE(

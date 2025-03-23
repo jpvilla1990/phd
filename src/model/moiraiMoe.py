@@ -139,8 +139,14 @@ class MoiraiMoE(FileSystem):
 
         self.__moiraiMoEEmbeddings : MoiraiMoEEmbeddings = MoiraiMoEEmbeddings(self.__model.module)
         self.__vectorDB : vectorDB = vectorDB()
+
+    def setRagCollection(self, collectionName : str, dataset : str):
+        """
+        Method to set RAG collection
+        """
         self.__vectorDB.setCollection(
             collectionName,
+            dataset,
             self.__moiraiMoEEmbeddings.inference,
         )
 
@@ -166,11 +172,11 @@ class MoiraiMoE(FileSystem):
         """
         self.__vectorDB.deleteDataset(dataset)
 
-    def queryVector(self, sample : np.ndarray, k : int = 1) -> tuple:
+    def queryVector(self, sample : np.ndarray, k : int = 1, metadata : dict = {}) -> tuple:
         """
         Method to query vector
         """
-        return self.__vectorDB.queryTimeseries(sample, k)
+        return self.__vectorDB.queryTimeseries(sample, k, metadata)
 
     def inference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
         """
@@ -201,7 +207,7 @@ class MoiraiMoE(FileSystem):
         timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
 
         sample.columns = ["datetime", "value"]
-        queried : np.ndarray = self.queryVector(sample["value"], k=1)[0][0]
+        queried : np.ndarray = self.queryVector(sample["value"], k=1, metadata={"dataset" : dataset})[0][0]
         sampleNp : np.ndarray = sample["value"].to_numpy()
         queriedMean, queriedStd = np.mean(queried), np.std(queried)
         sampleMean, sampleStd = np.mean(sampleNp), np.std(sampleNp)
