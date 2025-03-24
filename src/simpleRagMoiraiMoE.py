@@ -88,4 +88,27 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_128_16",
 )
 
-report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERag",reportTargetName="evaluationFinalReportRag")
+report : dict = evaluation.evaluateMoiraiMoERag(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="traffic",
+    collection="moiraiMoECosine_32_16",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERag(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="traffic",
+    collection="moiraiMoECosine_64_16",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERag(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="traffic",
+    collection="moiraiMoECosine_128_16",
+)
+report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERag",reportTargetName="evaluationFinalReportMoiraiMoERag")

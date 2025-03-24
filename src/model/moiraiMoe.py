@@ -105,7 +105,6 @@ class MoiraiMoE(FileSystem):
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
         collectionName : str = "moiraiMoEAllCosine_32_16",
-        rag : bool = False
     ):
         super().__init__()
         self.__datasetsConfig : dict = self._getConfig()["datasets"]
@@ -120,8 +119,8 @@ class MoiraiMoE(FileSystem):
             "Y" : 60 * 60 * 24 * 365,
         }
 
-        if rag:
-            contextLength += contextLength + predictionLength
+        self.__scoreThreshold : float = self._getConfig()["vectorDatabase"]["scoreThreshold"]
+        self.__k : int = self._getConfig()["vectorDatabase"]["k"]
 
         self.__contextLength : int = contextLength
         self.__model : MoiraiMoEForecast = MoiraiMoEForecast(
@@ -135,7 +134,20 @@ class MoiraiMoE(FileSystem):
             past_feat_dynamic_real_dim=pastFeatDynamicRealDim,
         )
 
+        self.__modelRag : MoiraiMoEForecast = MoiraiMoEForecast(
+            module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
+            prediction_length=predictionLength,
+            context_length=contextLength + contextLength + predictionLength,
+            patch_size=patchSize,
+            num_samples=numSamples,
+            target_dim=targetDim,
+            feat_dynamic_real_dim=featDynamicRealDim,
+            past_feat_dynamic_real_dim=pastFeatDynamicRealDim,
+        )
+
         self.__predictor : PyTorchPredictor = self.__model.create_predictor(batch_size=batchSize)
+
+        self.__predictorRag : PyTorchPredictor = self.__modelRag.create_predictor(batch_size=batchSize)
 
         self.__moiraiMoEEmbeddings : MoiraiMoEEmbeddings = MoiraiMoEEmbeddings(self.__model.module)
         self.__vectorDB : vectorDB = vectorDB()
@@ -178,6 +190,22 @@ class MoiraiMoE(FileSystem):
         """
         return self.__vectorDB.queryTimeseries(sample, k, metadata)
 
+    def mergeQueries(self, query : tuple) -> np.ndarray:
+        """
+        Method to merge queries
+        """
+        merged : np.ndarray = np.zeros_like(query[0][0])
+        nElements : int = 0
+        for index in range(len(query[0])):
+            if query[1][index] > self.__scoreThreshold:
+                merged += query[0][index]
+                nElements += 1
+
+        if nElements == 0:
+            return None
+        else:
+            return merged / nElements
+
     def inference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
@@ -207,22 +235,33 @@ class MoiraiMoE(FileSystem):
         timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
 
         sample.columns = ["datetime", "value"]
-        queried : np.ndarray = self.queryVector(sample["value"], k=1, metadata={"dataset" : dataset})[0][0]
-        sampleNp : np.ndarray = sample["value"].to_numpy()
-        queriedMean, queriedStd = np.mean(queried), np.std(queried)
-        sampleMean, sampleStd = np.mean(sampleNp), np.std(sampleNp)
+        queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
+        queried : np.ndarray = self.mergeQueries(queriedVectors)
+        if queried is not None:
+            sampleNp : np.ndarray = sample["value"].to_numpy()
+            queriedMean, queriedStd = np.mean(queried), np.std(queried)
+            sampleMean, sampleStd = np.mean(sampleNp), np.std(sampleNp)
 
-        queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
-        queryDenormed : np.ndarray = (queryNormed * sampleStd) + sampleMean
-        newSample : list = queryDenormed.tolist() + sampleNp.tolist()
-        sampleGluonts : ListDataset = ListDataset(
-            [{
-                "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
-                "target": newSample,
-            }],
-            freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
-        )
-        return next(iter(self.__predictor.predict(sampleGluonts)))
+            queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
+            queryDenormed : np.ndarray = (queryNormed * sampleStd) + sampleMean
+            newSample : list = queryDenormed.tolist() + sampleNp.tolist()
+            sampleGluonts : ListDataset = ListDataset(
+                [{
+                    "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+                    "target": newSample,
+                }],
+                freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
+            )
+            return next(iter(self.__predictorRag.predict(sampleGluonts)))
+        else:
+            sampleGluonts : ListDataset = ListDataset(
+                [{
+                    "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+                    "target": sample["value"].tolist(),"target": newSample,
+                }],
+                freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
+            )
+            return next(iter(self.__predictor.predict(sampleGluonts)))
 
     def plotSample(self, sample : pd.core.frame.DataFrame, groundTruth : pd.core.frame.DataFrame, dataset : str):
         """

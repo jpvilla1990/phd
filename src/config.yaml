@@ -71,6 +71,8 @@ monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
   maxNumberSamples: 10000
+  scoreThreshold : 0.1
+  k : 10
   collections:
     moiraiMoEAllL2_128_16:
       metric:
@@ -147,5 +149,9 @@ files:
   databaseTracking: ["data", "databaseTracking.yaml"]
   evaluationReportsMoiraiMoE: ["data", "reportsMoiraiMoE.yaml"]
   evaluationReportsMoiraiMoERag: ["data", "reportsMoiraiMoERag.yaml"]
-  evaluationFinalReport: ["data" ,"reports.pdf"]
-  evaluationFinalReportRag: ["data", "reportsRag.pdf"]
+  evaluationReportsChatTime: ["data", "reportsChatTime.yaml"]
+  evaluationReportsChatTimeRag: ["data", "reportsChatTimeRag.yaml"]
+  evaluationFinalReportMoiraiMoE: ["data" ,"reportsMoiraiMoE.pdf"]
+  evaluationFinalReportChatTime: ["data" ,"reportsChatTime.pdf"]
+  evaluationFinalReportMoiraiMoERag: ["data", "reportsMoiraiMoERag.pdf"]
+  evaluationFinalReportChatTimeRag: ["data", "reportsChatTimeRag.pdf"]

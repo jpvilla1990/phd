@@ -71,7 +71,9 @@ class VectorDBIngestion(FileSystem):
                     if len(sample) < predictionLength + contextLength:
                         break
 
-                    for index in range(1,len(features)):
+                    for index in range(1,len(features)): 
+                        if sample[index].isna().any().any():
+                            continue
                         model.ingestVector(
                             sample[index].iloc[:contextLength].values,
                             sample[index].iloc[contextLength:contextLength+predictionLength].values,

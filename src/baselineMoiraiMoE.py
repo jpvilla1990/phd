@@ -93,4 +93,4 @@ report : dict = evaluation.evaluateMoiraiMoE(
     dataset="m4-monthly",
 )
 
-report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoE",reportTargetName="evaluationFinalReport")
+report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoE",reportTargetName="evaluationFinalReportMoiraiMoE")
