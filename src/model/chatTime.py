@@ -10,6 +10,7 @@ import torch
 import torch.nn as nn
 
 from chat_time.model.model import ChatTime
+from chat_time.utils.tools import Discretizer, Serializer
 from utils.fileSystem import FileSystem
 
 from vectorDB.vectorDB import vectorDB
@@ -22,9 +23,8 @@ class ChatTimeEmbeddings(nn.Module):
         self.__targetDevice : str = "cpu"
         self.model : LlamaForCausalLM = chatTime.model
         self.tokenizer : LlamaTokenizer = chatTime.tokenizer
-
-        x = self.tokenizer(a)
-        y = self.model.model.embed_tokens(torch.Tensor(x["input_ids"]).long().to(self.__device))
+        self.discretizer : Discretizer = chatTime.discretizer
+        self.serializer : Serializer = chatTime.serializer
 
     def forward(
             self,
@@ -33,8 +33,12 @@ class ChatTimeEmbeddings(nn.Module):
         """
         Define the forward pass based on the selected layers.
         """
+        x : np.ndarray = self.discretizer.discretize(x)
+        x : str = self.serializer.serialize(x)
         x : list = self.tokenizer(x)["input_ids"]
-        return self.model.model.embed_tokens(torch.Tensor(x).long().to(self.__device))
+        x : torch.Tensor = self.model.model.embed_tokens(torch.Tensor(x).long().to(self.__device))
+        normalizer : nn.LayerNorm = nn.LayerNorm(x.shape[1:]).to(self.__device).to(torch.float16)
+        return normalizer(x)
 
     def inference(
             self,
@@ -58,9 +62,13 @@ class ChatTimeModel(FileSystem):
         contextLength : int = 32,
         predictionLength : int = 16,
         modelPath : str = "ChengsenWang/ChatTime-1-7B-Chat",
+        collectionName : str = "chatTimeCosine_128_16",
     ):
         super().__init__()
         self.__model : ChatTime = ChatTime(hist_len=contextLength, pred_len=predictionLength, model_path=modelPath)
+
+        self.__scoreThreshold : float = self._getConfig()["vectorDatabase"]["scoreThreshold"]
+        self.__k : int = self._getConfig()["vectorDatabase"]["k"]
 
         self.__contextLength : int = contextLength
         self.__predictionlength : int = predictionLength
@@ -123,7 +131,7 @@ class ChatTimeModel(FileSystem):
 
         return self.__model.predict(sample["value"].values)
 
-    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
+    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str) -> any:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
         """
@@ -133,14 +141,18 @@ class ChatTimeModel(FileSystem):
         sample.columns = ["value"]
         queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
         queried : np.ndarray = self.mergeQueries(queriedVectors)
+
         if queried is not None:
-            sampleNp : np.ndarray = sample["value"].to_numpy() #
+            sampleNp : np.ndarray = sample["value"].to_numpy()
             queriedMean, queriedStd = np.mean(queried), np.std(queried)
             sampleMean, sampleStd = np.mean(sampleNp), np.std(sampleNp)
 
             queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
-            queryDenormed : np.ndarray = (queryNormed * sampleStd) + sampleMean ##
-            return self.__model.predict(newSample)
+            queryDenormed : np.ndarray = (queryNormed * sampleStd) + sampleMean
+            refSample : str = self.__model.serializer.serialize(
+                    self.__model.discretizer.discretize(queryDenormed)
+            )
+            return self.__model.predict(sample["value"].values, context=f"Use the following sample as a reference: {refSample}")
         else:
             return self.__model.predict(sample["value"].values)
 

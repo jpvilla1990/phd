@@ -571,3 +571,145 @@ class Evaluation(FileSystem):
                 continue
 
         return report
+
+    def evaluateChatTimesRag(
+            self,
+            contextLength : int,
+            predictionLength : int,
+            dataset : str,
+            collection : str,
+            subdataset : str = "",
+        ) -> dict:
+        """
+        Method to evaluate model
+        """
+        print(f"Evaluating Dataset {dataset}, context length : {contextLength}, prediction length : {predictionLength}")
+        maxTestSamples : int = self._getConfig()["maxTestSamples"]
+        subdatasets : list = []
+        model : ChatTimeModel = ChatTimeModel(
+            predictionLength = predictionLength,
+            contextLength = contextLength,
+            collectionName = collection,
+        )
+        model.setRagCollection(collection, dataset)
+        iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
+        self.__datasetMetadata = iterator.getDatasetMetadata()
+        iterator.setSampleSize(contextLength + predictionLength)
+
+        if subdataset == "":
+            datasetConfig : dict = Utils.readYaml(
+                self._getFiles()["datasets"]
+            )
+            subdatasets = list(datasetConfig[dataset].keys())
+        else:
+            subdatasets.append(subdataset)
+
+        maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
+        for element in subdatasets:
+            try:
+                print(f"Subdataset {element}")
+                reportMAE : np.ndarray = np.array([])
+                reportNMAE : np.ndarray = np.array([])
+                reportMSE : np.ndarray = np.array([])
+                reportNMSE : np.ndarray = np.array([])
+                reportMASE : np.ndarray = np.array([])
+                iterations : int = 0
+                running : bool = True
+                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
+                features : list = list(iterator.getAvailableFeatures(element).keys())
+
+                while running:
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                        futureSample : concurrent.futures._base.Future = executor.submit(
+                            iterator.iterateDataset,
+                            element,
+                            features,
+                            False,
+                        )
+                        sample : pd.core.frame.DataFrame = futureSample.result()
+                        if sample is None:
+                            break
+
+                        if len(sample) < predictionLength + contextLength:
+                            break
+
+                        indexes : list = [index for index in range(1,len(features))]
+                        random.shuffle(indexes)
+                        for i in range(len(indexes)):
+                            index : int = indexes[i]
+                            if sample[index].isna().any().any():
+                                continue
+                            pred : np.ndarray = model.ragInference(sample[[index]].iloc[:contextLength], dataset)
+
+                            mase : float = self.__getMASE(
+                                sample[index].iloc[:contextLength].values,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            mae : float = self.__getMAE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            mse : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            if mase:
+                                reportMASE = np.append(reportMASE, [mase])
+                            if mae:
+                                reportMAE = np.append(reportMAE, [mae])
+                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
+                            if mse:
+                                reportMSE = np.append(reportMSE, [mse])
+                                reportNMSE = np.append(reportNMSE, [abs(mse / self.__datasetMetadata["std"])])
+
+                            iterations += 1
+
+                            if iterations >= maxTestSamplesPerSubdataset:
+                                running = False
+                                break
+
+                if iterations <= 0:
+                    continue
+
+                report : dict = self.__loadReport("evaluationReportsChatTime")
+
+                if dataset not in report:
+                    report[dataset] = dict()
+                if f"{contextLength},{predictionLength}" not in report[dataset]:
+                    report[dataset][f"{contextLength},{predictionLength}"] = dict()
+
+                report[dataset][f"{contextLength},{predictionLength}"][element] = {
+                    "MASE" : {
+                        "mean" : float(reportMASE.mean()),
+                        "median" : float(np.median(reportMASE)),
+                    },
+                    "MAE" : {
+                        "mean" : float(reportMAE.mean()),
+                        "median" : float(np.median(reportMAE)),
+                    },
+                    "normalizedMAE" : {
+                        "mean" : float(reportNMAE.mean()),
+                        "median" : float(np.median(reportNMAE)),
+                    },
+                    "MSE" : {
+                        "mean" : float(reportMSE.mean()),
+                        "median" : float(np.median(reportMSE)),
+                    },
+                    "normalizedMSE" : {
+                        "mean" : float(reportNMSE.mean()),
+                        "median" : float(np.median(reportNMSE)),
+                    },
+                    "numberIterations" : iterations,
+                }
+
+                self.__writeReport(report, "evaluationReportsChatTime")
+
+            except Exception as e:
+                print("Exception: " + str(e))
+                continue
+
+        return report

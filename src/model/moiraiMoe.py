@@ -104,7 +104,7 @@ class MoiraiMoE(FileSystem):
         featDynamicRealDim : int = 0,
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
-        collectionName : str = "moiraiMoEAllCosine_32_16",
+        collectionName : str = "moiraiMoECosine_128_16",
     ):
         super().__init__()
         self.__datasetsConfig : dict = self._getConfig()["datasets"]

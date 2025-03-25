@@ -76,7 +76,7 @@ vectorDatabase:
   collections:
     chatTimeCosine_32_16:
       metric:
-        hnsw:space: "l2"
+        hnsw:space: "cosine"
       context: 32
       prediction: 16
       datasets: [
@@ -141,14 +141,6 @@ vectorDatabase:
         "power",
         "m4-monthly",
         "traffic",
-      ]
-    chatTimeAllL2_128_16:
-      metric:
-        hnsw:space: "l2"
-      context: 128
-      prediction: 16
-      datasets: [
-        "ET",
       ]
 paths:
   data: ["data"]

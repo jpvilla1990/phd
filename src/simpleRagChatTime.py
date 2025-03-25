@@ -8,107 +8,93 @@ vectorDBingestion.ingestDatasetsChatTime("chatTimeCosine_32_16")
 vectorDBingestion.ingestDatasetsChatTime("chatTimeCosine_64_16")
 vectorDBingestion.ingestDatasetsChatTime("chatTimeCosine_128_16")
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=32,
     predictionLength=16,
-    numberSamples=100,
     dataset="ET",
-    collection="moiraiMoECosine_32_16",
+    collection="chatTimeCosine_32_16",
 )
-
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=64,
     predictionLength=16,
-    numberSamples=100,
     dataset="ET",
-    collection="moiraiMoECosine_64_16",
+    collection="chatTimeCosine_64_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=128,
     predictionLength=16,
-    numberSamples=100,
     dataset="ET",
-    collection="moiraiMoECosine_128_16",
+    collection="chatTimeCosine_128_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=32,
     predictionLength=16,
-    numberSamples=100,
     dataset="solarEnergy",
-    collection="moiraiMoECosine_32_16",
+    collection="chatTimeCosine_32_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=32,
     predictionLength=16,
-    numberSamples=100,
     dataset="power",
-    collection="moiraiMoECosine_32_16",
+    collection="chatTimeCosine_32_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=64,
     predictionLength=16,
-    numberSamples=100,
     dataset="power",
-    collection="moiraiMoECosine_64_16",
+    collection="chatTimeCosine_64_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=128,
     predictionLength=16,
-    numberSamples=100,
     dataset="power",
-    collection="moiraiMoECosine_128_16",
+    collection="chatTimeCosine_128_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=32,
     predictionLength=16,
-    numberSamples=100,
     dataset="m4-monthly",
-    collection="moiraiMoECosine_32_16",
+    collection="chatTimeCosine_32_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=64,
     predictionLength=16,
-    numberSamples=100,
     dataset="m4-monthly",
-    collection="moiraiMoECosine_64_16",
+    collection="chatTimeCosine_64_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=128,
     predictionLength=16,
-    numberSamples=100,
     dataset="m4-monthly",
-    collection="moiraiMoECosine_128_16",
+    collection="chatTimeCosine_128_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=32,
     predictionLength=16,
-    numberSamples=100,
     dataset="traffic",
-    collection="moiraiMoECosine_32_16",
+    collection="chatTimeCosine_32_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=64,
     predictionLength=16,
-    numberSamples=100,
     dataset="traffic",
-    collection="moiraiMoECosine_64_16",
+    collection="chatTimeCosine_64_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateChatTimesRag(
     contextLength=128,
     predictionLength=16,
-    numberSamples=100,
     dataset="traffic",
-    collection="moiraiMoECosine_128_16",
+    collection="chatTimeCosine_128_16",
 )
-report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERag",reportTargetName="evaluationFinalReportMoiraiMoERag")
+report : dict = evaluation.compileReports(reportOriginName="evaluationReportsChatTimeRag",reportTargetName="evaluationFinalReportChatTimeRag")

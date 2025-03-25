@@ -4,7 +4,7 @@ from utils.fileSystem import FileSystem
 from datasets.datasets import Datasets
 from datasets.datasetIterator import DatasetIterator
 from model.moiraiMoe import MoiraiMoE
-from model.chatTime import ChatTime
+from model.chatTime import ChatTimeModel
 
 class VectorDBIngestion(FileSystem):
     """
@@ -122,13 +122,13 @@ class VectorDBIngestion(FileSystem):
                 collections["prediction"],
             )
 
-    def ingestDatasetsChatTime(self, collection : str):
+    def ingestDatasetChatTime(self, dataset : str, collectionName : str, contextLength : int, predictionLength : int):
         """
         Method to ingest dataset in a collection using chat time
         """
         print(f"Ingesting dataset {dataset} in collection {collectionName}_{dataset}")
         maxNumberSamples : int = self._getConfig()["vectorDatabase"]["maxNumberSamples"]
-        model : ChatTime = ChatTime(
+        model : ChatTimeModel = ChatTimeModel(
             predictionLength = predictionLength,
             contextLength = contextLength,
             collectionName = collectionName,
@@ -190,3 +190,23 @@ class VectorDBIngestion(FileSystem):
 
         databaseTracking[f"{collectionName}_{dataset}"][dataset] = iterations
         self.__writeDatabaseTracking(databaseTracking)
+
+    def ingestDatasetsChatTime(self, collection : str):
+        """
+        Method to ingest all datasets to MoiraiMoE
+        """
+        collections : dict = self._getConfig()["vectorDatabase"]["collections"][collection]
+
+        for dataset in collections["datasets"]:
+            databaseTracking : dict = self.__loadDatabaseTracking()
+            collectionDataset : str = f"{collection}_{dataset}"
+            if collectionDataset in databaseTracking:
+                if dataset in databaseTracking[collectionDataset]: # Skip if the dataset is already ingested in collection
+                    continue
+
+            self.ingestDatasetChatTime(
+                dataset,
+                collection,
+                collections["context"],
+                collections["prediction"],
+            )
