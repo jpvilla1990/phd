@@ -206,6 +206,61 @@ ET:
         mean: 0.603029795040132
         median: 0.1346974126412904
       numberIterations: 2500
+m4-monthly:
+  128,16:
+    m4-monthly:
+      MAE:
+        mean: 410.2363109030482
+        median: 179.28065159098145
+      MASE:
+        mean: 3.548864637382363
+        median: 2.2078286567164147
+      MSE:
+        mean: 1020372.1333957188
+        median: 45566.40512696872
+      normalizedMAE:
+        mean: 0.12462515470483665
+        median: 0.05446343569862667
+      normalizedMSE:
+        mean: 309.9775217386804
+        median: 13.842558879761867
+      numberIterations: 10000
+  32,16:
+    m4-monthly:
+      MAE:
+        mean: 442.2018287505881
+        median: 207.64719375000004
+      MASE:
+        mean: 3.613666037583551
+        median: 2.0104649560226595
+      MSE:
+        mean: 1052592.608287315
+        median: 62509.32446871324
+      normalizedMAE:
+        mean: 0.1343359177482167
+        median: 0.06308087060395479
+      normalizedMSE:
+        mean: 319.76573785048504
+        median: 18.989626284566747
+      numberIterations: 10000
+  64,16:
+    m4-monthly:
+      MAE:
+        mean: 415.0496125729353
+        median: 183.76235624999993
+      MASE:
+        mean: 3.0977186041714297
+        median: 1.9289454545454539
+      MSE:
+        mean: 1037489.372120591
+        median: 49022.676083324935
+      normalizedMAE:
+        mean: 0.12608738135154735
+        median: 0.055824926921190746
+      normalizedMSE:
+        mean: 315.1775454018978
+        median: 14.892534933050635
+      numberIterations: 10000
 power:
   128,16:
     power:
@@ -281,6 +336,24 @@ solarEnergy:
         median: 997.9143540848042
       numberIterations: 137
 traffic:
+  128,16:
+    traffic:
+      MAE:
+        mean: 1.7237287176023215
+        median: 1.2494250000000005
+      MASE:
+        mean: 8.31228429092664
+        median: 5.4128338068181865
+      MSE:
+        mean: 11.161565552582934
+        median: 2.5002500100000082
+      normalizedMAE:
+        mean: 0.07354156303136744
+        median: 0.053305758877346066
+      normalizedMSE:
+        mean: 0.47619962946129407
+        median: 0.10667124810704322
+      numberIterations: 10000
   32,16:
     traffic:
       MAE:
@@ -297,5 +370,23 @@ traffic:
         median: 0.053327090993670535
       normalizedMSE:
         mean: 0.48130164760547706
+        median: 0.10668191544513202
+      numberIterations: 10000
+  64,16:
+    traffic:
+      MAE:
+        mean: 1.6773109824999997
+        median: 1.249875
+      MASE:
+        mean: 8.173639675048008
+        median: 5.627362499999989
+      MSE:
+        mean: 10.242316794376876
+        median: 2.5005000399999986
+      normalizedMAE:
+        mean: 0.07156118598192718
+        median: 0.05332495778203805
+      normalizedMSE:
+        mean: 0.43698058657898275
         median: 0.10668191544513202
       numberIterations: 10000
