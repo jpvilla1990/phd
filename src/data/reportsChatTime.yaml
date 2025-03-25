@@ -280,3 +280,22 @@ solarEnergy:
         mean: 1252.0203869666022
         median: 997.9143540848042
       numberIterations: 137
+traffic:
+  32,16:
+    traffic:
+      MAE:
+        mean: 1.731546734375
+        median: 1.249925000000001
+      MASE:
+        mean: 8.483009097464292
+        median: 6.026916666666675
+      MSE:
+        mean: 11.281150924858812
+        median: 2.5005000399999986
+      normalizedMAE:
+        mean: 0.07387511271780996
+        median: 0.053327090993670535
+      normalizedMSE:
+        mean: 0.48130164760547706
+        median: 0.10668191544513202
+      numberIterations: 10000

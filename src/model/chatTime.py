@@ -1,9 +1,53 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from transformers import (
+    LlamaForCausalLM,
+    LlamaTokenizer,
+    pipeline,
+)
+import torch
+import torch.nn as nn
+
 from chat_time.model.model import ChatTime
 from utils.fileSystem import FileSystem
+
+from vectorDB.vectorDB import vectorDB
 from exceptions.modelException import ModelException
+
+class ChatTimeEmbeddings(nn.Module):
+    def __init__(self, chatTime : ChatTime):
+        super().__init__()
+        self.__device : str = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.__targetDevice : str = "cpu"
+        self.model : LlamaForCausalLM = chatTime.model
+        self.tokenizer : LlamaTokenizer = chatTime.tokenizer
+
+        x = self.tokenizer(a)
+        y = self.model.model.embed_tokens(torch.Tensor(x["input_ids"]).long().to(self.__device))
+
+    def forward(
+            self,
+            x : str,
+        ) -> torch.Tensor:
+        """
+        Define the forward pass based on the selected layers.
+        """
+        x : list = self.tokenizer(x)["input_ids"]
+        return self.model.model.embed_tokens(torch.Tensor(x).long().to(self.__device))
+
+    def inference(
+            self,
+            x : str,
+        ) -> torch.Tensor:
+        """
+        Inference
+        """
+        output : torch.Tensor = None
+        with torch.no_grad():
+            output = self(x)
+
+        return output.to(self.__targetDevice)
 
 class ChatTimeModel(FileSystem):
     """
@@ -21,6 +65,53 @@ class ChatTimeModel(FileSystem):
         self.__contextLength : int = contextLength
         self.__predictionlength : int = predictionLength
 
+        self.__chatTimeEmbeddings : ChatTimeEmbeddings = ChatTimeEmbeddings(self.__model)
+        self.__vectorDB : vectorDB = vectorDB()
+
+    def setRagCollection(self, collectionName : str, dataset : str):
+        """
+        Method to set RAG collection
+        """
+        self.__vectorDB.setCollection(
+            collectionName,
+            dataset,
+            self.__chatTimeEmbeddings.inference,
+        )
+
+    def ingestVector(self, sample : np.ndarray, prediction : np.ndarray, dataset : str = ""):
+        """
+        Method to ingest vector
+        """
+        self.__vectorDB.ingestTimeseries(sample, prediction, dataset)
+
+    def deleteDataset(self, dataset : str):
+        """
+        Method to delete dataset from collection
+        """
+        self.__vectorDB.deleteDataset(dataset)
+
+    def queryVector(self, sample : np.ndarray, k : int = 1, metadata : dict = {}) -> tuple:
+        """
+        Method to query vector
+        """
+        return self.__vectorDB.queryTimeseries(sample, k, metadata)
+
+    def mergeQueries(self, query : tuple) -> np.ndarray:
+        """
+        Method to merge queries
+        """
+        merged : np.ndarray = np.zeros_like(query[0][0])
+        nElements : int = 0
+        for index in range(len(query[0])):
+            if query[1][index] > self.__scoreThreshold:
+                merged += query[0][index]
+                nElements += 1
+
+        if nElements == 0:
+            return None
+        else:
+            return merged / nElements
+
     def inference(self, sample : pd.core.frame.DataFrame) -> np.ndarray:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
@@ -31,6 +122,27 @@ class ChatTimeModel(FileSystem):
         sample.columns = ["value"]
 
         return self.__model.predict(sample["value"].values)
+
+    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
+        """
+        Method to predict one sample, first columns must be the timestamp and second is the timeseries
+        """
+        if len(sample.columns) != 1:
+            raise ModelException("ChatTime predictor accepts only one column")
+
+        sample.columns = ["value"]
+        queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
+        queried : np.ndarray = self.mergeQueries(queriedVectors)
+        if queried is not None:
+            sampleNp : np.ndarray = sample["value"].to_numpy() #
+            queriedMean, queriedStd = np.mean(queried), np.std(queried)
+            sampleMean, sampleStd = np.mean(sampleNp), np.std(sampleNp)
+
+            queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
+            queryDenormed : np.ndarray = (queryNormed * sampleStd) + sampleMean ##
+            return self.__model.predict(newSample)
+        else:
+            return self.__model.predict(sample["value"].values)
 
     def plotSample(self, sample : pd.core.frame.DataFrame, groundTruth : pd.core.frame.DataFrame, dataset : str):
         """

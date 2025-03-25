@@ -4,6 +4,7 @@ from utils.fileSystem import FileSystem
 from datasets.datasets import Datasets
 from datasets.datasetIterator import DatasetIterator
 from model.moiraiMoe import MoiraiMoE
+from model.chatTime import ChatTime
 
 class VectorDBIngestion(FileSystem):
     """
@@ -33,7 +34,7 @@ class VectorDBIngestion(FileSystem):
 
     def ingestDatasetMoiraiMoE(self, dataset : str, collectionName : str, contextLength : int, predictionLength : int):
         """
-        Method to ingest dataset in a collection
+        Method to ingest dataset in a collection for moiraiMoE
         """
         print(f"Ingesting dataset {dataset} in collection {collectionName}_{dataset}")
         maxNumberSamples : int = self._getConfig()["vectorDatabase"]["maxNumberSamples"]
@@ -120,3 +121,72 @@ class VectorDBIngestion(FileSystem):
                 collections["context"],
                 collections["prediction"],
             )
+
+    def ingestDatasetsChatTime(self, collection : str):
+        """
+        Method to ingest dataset in a collection using chat time
+        """
+        print(f"Ingesting dataset {dataset} in collection {collectionName}_{dataset}")
+        maxNumberSamples : int = self._getConfig()["vectorDatabase"]["maxNumberSamples"]
+        model : ChatTime = ChatTime(
+            predictionLength = predictionLength,
+            contextLength = contextLength,
+            collectionName = collectionName,
+        )
+        model.setRagCollection(collectionName, dataset)
+        iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
+        iterator.setSampleSize(contextLength + predictionLength)
+
+        datasetConfig : dict = Utils.readYaml(
+            self._getFiles()["datasets"]
+        )
+        subdatasets : list = list(datasetConfig[dataset].keys())
+
+        iterations : int = 0
+
+        model.deleteDataset(dataset)
+        maxSamplesPerSubdataset : int = int(maxNumberSamples / len(subdatasets))
+        for element in subdatasets:
+            try:
+                print(f"Subdataset {element}")
+                sampleNumber : int = 0
+                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
+                features : list = list(iterator.getAvailableFeatures(element).keys())
+
+                running : bool = True
+                while running:
+                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=True)
+                    if sample is None:
+                        break
+                    if len(sample) < predictionLength + contextLength:
+                        break
+
+                    for index in range(1,len(features)): 
+                        if sample[index].isna().any().any():
+                            continue
+                        model.ingestVector(
+                            sample[index].iloc[:contextLength].values,
+                            sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                            dataset,
+                        )
+
+                        iterations += 1
+                        sampleNumber += 1
+
+                        if sampleNumber >= maxSamplesPerSubdataset:
+                            running = False
+                            break
+
+                if iterations <= 0:
+                    continue
+
+            except Exception as e:
+                print("Exception: " + str(e))
+                continue
+
+        databaseTracking : dict = self.__loadDatabaseTracking()
+        if f"{collectionName}_{dataset}" not in databaseTracking:
+            databaseTracking[f"{collectionName}_{dataset}"] = {}
+
+        databaseTracking[f"{collectionName}_{dataset}"][dataset] = iterations
+        self.__writeDatabaseTracking(databaseTracking)

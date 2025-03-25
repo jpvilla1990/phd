@@ -74,29 +74,39 @@ vectorDatabase:
   scoreThreshold : 0.1
   k : 10
   collections:
-    moiraiMoEAllL2_128_16:
+    chatTimeCosine_32_16:
       metric:
         hnsw:space: "l2"
-      context: 128
-      prediction: 16
-      datasets: [
-        "ET",
-      ]
-    moiraiMoEAllCosine_32_16:
-      metric:
-        hnsw:space: "cosine"
-      context: 128
-      prediction: 16
-      datasets: [
-        "ET",
-      ]
-    moiraiMoESolarPowerCosine_32_16:
-      metric:
-        hnsw:space: "cosine"
       context: 32
       prediction: 16
       datasets: [
+        "ET",
         "solarEnergy",
+        "power",
+        "m4-monthly",
+        "traffic",
+      ]
+    chatTimeCosine_64_16:
+      metric:
+        hnsw:space: "cosine"
+      context: 64
+      prediction: 16
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
+      ]
+    chatTimeCosine_128_16:
+      metric:
+        hnsw:space: "cosine"
+      context: 128
+      prediction: 16
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
       ]
     moiraiMoECosine_32_16:
       metric:
