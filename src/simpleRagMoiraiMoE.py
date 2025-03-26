@@ -7,7 +7,7 @@ evaluation : Evaluation = Evaluation()
 vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_32_16")
 vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_64_16")
 vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_128_16")
-a = """
+
 report : dict = evaluation.evaluateMoiraiMoERag(
     contextLength=32,
     predictionLength=16,
@@ -111,7 +111,6 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     dataset="traffic",
     collection="moiraiMoECosine_128_16",
 )
-"""
 
 report : dict = evaluation.evaluateMoiraiMoERag(
     contextLength=32,
