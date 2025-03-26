@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import pandas as pd
 from utils.fileSystem import FileSystem
 from utils.utils import Utils
@@ -67,6 +68,10 @@ class Datasets(FileSystem):
             if datasetFormat == "csv":
                 for subDataset in datasetConfig:
                     subDatasetPath : str = datasetConfig[subDataset]
+                    if ".zip" in subDatasetPath:
+                        self._unzipFile(subDatasetPath, Path(subDatasetPath).parent, True)
+                        subDatasetPath = subDatasetPath.replace(".zip", ".csv")
+                        datasetConfig[subDataset] = subDatasetPath
                     df : pd.core.frame.DataFrame = pd.read_csv(
                         subDatasetPath,
                         sep=self.__datasets[dataset]["separator"],

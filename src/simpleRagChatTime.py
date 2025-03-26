@@ -97,4 +97,26 @@ report : dict = evaluation.evaluateChatTimesRag(
     dataset="traffic",
     collection="chatTimeCosine_128_16",
 )
+
+report : dict = evaluation.evaluateChatTimesRag(
+    contextLength=32,
+    predictionLength=16,
+    dataset="huaweiCloud",
+    collection="chatTimeCosine_32_16",
+)
+
+report : dict = evaluation.evaluateChatTimesRag(
+    contextLength=64,
+    predictionLength=16,
+    dataset="huaweiCloud",
+    collection="chatTimeCosine_64_16",
+)
+
+report : dict = evaluation.evaluateChatTimesRag(
+    contextLength=128,
+    predictionLength=16,
+    dataset="huaweiCloud",
+    collection="chatTimeCosine_128_16",
+)
+
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsChatTimeRag",reportTargetName="evaluationFinalReportChatTimeRag")

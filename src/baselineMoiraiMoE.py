@@ -55,6 +55,27 @@ report : dict = evaluation.evaluateMoiraiMoE(
     contextLength=32,
     predictionLength=16,
     numberSamples=100,
+    dataset="m4-monthly",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="m4-monthly",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="m4-monthly",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
     dataset="traffic",
 )
 
@@ -76,21 +97,21 @@ report : dict = evaluation.evaluateMoiraiMoE(
     contextLength=32,
     predictionLength=16,
     numberSamples=100,
-    dataset="m4-monthly",
+    dataset="huaweiCloud",
 )
 
 report : dict = evaluation.evaluateMoiraiMoE(
     contextLength=64,
     predictionLength=16,
     numberSamples=100,
-    dataset="m4-monthly",
+    dataset="huaweiCloud",
 )
 
 report : dict = evaluation.evaluateMoiraiMoE(
     contextLength=128,
     predictionLength=16,
     numberSamples=100,
-    dataset="m4-monthly",
+    dataset="huaweiCloud",
 )
 
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoE",reportTargetName="evaluationFinalReportMoiraiMoE")

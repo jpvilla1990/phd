@@ -47,6 +47,24 @@ report : dict = evaluation.evaluateChatTimes(
 report : dict = evaluation.evaluateChatTimes(
     contextLength=32,
     predictionLength=16,
+    dataset="m4-monthly",
+)
+
+report : dict = evaluation.evaluateChatTimes(
+    contextLength=64,
+    predictionLength=16,
+    dataset="m4-monthly",
+)
+
+report : dict = evaluation.evaluateChatTimes(
+    contextLength=128,
+    predictionLength=16,
+    dataset="m4-monthly",
+)
+
+report : dict = evaluation.evaluateChatTimes(
+    contextLength=32,
+    predictionLength=16,
     dataset="traffic",
 )
 
@@ -65,19 +83,19 @@ report : dict = evaluation.evaluateChatTimes(
 report : dict = evaluation.evaluateChatTimes(
     contextLength=32,
     predictionLength=16,
-    dataset="m4-monthly",
+    dataset="huaweiCloud",
 )
 
 report : dict = evaluation.evaluateChatTimes(
     contextLength=64,
     predictionLength=16,
-    dataset="m4-monthly",
+    dataset="huaweiCloud",
 )
 
 report : dict = evaluation.evaluateChatTimes(
     contextLength=128,
     predictionLength=16,
-    dataset="m4-monthly",
+    dataset="huaweiCloud",
 )
 
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsChatTime",reportTargetName="evaluationFinalReportChatTime")

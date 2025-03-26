@@ -126,12 +126,21 @@ class FileSystem(object):
         """
         os.makedirs(folderName, exist_ok=True)
 
-    def _unzipFile(self, zipFile : str, path : str):
+    def _unzipFile(self, zipFile : str, path : str, noFolders : bool = False):
         """
         Method to unzip file
         """
-        with zipfile.ZipFile(zipFile, "r") as zipRef:
-            zipRef.extractall(path)
+        if noFolders:
+            with zipfile.ZipFile(zipFile, 'r') as zipRef:
+                for file in zipRef.namelist():
+                    if not file.endswith('/'):
+                        fileName = os.path.basename(file)
+
+                        with zipRef.open(file) as source, open(os.path.join(path, fileName), 'wb') as target:
+                            target.write(source.read())
+        else:
+            with zipfile.ZipFile(zipFile, "r") as zipRef:
+                zipRef.extractall(path)
 
     def _saveFile(self, fileName : str, content : list):
         """

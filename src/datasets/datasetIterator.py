@@ -131,7 +131,7 @@ class DatasetIterator(object):
             )
 
         if "frame" not in self.__indexIterator[subdataset]:
-            self.__indexIterator[subdataset]["frame"] = Utils.loadPandasFromArrow(self.__datasets[subdataset])
+            self.__indexIterator[subdataset]["frame"] = Utils.loadPandasFromArrow(self.__datasets[subdataset]).iloc[:, featuresIndices]
             self.__indexIterator[subdataset]["frame"].columns = featuresIndices
 
         if sampleSize >= maxNumberSamples:

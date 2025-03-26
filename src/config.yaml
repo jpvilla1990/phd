@@ -14,6 +14,18 @@ datasets:
       ETTh2: ["ETT-small", "ETTh2.csv"]
       ETTm1: ["ETT-small", "ETTm1.csv"]
       ETTm2: ["ETT-small", "ETTm2.csv"]
+  huaweiCloud:
+    url: "https://github.com/sir-lab/time-series-fm-dataset.git"
+    type: "gitRepository"
+    format: "csv"
+    separator: ","
+    decimal: "."
+    timeformat: "%Y-%m-%d %H:%M:%S"
+    subdatasets:
+      datacenter1: ["data", "datacentre_1.zip"]
+      datacenter2: ["data", "datacentre_2.zip"]
+      datacenter3: ["data", "datacentre_3.zip"]
+      datacenter4: ["data", "datacentre_4.zip"]
   electricityUCI:
     url: "https://archive.ics.uci.edu/static/public/321/electricityloaddiagrams20112014.zip"
     type: "zip"
@@ -85,6 +97,7 @@ vectorDatabase:
         "power",
         "m4-monthly",
         "traffic",
+        "huaweiCloud",
       ]
     chatTimeCosine_64_16:
       metric:
@@ -96,6 +109,7 @@ vectorDatabase:
         "power",
         "m4-monthly",
         "traffic",
+        "huaweiCloud",
       ]
     chatTimeCosine_128_16:
       metric:
@@ -107,6 +121,7 @@ vectorDatabase:
         "power",
         "m4-monthly",
         "traffic",
+        "huaweiCloud",
       ]
     moiraiMoECosine_32_16:
       metric:
@@ -119,6 +134,7 @@ vectorDatabase:
         "power",
         "m4-monthly",
         "traffic",
+        "huaweiCloud",
       ]
     moiraiMoECosine_64_16:
       metric:
@@ -130,6 +146,7 @@ vectorDatabase:
         "power",
         "m4-monthly",
         "traffic",
+        "huaweiCloud",
       ]
     moiraiMoECosine_128_16:
       metric:
@@ -141,6 +158,7 @@ vectorDatabase:
         "power",
         "m4-monthly",
         "traffic",
+        "huaweiCloud",
       ]
 paths:
   data: ["data"]
