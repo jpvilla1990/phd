@@ -152,7 +152,7 @@ class ChatTimeModel(FileSystem):
             refSample : str = self.__model.serializer.serialize(
                     self.__model.discretizer.discretize(queryDenormed)
             )
-            return self.__model.predict(sample["value"].values, context=f"Use the following sample as a reference: {refSample}")
+            return self.__model.predict(sample["value"].values, context=f"Use the following sequence as a reference: {refSample}")
         else:
             return self.__model.predict(sample["value"].values)
 

@@ -675,7 +675,7 @@ class Evaluation(FileSystem):
                 if iterations <= 0:
                     continue
 
-                report : dict = self.__loadReport("evaluationReportsChatTime")
+                report : dict = self.__loadReport("evaluationReportsChatTimeRag")
 
                 if dataset not in report:
                     report[dataset] = dict()
@@ -706,7 +706,7 @@ class Evaluation(FileSystem):
                     "numberIterations" : iterations,
                 }
 
-                self.__writeReport(report, "evaluationReportsChatTime")
+                self.__writeReport(report, "evaluationReportsChatTimeRag")
 
             except Exception as e:
                 print("Exception: " + str(e))
