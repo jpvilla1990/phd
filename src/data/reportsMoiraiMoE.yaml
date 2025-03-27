@@ -207,6 +207,75 @@ ET:
         median: 0.010017827060567128
       numberIterations: 2500
 huaweiCloud:
+  128,16:
+    datacenter1:
+      MAE:
+        mean: 11840.825971774982
+        median: 371.20558166503906
+      MASE:
+        mean: 4.261117611000808
+        median: 1.7560037764335392
+      MSE:
+        mean: 5249262838.591547
+        median: 198806.7963949442
+      normalizedMAE:
+        mean: 0.0432092465713526
+        median: 0.0013545941427617024
+      normalizedMSE:
+        mean: 0.06990169552921156
+        median: 2.6474064222065304e-06
+      numberIterations: 2500
+    datacenter2:
+      MAE:
+        mean: 12422.920886465836
+        median: 343.0292434692383
+      MASE:
+        mean: 4.844274785543889
+        median: 1.5001310835307557
+      MSE:
+        mean: 14086723007.437721
+        median: 178129.24500804208
+      normalizedMAE:
+        mean: 0.045333412804076746
+        median: 0.0012517737527414216
+      normalizedMSE:
+        mean: 0.18758554352261325
+        median: 2.372054254524891e-06
+      numberIterations: 2500
+    datacenter3:
+      MAE:
+        mean: 3028.751062866998
+        median: 141.7089524269104
+      MASE:
+        mean: 2.996157541278778
+        median: 1.0065702682119126
+      MSE:
+        mean: 64151029.26353801
+        median: 28682.359686459356
+      normalizedMAE:
+        mean: 0.011052442776426386
+        median: 0.0005171207719274135
+      normalizedMSE:
+        mean: 0.0008542657994752968
+        median: 3.8194802499167095e-07
+      numberIterations: 2500
+    datacenter4:
+      MAE:
+        mean: 610.061739550149
+        median: 24.233322620391846
+      MASE:
+        mean: 2.9729864544633022
+        median: 0.6422659758352856
+      MSE:
+        mean: 6330694.177591697
+        median: 1194.5061444398889
+      normalizedMAE:
+        mean: 0.002226222071906625
+        median: 8.843163600610567e-05
+      normalizedMSE:
+        mean: 8.430255266267126e-05
+        median: 1.590661534464394e-08
+      numberIterations: 2500
   32,16:
     datacenter1:
       MAE:
@@ -310,6 +379,40 @@ huaweiCloud:
       normalizedMSE:
         mean: 0.10867823797169057
         median: 2.3731520545411773e-06
+      numberIterations: 2500
+    datacenter3:
+      MAE:
+        mean: 3386.996621760535
+        median: 158.0857048034668
+      MASE:
+        mean: 3.5087999720050407
+        median: 1.1227556402326344
+      MSE:
+        mean: 121978160.69607368
+        median: 37174.921075539605
+      normalizedMAE:
+        mean: 0.012359743527592011
+        median: 0.0005768824079115403
+      normalizedMSE:
+        mean: 0.0016243195496908976
+        median: 4.950390358128987e-07
+      numberIterations: 2500
+    datacenter4:
+      MAE:
+        mean: 732.6347464838983
+        median: 29.01924169063568
+      MASE:
+        mean: 18.366318936285836
+        median: 0.8234600272216395
+      MSE:
+        mean: 9015847.060143413
+        median: 1924.1793749878852
+      normalizedMAE:
+        mean: 0.002673512429202413
+        median: 0.00010589629241349182
+      normalizedMSE:
+        mean: 0.00012005933318918735
+        median: 2.5623293203218786e-08
       numberIterations: 2500
 m4-monthly:
   128,16:
