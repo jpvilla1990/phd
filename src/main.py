@@ -4,6 +4,10 @@ evaluation : Evaluation = Evaluation()
 
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoE",reportTargetName="evaluationFinalReportMoiraiMoE")
 
-report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERag",reportTargetName="evaluationFinalReportMoiraiMoERag") # Reports will be located in src/data/reports.pdf
+report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERagMean",reportTargetName="evaluationFinalReportMoiraiMoERagMean")
 
-report : dict = evaluation.compileReports(reportOriginName="evaluationReportsChatTime",reportTargetName="evaluationFinalReportChatTime") # Reports will be located in src/data/reports.pdf
+report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERagSoftMax",reportTargetName="evaluationFinalReportMoiraiMoERagSoftMax")
+
+report : dict = evaluation.compileReports(reportOriginName="evaluationReportsChatTime",reportTargetName="evaluationFinalReportChatTime")
+
+report : dict = evaluation.compileReports(reportOriginName="evaluationReportsChatTimeRag",reportTargetName="evaluationFinalReportChatTimeRag")

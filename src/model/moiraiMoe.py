@@ -206,6 +206,28 @@ class MoiraiMoE(FileSystem):
         else:
             return merged / nElements
 
+    def mergeQueriesSoftMax(self, query : tuple) -> np.ndarray:
+        """
+        Method to merge queries
+        """
+        vectors : np.ndarray = np.array(query[0])
+        scores : np.ndarray = np.array(query[1])
+
+        validIndices : np.ndarray = scores > self.__scoreThreshold
+
+        validScores : np.ndarray = scores[validIndices]
+        validVectors : np.ndarray = vectors[validIndices]
+
+        softMaxNumerator : np.ndarray = np.exp(validScores)
+        weights : np.ndarray = softMaxNumerator / softMaxNumerator.sum()
+
+        weigthedVectors : np.ndarray = validVectors * weights[:, np.newaxis]
+
+        if len(validScores) == 0:
+            return None
+        else:
+            return np.sum(weigthedVectors, axis=0)
+
     def inference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
@@ -225,7 +247,7 @@ class MoiraiMoE(FileSystem):
         )
         return next(iter(self.__predictor.predict(sampleGluonts)))
 
-    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
+    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False) -> SampleForecast:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
         """
@@ -236,7 +258,7 @@ class MoiraiMoE(FileSystem):
 
         sample.columns = ["datetime", "value"]
         queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
-        queried : np.ndarray = self.mergeQueries(queriedVectors)
+        queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors)
         if queried is not None:
             sampleNp : np.ndarray = sample["value"].to_numpy()
             queriedMean, queriedStd = np.mean(queried), np.std(queried)
@@ -257,7 +279,7 @@ class MoiraiMoE(FileSystem):
             sampleGluonts : ListDataset = ListDataset(
                 [{
                     "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
-                    "target": sample["value"].tolist(),"target": newSample,
+                    "target": sample["value"].tolist(),
                 }],
                 freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
             )

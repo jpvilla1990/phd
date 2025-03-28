@@ -1,6 +1,11 @@
 seed: 42
 trainPartition: 0.8
 maxTestSamples: 10000
+models:
+  linealModel:
+    type: ridge
+    alpha: 0.5
+    refitSteps: 200
 datasets:
   ET:
     url: "https://github.com/zhouhaoyi/ETDataset"
@@ -83,8 +88,8 @@ monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
   maxNumberSamples: 10000
-  scoreThreshold : 0.1
-  k : 10
+  scoreThreshold : 0.5
+  k : 16
   collections:
     chatTimeCosine_32_16:
       metric:
@@ -167,11 +172,15 @@ paths:
 files:
   datasets: ["data", "datasets", "datasets.yaml"]
   databaseTracking: ["data", "databaseTracking.yaml"]
+  evaluationReportsLineal: ["data", "reportsLineal.yaml"]
   evaluationReportsMoiraiMoE: ["data", "reportsMoiraiMoE.yaml"]
-  evaluationReportsMoiraiMoERag: ["data", "reportsMoiraiMoERag.yaml"]
+  evaluationReportsMoiraiMoERagMean: ["data", "reportsMoiraiMoERagMean.yaml"]
+  evaluationReportsMoiraiMoERagSoftMax: ["data", "reportsMoiraiMoERagSoftMax.yaml"]
   evaluationReportsChatTime: ["data", "reportsChatTime.yaml"]
   evaluationReportsChatTimeRag: ["data", "reportsChatTimeRag.yaml"]
+  evaluationFinalReportLineal: ["data" ,"reportsLineal.pdf"]
   evaluationFinalReportMoiraiMoE: ["data" ,"reportsMoiraiMoE.pdf"]
   evaluationFinalReportChatTime: ["data" ,"reportsChatTime.pdf"]
-  evaluationFinalReportMoiraiMoERag: ["data", "reportsMoiraiMoERag.pdf"]
+  evaluationFinalReportMoiraiMoERagMean: ["data", "reportsMoiraiMoERagMean.pdf"]
+  evaluationFinalReportMoiraiMoERagSoftMax: ["data", "reportsMoiraiMoERagSoftMax.pdf"]
   evaluationFinalReportChatTimeRag: ["data", "reportsChatTimeRag.pdf"]

@@ -8,7 +8,7 @@ vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_32_16")
 vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_64_16")
 vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_128_16")
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=32,
     predictionLength=16,
     numberSamples=100,
@@ -16,7 +16,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_32_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=64,
     predictionLength=16,
     numberSamples=100,
@@ -24,7 +24,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_64_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=128,
     predictionLength=16,
     numberSamples=100,
@@ -32,7 +32,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_128_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=32,
     predictionLength=16,
     numberSamples=100,
@@ -40,7 +40,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_32_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=32,
     predictionLength=16,
     numberSamples=100,
@@ -48,7 +48,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_32_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=64,
     predictionLength=16,
     numberSamples=100,
@@ -56,7 +56,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_64_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=128,
     predictionLength=16,
     numberSamples=100,
@@ -64,7 +64,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_128_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=32,
     predictionLength=16,
     numberSamples=100,
@@ -72,7 +72,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_32_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=64,
     predictionLength=16,
     numberSamples=100,
@@ -80,7 +80,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_64_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=128,
     predictionLength=16,
     numberSamples=100,
@@ -88,7 +88,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_128_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=32,
     predictionLength=16,
     numberSamples=100,
@@ -96,7 +96,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_32_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=64,
     predictionLength=16,
     numberSamples=100,
@@ -104,7 +104,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_64_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=128,
     predictionLength=16,
     numberSamples=100,
@@ -112,7 +112,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_128_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=32,
     predictionLength=16,
     numberSamples=100,
@@ -120,7 +120,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_32_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=64,
     predictionLength=16,
     numberSamples=100,
@@ -128,7 +128,7 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_64_16",
 )
 
-report : dict = evaluation.evaluateMoiraiMoERag(
+report : dict = evaluation.evaluateMoiraiMoERagMean(
     contextLength=128,
     predictionLength=16,
     numberSamples=100,
@@ -136,4 +136,4 @@ report : dict = evaluation.evaluateMoiraiMoERag(
     collection="moiraiMoECosine_128_16",
 )
 
-report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERag",reportTargetName="evaluationFinalReportMoiraiMoERag")
+report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERagMean",reportTargetName="evaluationFinalReportMoiraiMoERagMean")
