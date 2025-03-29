@@ -191,7 +191,7 @@ class Evaluation(FileSystem):
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
-                iterator.resetIteration(element, False, trainPartition=self._getConfig()["trainPartition"])
+                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
                 while running:

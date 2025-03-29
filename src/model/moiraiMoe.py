@@ -47,6 +47,9 @@ class MoiraiMoEEmbeddings(nn.Module):
         - `in_proj`, `res_proj`, and `feat_proj` apply transformations.
         """
         seqLen : int = math.ceil(len(x) / patchSize) + 1
+        pad : np.ndarray = np.zeros((batchSize * (seqLen - 1) * patchSize) - len(x))
+        if len(pad) > 0:
+            x = np.concatenate([pad, x])
         patchSizeTensor : torch.Tensor = torch.full((batchSize, seqLen), patchSize).to(self.__device)
         target : torch.Tensor = F.pad(
             torch.tensor(x, dtype=torch.float32).reshape(batchSize, seqLen - 1, patchSize),
@@ -183,6 +186,12 @@ class MoiraiMoE(FileSystem):
         Method to delete dataset from collection
         """
         self.__vectorDB.deleteDataset(dataset)
+
+    def deleteCollection(self, collectionName : str, dataset : str):
+        """
+        Method to delete a collection
+        """
+        self.__vectorDB.deleteCollection(collectionName, dataset)
 
     def queryVector(self, sample : np.ndarray, k : int = 1, metadata : dict = {}) -> tuple:
         """

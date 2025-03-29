@@ -46,13 +46,14 @@ class vectorDB(FileSystem):
 
     def deleteCollection(
             self,
-            collection : str,
+            collectionName : str,
+            dataset : str,
         ):
         """
         Method to set collection
         """
         self.__chromaClient.delete_collection(
-            name=collection,
+            name=f"{collectionName}_{dataset}",
         )
 
     def ingestTimeseries(self, context : np.ndarray, prediction : np.ndarray, dataset : str = ""):
