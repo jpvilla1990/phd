@@ -8,7 +8,6 @@ vectorDBingestion.ingestDatasetsChatTime("chatTimeCosine_32_16")
 vectorDBingestion.ingestDatasetsChatTime("chatTimeCosine_64_16")
 vectorDBingestion.ingestDatasetsChatTime("chatTimeCosine_128_16")
 
-a = """
 report : dict = evaluation.evaluateChatTimesRag(
     contextLength=32,
     predictionLength=16,
@@ -70,7 +69,7 @@ report : dict = evaluation.evaluateChatTimesRag(
     dataset="m4-monthly",
     collection="chatTimeCosine_64_16",
 )
-"""
+
 report : dict = evaluation.evaluateChatTimesRag(
     contextLength=128,
     predictionLength=16,
