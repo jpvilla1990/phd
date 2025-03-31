@@ -137,6 +137,75 @@ ET:
         mean: 0.5676576319166156
         median: 0.15278924110041403
       numberIterations: 2500
+  520,30:
+    ETTh1:
+      MAE:
+        mean: 1.502283746708453
+        median: 0.989124835633437
+      MASE:
+        mean: 2.03466082120805
+        median: 1.64480645725222
+      MSE:
+        mean: 7.750793646535688
+        median: 1.6263840237724598
+      normalizedMAE:
+        mean: 0.11485225484384637
+        median: 0.07562034665119494
+      normalizedMSE:
+        mean: 0.5925619105474763
+        median: 0.12433994096091738
+      numberIterations: 2500
+    ETTh2:
+      MAE:
+        mean: 2.4621212659887943
+        median: 1.739381475575765
+      MASE:
+        mean: 3.3691368208596413
+        median: 1.5866141465606218
+      MSE:
+        mean: 18.07526509504302
+        median: 4.525720586948312
+      normalizedMAE:
+        mean: 0.18823353425568115
+        median: 0.13297879640993204
+      normalizedMSE:
+        mean: 1.3818860502315253
+        median: 0.345999359537173
+      numberIterations: 2500
+    ETTm1:
+      MAE:
+        mean: 1.6039107139451674
+        median: 0.8177683302783973
+      MASE:
+        mean: 3.562543253021795
+        median: 2.571055897580494
+      MSE:
+        mean: 12.332907993595445
+        median: 0.9762709384325752
+      normalizedMAE:
+        mean: 0.12262181659651271
+        median: 0.06251983813187634
+      normalizedMSE:
+        mean: 0.9428726729884708
+        median: 0.07463764342999281
+      numberIterations: 2500
+    ETTm2:
+      MAE:
+        mean: 1.9303932829746835
+        median: 1.319412881327003
+      MASE:
+        mean: 4.112530470930699
+        median: 2.2182281278121083
+      MSE:
+        mean: 11.054714548660163
+        median: 2.637189683836106
+      normalizedMAE:
+        mean: 0.14758198760442598
+        median: 0.10087145309429438
+      normalizedMSE:
+        mean: 0.8451525188570748
+        median: 0.2016178250634353
+      numberIterations: 2500
   64,16:
     ETTh1:
       MAE:

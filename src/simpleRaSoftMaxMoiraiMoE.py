@@ -74,7 +74,7 @@ report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
 
 report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
     contextLength=520,
-    predictionLength=96,
+    predictionLength=336,
     numberSamples=100,
     dataset="m4-monthly",
     collection="moiraiMoECosine_520_336",
