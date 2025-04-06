@@ -4,9 +4,10 @@ import pandas as pd
 from utils.fileSystem import FileSystem
 from utils.utils import Utils
 from exceptions.datasetException import DatasetException
-from datasets.datasetDownloader import DatasetDownloader
-from datasets.datasetIterator import DatasetIterator
-from datasets.monashPreparer import MonashPreparer
+from datasetsModule.datasetDownloader import DatasetDownloader
+from datasetsModule.datasetIterator import DatasetIterator
+from datasetsModule.huggingFaceIterator import HuggingFaceIterator
+from datasetsModule.monashPreparer import MonashPreparer
 from utils.utils import Utils
 
 class Datasets(FileSystem):
@@ -81,6 +82,8 @@ class Datasets(FileSystem):
             elif datasetFormat == "monash":
                 monashPreparer : MonashPreparer = MonashPreparer(dataset)
                 datasetConfig = monashPreparer.prepare(datasetConfig)
+            elif datasetFormat == "huggingface":
+                pass
             else:
                 raise DatasetException(f"Format {datasetFormat} is not supported in dataset {dataset}")
 
@@ -88,9 +91,17 @@ class Datasets(FileSystem):
                 {dataset : datasetConfig}
             )
 
-        return DatasetIterator(
-            dataset,
-            self.__loadDatasetConfig()[dataset],
-            self.__datasets[dataset],
-            self._getConfig()["seed"],
-        )
+        if self.__datasets[dataset]["format"] == "huggingFace":
+            return HuggingFaceIterator(
+                dataset,
+                self.__loadDatasetConfig()[dataset],
+                self.__datasets[dataset],
+                self._getConfig()["seed"],
+            )
+        else:
+            return DatasetIterator(
+                dataset,
+                self.__loadDatasetConfig()[dataset],
+                self.__datasets[dataset],
+                self._getConfig()["seed"],
+            )

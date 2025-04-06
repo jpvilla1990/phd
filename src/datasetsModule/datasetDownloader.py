@@ -2,6 +2,7 @@ import os
 import requests
 from git import Repo
 import kagglehub
+from datasets import load_dataset
 from utils.fileSystem import FileSystem
 from exceptions.datasetException import DatasetException
 
@@ -78,6 +79,13 @@ class DatasetDownloader(FileSystem):
             self.__downloadZip(self.__datasetParams["url"])
         elif self.__typeDataset == "kaggle":
             self.__downloadKaggle(self.__datasetParams["url"])
+        elif self.__typeDataset == "huggingface":
+            huggingfaceDatasets : dict = {}
+            downloadFolder : str = os.path.join(self.__datasetPath, "downloads")
+            for subdataset in self.__datasetParams["subdatasets"]:
+                huggingfaceDatasets[subdataset] = load_dataset(self.__datasetParams["datasetName"], subdataset, split="train", cache_dir=self.__datasetPath)
+                if self._checkFileExists(downloadFolder):
+                    self._deleteFolder(downloadFolder)
         else:
             raise DatasetException(
                 f"Type {self.__typeDataset} on dataset {self.__datasetName} is not supported"

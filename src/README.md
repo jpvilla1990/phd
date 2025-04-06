@@ -10,7 +10,7 @@
 ```python
 import pandas as pd
 from gluonts.model.forecast import SampleForecast
-from datasets.datasets import Datasets
+from datasetsModule.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
 
 CONTEXT : int = 64
@@ -131,7 +131,7 @@ vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_32_16")
 ```python
 import pandas as pd
 from gluonts.model.forecast import SampleForecast
-from datasets.datasets import Datasets
+from datasetsModule.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
 
 CONTEXT : int = 32
@@ -165,7 +165,7 @@ while True:
 import pandas as pd
 import numpy as np
 from gluonts.model.forecast import SampleForecast
-from datasets.datasets import Datasets
+from datasetsModule.datasets import Datasets
 from model.moiraiMoe import MoiraiMoE
 
 CONTEXT : int = 128

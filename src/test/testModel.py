@@ -4,8 +4,8 @@ import numpy as np
 from gluonts.model.forecast import SampleForecast
 from utils.utils import Utils
 from utils.fileSystem import FileSystem
-from datasets.datasets import Datasets
-from datasets.datasetIterator import DatasetIterator
+from datasetsModule.datasets import Datasets
+from datasetsModule.datasetIterator import DatasetIterator
 from model.moiraiMoe import MoiraiMoE
 
 class TestModel(object):
@@ -37,7 +37,7 @@ class TestModel(object):
         datasets : Datasets = Datasets()
 
         for element in datasetsUnderTest:
-            datasets.loadDataset(element)
+            datasetsModule.loadDataset(element)
             subdatasets : list = list(datasetConfig[element].keys())
             self.__datasets[element] = subdatasets
 

@@ -13,7 +13,6 @@ report : dict = evaluation.evaluateChatTimes(
     predictionLength=96,
     dataset="ET",
 )
-
 report : dict = evaluation.evaluateChatTimes(
     contextLength=520,
     predictionLength=336,

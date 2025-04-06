@@ -6,13 +6,13 @@ from gluonts.model.forecast import SampleForecast
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
-from datasets.datasets import Datasets
+from datasetsModule.datasets import Datasets
 from model.lineal import LinealRegression
 from model.moiraiMoe import MoiraiMoE
 from model.chatTime import ChatTimeModel
 from utils.fileSystem import FileSystem
 from utils.utils import Utils
-from datasets.datasetIterator import DatasetIterator
+from datasetsModule.datasetIterator import DatasetIterator
 
 class Evaluation(FileSystem):
     """
@@ -178,7 +178,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasets.append(subdataset)
+            subdatasetsModule.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -324,7 +324,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasets.append(subdataset)
+            subdatasetsModule.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -361,7 +361,6 @@ class Evaluation(FileSystem):
                             if sample[index].isna().any().any():
                                 continue
                             pred : SampleForecast = model.inference(sample[[0, index]].iloc[:contextLength], dataset)
-
                             mase : float = self.__getMASE(
                                 sample[index].iloc[:contextLength].values,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
@@ -467,7 +466,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasets.append(subdataset)
+            subdatasetsModule.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -610,7 +609,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasets.append(subdataset)
+            subdatasetsModule.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -748,7 +747,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasets.append(subdataset)
+            subdatasetsModule.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -890,7 +889,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasets.append(subdataset)
+            subdatasetsModule.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:

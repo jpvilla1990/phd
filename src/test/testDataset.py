@@ -2,8 +2,8 @@ import pytest
 import pandas as pd
 from utils.utils import Utils
 from utils.fileSystem import FileSystem
-from datasets.datasets import Datasets
-from datasets.datasetIterator import DatasetIterator
+from datasetsModule.datasets import Datasets
+from datasetsModule.datasetIterator import DatasetIterator
 
 class TestDataset(object):
     """
@@ -27,7 +27,7 @@ class TestDataset(object):
         datasets : Datasets = Datasets()
 
         for element in datasetsUnderTest:
-            datasets.loadDataset(element)
+            datasetsModule.loadDataset(element)
             subdatasets : list = list(datasetConfig[element].keys())
             self.__datasets[element] = subdatasets
 

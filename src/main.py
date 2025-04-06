@@ -11,3 +11,11 @@ report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoi
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsChatTime",reportTargetName="evaluationFinalReportChatTime")
 
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsChatTimeRag",reportTargetName="evaluationFinalReportChatTimeRag")
+
+from datasetsModule.datasets import Datasets
+
+DATASET : str = "lotsaData"
+
+dataset : Datasets = Datasets()
+
+iterator = dataset.loadDataset(DATASET)

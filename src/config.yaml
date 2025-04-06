@@ -84,6 +84,49 @@ datasets:
       traffic : ["istanbul_traffic.csv"]
   cloud:
     url: https://github.com/BizITObs/BizITObservabilityData/tree/main/Complete/Time%20Series/L2C
+  lotsaData:
+    datasetName : Salesforce/lotsa_data
+    type : "huggingface"
+    format: "huggingface"
+    subdatasets:
+      buildings_900k : ["buildings_900k", "0.0.0"]
+      # buildings_bench
+      sceaux : ["Salesforce___lotsa_data", "sceaux", "0.0.0"]
+      borealis : ["Salesforce___lotsa_data", "borealis", "0.0.0"]
+      ideal : ["Salesforce___lotsa_data", "ideal", "0.0.0"]
+      bdg-2_panther : ["Salesforce___lotsa_data", "bdg-2_panther", "0.0.0"]
+      bdg-2_fox : ["Salesforce___lotsa_data", "bdg-2_fox", "0.0.0"]
+      bdg-2_rat : ["Salesforce___lotsa_data", "bdg-2_rat", "0.0.0"]
+      bdg-2_bear : ["Salesforce___lotsa_data", "bdg-2_bear", "0.0.0"]
+      smart : ["Salesforce___lotsa_data", "smart", "0.0.0"]
+      lcl : ["Salesforce___lotsa_data", "lcl", "0.0.0"]
+      # cloudops_tsf
+      azure_vm_traces_2017 : ["Salesforce___lotsa_data", "azure_vm_traces_2017", "0.0.0"]
+      borg_cluster_data_2011 : ["Salesforce___lotsa_data", "borg_cluster_data_2011", "0.0.0"]
+      alibaba_cluster_trace_2018 : ["Salesforce___lotsa_data", "alibaba_cluster_trace_2018", "0.0.0"]
+      cmip6 : ["Salesforce___lotsa_data", "cmip6", "0.0.0"]
+      era5 : ["Salesforce___lotsa_data", "era5", "0.0.0"]
+      #gluonts :  gluonts
+      largest :  ["Salesforce___lotsa_data", "largest", "0.0.0"]
+      # lib_city
+      BEIJING_SUBWAY_30MIN : ["Salesforce___lotsa_data", "BEIJING_SUBWAY_30MIN", "0.0.0"]
+      HZMETRO : ["Salesforce___lotsa_data", "HZMETRO", "0.0.0"]
+      LOOP_SEATTLE : ["Salesforce___lotsa_data", "LOOP_SEATTLE", "0.0.0"]
+      LOS_LOOP : ["Salesforce___lotsa_data", "LOS_LOOP", "0.0.0"]
+      M_DENSE : ["Salesforce___lotsa_data", "M_DENSE", "0.0.0"]
+      PEMS03 : ["Salesforce___lotsa_data", "PEMS03", "0.0.0"]
+      PEMS04 : ["Salesforce___lotsa_data", "PEMS04", "0.0.0"]
+      PEMS07 : ["Salesforce___lotsa_data", "PEMS07", "0.0.0"]
+      PEMS08 : ["Salesforce___lotsa_data", "PEMS08", "0.0.0"]
+      PEMS_BAY : ["Salesforce___lotsa_data", "PEMS_BAY", "0.0.0"]
+      Q-TRAFFIC : ["Salesforce___lotsa_data", "Q-TRAFFIC", "0.0.0"]
+      SHMETRO : ["Salesforce___lotsa_data", "SHMETRO", "0.0.0"]
+      SZ_TAXI : ["Salesforce___lotsa_data", "SZ_TAXI", "0.0.0"]
+      # others
+      godaddy : ["Salesforce___lotsa_data", "godaddy", "0.0.0"]
+      hierarchical_sales : ["Salesforce___lotsa_data", "hierarchical_sales", "0.0.0"]
+      beijing_air_quality : ["Salesforce___lotsa_data", "beijing_air_quality", "0.0.0"]
+      subseasonal : ["Salesforce___lotsa_data", "subseasonal", "0.0.0"]
 monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
