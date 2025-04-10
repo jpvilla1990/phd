@@ -183,6 +183,7 @@ vectorDatabase:
         "m4-monthly",
         "traffic",
         "huaweiCloud",
+        "electricityUCI",
       ]
     moiraiMoECosine_64_16:
       metric:
@@ -195,6 +196,7 @@ vectorDatabase:
         "m4-monthly",
         "traffic",
         "huaweiCloud",
+        "electricityUCI",
       ]
     moiraiMoECosine_128_16:
       metric:
@@ -207,6 +209,7 @@ vectorDatabase:
         "m4-monthly",
         "traffic",
         "huaweiCloud",
+        "electricityUCI",
       ]
     moiraiMoECosine_520_30:
       metric:
@@ -219,6 +222,7 @@ vectorDatabase:
         "m4-monthly",
         "traffic",
         "huaweiCloud",
+        "electricityUCI",
       ]
     moiraiMoECosine_520_96:
       metric:
@@ -231,6 +235,7 @@ vectorDatabase:
         "m4-monthly",
         "traffic",
         "huaweiCloud",
+        "electricityUCI",
       ]
     moiraiMoECosine_520_336:
       metric:
@@ -243,6 +248,7 @@ vectorDatabase:
         "m4-monthly",
         "traffic",
         "huaweiCloud",
+        "electricityUCI",
       ]
 paths:
   data: ["data"]
