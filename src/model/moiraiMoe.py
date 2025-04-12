@@ -225,20 +225,20 @@ class MoiraiMoE(FileSystem):
         else:
             return merged / nElements
 
-    def mergeQueriesSoftMax(self, query : tuple) -> np.ndarray:
+    def mergeQueriesSoftMax(self, query : tuple, cosine : bool) -> np.ndarray:
         """
         Method to merge queries
         """
         vectors : np.ndarray = np.array(query[0])
-        scores : np.ndarray = np.array(query[1])
+        scores : np.ndarray = np.array(query[1]) if cosine else np.array(query[1])/(np.std(np.array(query[1])) + 1e-8)
 
-        validIndices : np.ndarray = scores > self.__scoreThreshold
+        validIndices : np.ndarray = scores > self.__scoreThreshold if cosine else scores > 0 # If score is L2, then the score does not makes sense and just filters negative L2
 
         validScores : np.ndarray = scores[validIndices]
         validVectors : np.ndarray = vectors[validIndices]
 
         softMaxNumerator : np.ndarray = np.exp(validScores)
-        weights : np.ndarray = softMaxNumerator / softMaxNumerator.sum()
+        weights : np.ndarray = softMaxNumerator / (softMaxNumerator.sum() + 1e-8)
 
         weigthedVectors : np.ndarray = validVectors * weights[:, np.newaxis]
 
@@ -266,7 +266,7 @@ class MoiraiMoE(FileSystem):
         )
         return next(iter(self.__predictor.predict(sampleGluonts)))
 
-    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False) -> SampleForecast:
+    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False, cosine : bool = True) -> SampleForecast:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
         """
@@ -277,7 +277,7 @@ class MoiraiMoE(FileSystem):
 
         sample.columns = ["datetime", "value"]
         queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
-        queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors)
+        queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors, cosine)
         if queried is not None:
             sampleNp : np.ndarray = sample["value"].to_numpy()
             queriedMean, queriedStd = np.mean(queried), np.std(queried)
@@ -315,7 +315,7 @@ class MoiraiMoE(FileSystem):
 
         sample.columns = ["datetime", "value"]
         queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
-        queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors)
+        queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors, False)
         if queried is not None:
             sampleNp : np.ndarray = sample["value"].to_numpy()
             queriedMean, queriedStd = np.mean(queried), np.std(queried)
@@ -344,7 +344,7 @@ class MoiraiMoE(FileSystem):
                 }],
                 freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
             )
-            return (next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5) * (sampleStd + 1e-8)) + sampleMean
+            return next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5)
 
     def plotSample(self, sample : pd.core.frame.DataFrame, groundTruth : pd.core.frame.DataFrame, dataset : str):
         """
