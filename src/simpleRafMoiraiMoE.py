@@ -13,7 +13,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="ET",
-    collection="moiraiMoERaf_32_16",
+    collection="moiraiMoERafL2_32_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -21,7 +21,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="ET",
-    collection="moiraiMoERaf_64_16",
+    collection="moiraiMoERafL2_64_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -29,7 +29,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="ET",
-    collection="moiraiMoERaf_128_16",
+    collection="moiraiMoERafL2_128_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -37,7 +37,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="power",
-    collection="moiraiMoERaf_32_16",
+    collection="moiraiMoERafL2_32_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -45,7 +45,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="power",
-    collection="moiraiMoERaf_64_16",
+    collection="moiraiMoERafL2_64_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -53,7 +53,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="power",
-    collection="moiraiMoERaf_128_16",
+    collection="moiraiMoERafL2_128_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -61,7 +61,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="m4-monthly",
-    collection="moiraiMoERaf_32_16",
+    collection="moiraiMoERafL2_32_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -69,7 +69,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="m4-monthly",
-    collection="moiraiMoERaf_64_16",
+    collection="moiraiMoERafL2_64_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -77,7 +77,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="m4-monthly",
-    collection="moiraiMoERaf_128_16",
+    collection="moiraiMoERafL2_128_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -85,7 +85,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="traffic",
-    collection="moiraiMoERaf_32_16",
+    collection="moiraiMoERafL2_32_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -93,7 +93,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="traffic",
-    collection="moiraiMoERaf_64_16",
+    collection="moiraiMoERafL2_64_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -101,7 +101,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="traffic",
-    collection="moiraiMoERaf_128_16",
+    collection="moiraiMoERafL2_128_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -109,7 +109,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="huaweiCloud",
-    collection="moiraiMoERaf_32_16",
+    collection="moiraiMoERafL2_32_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -117,7 +117,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="huaweiCloud",
-    collection="moiraiMoERaf_64_16",
+    collection="moiraiMoERafL2_64_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -125,7 +125,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="huaweiCloud",
-    collection="moiraiMoERaf_128_16",
+    collection="moiraiMoERafL2_128_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -133,7 +133,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="electricityUCI",
-    collection="moiraiMoERaf_32_16",
+    collection="moiraiMoERafL2_32_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -141,7 +141,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="electricityUCI",
-    collection="moiraiMoERaf_64_16",
+    collection="moiraiMoERafL2_64_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -149,7 +149,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="electricityUCI",
-    collection="moiraiMoERaf_128_16",
+    collection="moiraiMoERafL2_128_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -157,7 +157,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="covid19Deaths",
-    collection="moiraiMoERaf_32_16",
+    collection="moiraiMoERafL2_32_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -165,7 +165,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="covid19Deaths",
-    collection="moiraiMoERaf_64_16",
+    collection="moiraiMoERafL2_64_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -173,7 +173,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="covid19Deaths",
-    collection="moiraiMoERaf_128_16",
+    collection="moiraiMoERafL2_128_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -181,7 +181,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="fredMd",
-    collection="moiraiMoERaf_32_16",
+    collection="moiraiMoERafL2_32_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -189,7 +189,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="fredMd",
-    collection="moiraiMoERaf_64_16",
+    collection="moiraiMoERafL2_64_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -197,7 +197,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="fredMd",
-    collection="moiraiMoERaf_128_16",
+    collection="moiraiMoERafL2_128_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -205,7 +205,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="nn5",
-    collection="moiraiMoERaf_32_16",
+    collection="moiraiMoERafL2_32_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -213,7 +213,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="nn5",
-    collection="moiraiMoERaf_64_16",
+    collection="moiraiMoERafL2_64_16",
 )
 
 report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
@@ -221,7 +221,7 @@ report : dict = evaluation.evaluateMoiraiMoERafSoftMax(
     predictionLength=16,
     numberSamples=100,
     dataset="nn5",
-    collection="moiraiMoERaf_128_16",
+    collection="moiraiMoERafL2_128_16",
 )
 
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERafSoftMax",reportTargetName="evaluationFinalReportMoiraiMoERafSoftMax")
