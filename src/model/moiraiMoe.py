@@ -247,7 +247,7 @@ class MoiraiMoE(FileSystem):
         else:
             return np.sum(weigthedVectors, axis=0)
 
-    def inference(self, sample : pd.core.frame.DataFrame, dataset : str) -> SampleForecast:
+    def inference(self, sample : pd.core.frame.DataFrame, dataset : str) -> np.ndarray:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
         """
@@ -264,7 +264,7 @@ class MoiraiMoE(FileSystem):
             }],
             freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
         )
-        return next(iter(self.__predictor.predict(sampleGluonts)))
+        return next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5)
 
     def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False, cosine : bool = True) -> SampleForecast:
         """
@@ -284,8 +284,13 @@ class MoiraiMoE(FileSystem):
             sampleMean, sampleStd = np.mean(sampleNp), np.std(sampleNp)
 
             queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
-            queryDenormed : np.ndarray = (queryNormed * sampleStd) + sampleMean
-            newSample : list = queryDenormed.tolist() + sampleNp.tolist()
+            sampleNormed : np.ndarray = (sampleNp - sampleMean) / (sampleStd + 1e-8)
+
+            difference : float = sampleNormed[0] - queryNormed[-1]
+            queryNormed += difference
+
+            newSample : list = queryNormed.tolist() + sampleNormed.tolist()
+
             sampleGluonts : ListDataset = ListDataset(
                 [{
                     "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
@@ -293,7 +298,7 @@ class MoiraiMoE(FileSystem):
                 }],
                 freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
             )
-            return next(iter(self.__predictorRag.predict(sampleGluonts)))
+            return (next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5) * (sampleStd + 1e-8)) + sampleMean
         else:
             sampleGluonts : ListDataset = ListDataset(
                 [{
@@ -302,7 +307,7 @@ class MoiraiMoE(FileSystem):
                 }],
                 freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
             )
-            return next(iter(self.__predictor.predict(sampleGluonts)))
+            return next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5)
 
     def rafInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False) -> SampleForecast:
         """

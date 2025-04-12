@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import concurrent.futures
 import random
-from gluonts.model.forecast import SampleForecast
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
@@ -178,7 +177,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasetsModule.append(subdataset)
+            subdatasets.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -324,7 +323,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasetsModule.append(subdataset)
+            subdatasets.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -360,21 +359,21 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
-                            pred : SampleForecast = model.inference(sample[[0, index]].iloc[:contextLength], dataset)
+                            pred : np.ndarray = model.inference(sample[[0, index]].iloc[:contextLength], dataset)
                             mase : float = self.__getMASE(
                                 sample[index].iloc[:contextLength].values,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                pred.quantile(0.5),
+                                pred,
                             )
 
                             mae : float = self.__getMAE(
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                pred.quantile(0.5),
+                                pred,
                             )
 
                             mse : float = self.__getMSE(
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                pred.quantile(0.5),
+                                pred,
                             )
 
                             if mase:
@@ -466,7 +465,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasetsModule.append(subdataset)
+            subdatasets.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -502,22 +501,22 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
-                            pred : SampleForecast = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset)
+                            pred : np.ndarray = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset)
 
                             mase : float = self.__getMASE(
                                 sample[index].iloc[:contextLength].values,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                pred.quantile(0.5),
+                                pred,
                             )
 
                             mae : float = self.__getMAE(
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                pred.quantile(0.5),
+                                pred,
                             )
 
                             mse : float = self.__getMSE(
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                pred.quantile(0.5),
+                                pred,
                             )
 
                             if mase:
@@ -609,7 +608,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasetsModule.append(subdataset)
+            subdatasets.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -645,22 +644,22 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
-                            pred : SampleForecast = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset, True)
+                            pred : np.ndarray = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset, True)
 
                             mase : float = self.__getMASE(
                                 sample[index].iloc[:contextLength].values,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                pred.quantile(0.5),
+                                pred,
                             )
 
                             mae : float = self.__getMAE(
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                pred.quantile(0.5),
+                                pred,
                             )
 
                             mse : float = self.__getMSE(
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                pred.quantile(0.5),
+                                pred,
                             )
 
                             if mase:
@@ -752,7 +751,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasetsModule.append(subdataset)
+            subdatasets.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -890,7 +889,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasetsModule.append(subdataset)
+            subdatasets.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
@@ -1032,7 +1031,7 @@ class Evaluation(FileSystem):
             )
             subdatasets = list(datasetConfig[dataset].keys())
         else:
-            subdatasetsModule.append(subdataset)
+            subdatasets.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
         for element in subdatasets:
