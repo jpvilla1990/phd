@@ -1,7 +1,7 @@
 from evaluation.evaluation import Evaluation
 
 evaluation : Evaluation = Evaluation()
-
+a = """
 report : dict = evaluation.evaluateMoiraiMoE(
     contextLength=520,
     predictionLength=30,
@@ -148,5 +148,97 @@ report : dict = evaluation.evaluateMoiraiMoE(
     numberSamples=100,
     dataset="electricityUCI",
 )
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="covid19Deaths",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="covid19Deaths",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="covid19Deaths",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=520,
+    predictionLength=96,
+    numberSamples=100,
+    dataset="fredMd",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=520,
+    predictionLength=30,
+    numberSamples=100,
+    dataset="fredMd",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="fredMd",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="fredMd",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="fredMd",
+)
+"""
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=520,
+    predictionLength=96,
+    numberSamples=100,
+    dataset="nn5",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=520,
+    predictionLength=30,
+    numberSamples=100,
+    dataset="nn5",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="nn5",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="nn5",
+)
+
+report : dict = evaluation.evaluateMoiraiMoE(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="nn5",
+)
+
 
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoE",reportTargetName="evaluationFinalReportMoiraiMoE")

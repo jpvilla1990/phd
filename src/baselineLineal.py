@@ -91,7 +91,7 @@ report : dict = evaluation.evaluateLinearModel(
     predictionLength=336,
     dataset="huaweiCloud",
 )
-"""
+
 report : dict = evaluation.evaluateLinearModel(
     contextLength=520,
     predictionLength=30,
@@ -126,6 +126,84 @@ report : dict = evaluation.evaluateLinearModel(
     contextLength=32,
     predictionLength=16,
     dataset="electricityUCI",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=128,
+    predictionLength=16,
+    dataset="covid19Deaths",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=64,
+    predictionLength=16,
+    dataset="covid19Deaths",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=32,
+    predictionLength=16,
+    dataset="covid19Deaths",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=128,
+    predictionLength=16,
+    dataset="fredMd",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=64,
+    predictionLength=16,
+    dataset="fredMd",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=32,
+    predictionLength=16,
+    dataset="fredMd",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=520,
+    predictionLength=30,
+    dataset="fredMd",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=520,
+    predictionLength=96,
+    dataset="fredMd",
+)
+"""
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=128,
+    predictionLength=16,
+    dataset="nn5",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=64,
+    predictionLength=16,
+    dataset="nn5",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=32,
+    predictionLength=16,
+    dataset="nn5",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=520,
+    predictionLength=30,
+    dataset="nn5",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=520,
+    predictionLength=96,
+    dataset="nn5",
 )
 
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsLineal",reportTargetName="evaluationFinalReportLineal")

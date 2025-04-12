@@ -165,6 +165,16 @@ class MoiraiMoE(FileSystem):
             self.__moiraiMoEEmbeddings.inference,
         )
 
+    def setRafCollection(self, collectionName : str, dataset : str):
+        """
+        Method to set RAF collection
+        """
+        self.__vectorDB.setCollection(
+            collectionName,
+            dataset,
+            lambda x : torch.tensor(x).reshape(1, len(x)),
+        )
+
     def __getFrequency(self, timestamps : pd.core.frame.DataFrame, timestampFormat : str) -> str:
         """
         Method to get frequency from the timestamps
@@ -293,6 +303,48 @@ class MoiraiMoE(FileSystem):
                 freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
             )
             return next(iter(self.__predictor.predict(sampleGluonts)))
+
+    def rafInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False) -> SampleForecast:
+        """
+        Method to predict one sample, first columns must be the timestamp and second is the timeseries
+        """
+        if len(sample.columns) != 2:
+            raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
+
+        timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
+
+        sample.columns = ["datetime", "value"]
+        queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
+        queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors)
+        if queried is not None:
+            sampleNp : np.ndarray = sample["value"].to_numpy()
+            queriedMean, queriedStd = np.mean(queried), np.std(queried)
+            sampleMean, sampleStd = np.mean(sampleNp), np.std(sampleNp)
+
+            queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
+            sampleNormed : np.ndarray = (sampleNp - sampleMean) / (sampleStd + 1e-8)
+
+            difference : float = sampleNormed[0] - queryNormed[-1]
+            queryNormed += difference
+
+            newSample : list = queryNormed.tolist() + sampleNormed.tolist()
+            sampleGluonts : ListDataset = ListDataset(
+                [{
+                    "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+                    "target": newSample,
+                }],
+                freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
+            )
+            return (next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5) * (sampleStd + 1e-8)) + sampleMean
+        else:
+            sampleGluonts : ListDataset = ListDataset(
+                [{
+                    "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+                    "target": sample["value"].tolist(),
+                }],
+                freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
+            )
+            return (next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5) * (sampleStd + 1e-8)) + sampleMean
 
     def plotSample(self, sample : pd.core.frame.DataFrame, groundTruth : pd.core.frame.DataFrame, dataset : str):
         """

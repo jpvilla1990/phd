@@ -32,7 +32,7 @@ class VectorDBIngestion(FileSystem):
             self.__loadDatabaseTracking() | entry,
         )
 
-    def ingestDatasetMoiraiMoE(self, dataset : str, collectionName : str, contextLength : int, predictionLength : int):
+    def ingestDatasetMoiraiMoE(self, dataset : str, collectionName : str, contextLength : int, predictionLength : int, raf : bool = False):
         """
         Method to ingest dataset in a collection for moiraiMoE
         """
@@ -44,7 +44,10 @@ class VectorDBIngestion(FileSystem):
             numSamples = 100,
             collectionName = collectionName,
         )
-        model.setRagCollection(collectionName, dataset)
+        if raf:
+            model.setRafCollection(collectionName, dataset)
+        else:
+            model.setRagCollection(collectionName, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
         iterator.setSampleSize(contextLength + predictionLength)
 
@@ -55,7 +58,10 @@ class VectorDBIngestion(FileSystem):
 
         iterations : int = 0
 
-        model.deleteDataset(dataset)
+        try:
+            model.deleteDataset(dataset)
+        except Exception as e:
+            print("Exception: " + str(e))
         maxSamplesPerSubdataset : int = int(maxNumberSamples / len(subdatasets))
         for element in subdatasets:
             try:
@@ -102,7 +108,7 @@ class VectorDBIngestion(FileSystem):
         databaseTracking[f"{collectionName}_{dataset}"][dataset] = iterations
         self.__writeDatabaseTracking(databaseTracking)
 
-    def ingestDatasetsMoiraiMoE(self, collection : str):
+    def ingestDatasetsMoiraiMoE(self, collection : str, raf : bool = False):
         """
         Method to ingest all datasets to MoiraiMoE
         """
@@ -120,6 +126,7 @@ class VectorDBIngestion(FileSystem):
                 collection,
                 collections["context"],
                 collections["prediction"],
+                raf,
             )
 
     def ingestDatasetChatTime(self, dataset : str, collectionName : str, contextLength : int, predictionLength : int):
@@ -144,7 +151,10 @@ class VectorDBIngestion(FileSystem):
 
         iterations : int = 0
 
-        model.deleteDataset(dataset)
+        try:
+            model.deleteDataset(dataset)
+        except Exception as e:
+            print("Exception: " + str(e))
         maxSamplesPerSubdataset : int = int(maxNumberSamples / len(subdatasets))
         for element in subdatasets:
             try:

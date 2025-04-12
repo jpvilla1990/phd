@@ -62,6 +62,39 @@ datasets:
     timeformat: "%Y-%m-%d %H-%M-%S"
     subdatasets:
       solarEnergy: ["solar_weekly_dataset.tsf"]
+  covid19Deaths:
+    url: "https://zenodo.org/records/4656009/files/covid_deaths_dataset.zip?download=1"
+    type: "zip"
+    format: "monash"
+    separator: ","
+    decimal: "."
+    periodicity:
+      day: 1
+    timeformat: "%Y-%m-%d %H-%M-%S"
+    subdatasets:
+      covid19Deaths: ["covid_deaths_dataset.tsf"]
+  fredMd:
+    url: "https://zenodo.org/records/4654833/files/fred_md_dataset.zip?download=1"
+    type: "zip"
+    format: "monash"
+    separator: ","
+    decimal: "."
+    periodicity:
+      day: 1
+    timeformat: "%Y-%m-%d %H-%M-%S"
+    subdatasets:
+      fredMd: ["fred_md_dataset.tsf"]
+  nn5:
+    url: "https://zenodo.org/records/4656117/files/nn5_daily_dataset_without_missing_values.zip?download=1"
+    type: "zip"
+    format: "monash"
+    separator: ","
+    decimal: "."
+    periodicity:
+      day: 1
+    timeformat: "%Y-%m-%d %H-%M-%S"
+    subdatasets:
+      nn5: ["nn5_daily_dataset_without_missing_values.tsf"]
   power:
     url: "https://www.kaggle.com/datasets/dharanikra/electrical-power-demand-in-turkey"
     type: "kaggle"
@@ -184,6 +217,9 @@ vectorDatabase:
         "traffic",
         "huaweiCloud",
         "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
       ]
     moiraiMoECosine_64_16:
       metric:
@@ -197,6 +233,9 @@ vectorDatabase:
         "traffic",
         "huaweiCloud",
         "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
       ]
     moiraiMoECosine_128_16:
       metric:
@@ -210,6 +249,9 @@ vectorDatabase:
         "traffic",
         "huaweiCloud",
         "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
       ]
     moiraiMoECosine_520_30:
       metric:
@@ -223,6 +265,8 @@ vectorDatabase:
         "traffic",
         "huaweiCloud",
         "electricityUCI",
+        "fredMd",
+        "nn5",
       ]
     moiraiMoECosine_520_96:
       metric:
@@ -236,6 +280,8 @@ vectorDatabase:
         "traffic",
         "huaweiCloud",
         "electricityUCI",
+        "fredMd",
+        "nn5",
       ]
     moiraiMoECosine_520_336:
       metric:
@@ -250,6 +296,55 @@ vectorDatabase:
         "huaweiCloud",
         "electricityUCI",
       ]
+    moiraiMoERafL2_32_16:
+      metric:
+        hnsw:space: "l2"
+      context: 32
+      prediction: 16
+      datasets: [
+        "ET",
+        "solarEnergy",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
+      ]
+    moiraiMoERafL2_64_16:
+      metric:
+        hnsw:space: "l2"
+      context: 64
+      prediction: 16
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
+      ]
+    moiraiMoERafL2_128_16:
+      metric:
+        hnsw:space: "l2"
+      context: 128
+      prediction: 16
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
+      ]
 paths:
   data: ["data"]
   datasets: ["data", "datasets"]
@@ -261,6 +356,7 @@ files:
   evaluationReportsMoiraiMoE: ["data", "reportsMoiraiMoE.yaml"]
   evaluationReportsMoiraiMoERagMean: ["data", "reportsMoiraiMoERagMean.yaml"]
   evaluationReportsMoiraiMoERagSoftMax: ["data", "reportsMoiraiMoERagSoftMax.yaml"]
+  evaluationReportsMoiraiMoERafSoftMax: ["data", "reportsMoiraiMoERafSoftMax.yaml"]
   evaluationReportsChatTime: ["data", "reportsChatTime.yaml"]
   evaluationReportsChatTimeRag: ["data", "reportsChatTimeRag.yaml"]
   evaluationFinalReportLineal: ["data" ,"reportsLineal.pdf"]
@@ -268,4 +364,5 @@ files:
   evaluationFinalReportChatTime: ["data" ,"reportsChatTime.pdf"]
   evaluationFinalReportMoiraiMoERagMean: ["data", "reportsMoiraiMoERagMean.pdf"]
   evaluationFinalReportMoiraiMoERagSoftMax: ["data", "reportsMoiraiMoERagSoftMax.pdf"]
+  evaluationFinalReportMoiraiMoERafSoftMax: ["data", "reportsMoiraiMoERafSoftMax.pdf"]
   evaluationFinalReportChatTimeRag: ["data", "reportsChatTimeRag.pdf"]

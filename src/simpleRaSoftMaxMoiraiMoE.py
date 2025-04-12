@@ -130,7 +130,6 @@ report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
     dataset="huaweiCloud",
     collection="moiraiMoECosine_520_336",
 )
-"""
 
 report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
     contextLength=520,
@@ -178,6 +177,110 @@ report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
     numberSamples=100,
     dataset="electricityUCI",
     collection="moiraiMoECosine_32_16",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="covid19Deaths",
+    collection="moiraiMoECosine_32_16",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="covid19Deaths",
+    collection="moiraiMoECosine_64_16",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="covid19Deaths",
+    collection="moiraiMoECosine_128_16",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=520,
+    predictionLength=96,
+    numberSamples=100,
+    dataset="fredMd",
+    collection="moiraiMoECosine_520_96",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=520,
+    predictionLength=30,
+    numberSamples=100,
+    dataset="fredMd",
+    collection="moiraiMoECosine_520_30",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="fredMd",
+    collection="moiraiMoECosine_32_16",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="fredMd",
+    collection="moiraiMoECosine_64_16",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="fredMd",
+    collection="moiraiMoECosine_128_16",
+)
+"""
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=520,
+    predictionLength=96,
+    numberSamples=100,
+    dataset="nn5",
+    collection="moiraiMoECosine_520_96",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=520,
+    predictionLength=30,
+    numberSamples=100,
+    dataset="nn5",
+    collection="moiraiMoECosine_520_30",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=32,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="nn5",
+    collection="moiraiMoECosine_32_16",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=64,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="nn5",
+    collection="moiraiMoECosine_64_16",
+)
+
+report : dict = evaluation.evaluateMoiraiMoERagSoftMax(
+    contextLength=128,
+    predictionLength=16,
+    numberSamples=100,
+    dataset="nn5",
+    collection="moiraiMoECosine_128_16",
 )
 
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERagSoftMax",reportTargetName="evaluationFinalReportMoiraiMoERagSoftMax")
