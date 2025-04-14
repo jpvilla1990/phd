@@ -1,0 +1,134 @@
+Evaluating Dataset ET, context length : 32, prediction length : 16, collection : moiraiMoECosine_32_16_ET
+Subdataset ETTh1
+Subdataset ETTh2
+Subdataset ETTm1
+Subdataset ETTm2
+Evaluating Dataset ET, context length : 64, prediction length : 16, collection : moiraiMoECosine_64_16_ET
+Subdataset ETTh1
+Subdataset ETTh2
+Subdataset ETTm1
+Subdataset ETTm2
+Evaluating Dataset ET, context length : 128, prediction length : 16, collection : moiraiMoECosine_128_16_ET
+Subdataset ETTh1
+Subdataset ETTh2
+Subdataset ETTm1
+Subdataset ETTm2
+Evaluating Dataset ET, context length : 520, prediction length : 30, collection : moiraiMoECosine_520_30_ET
+Subdataset ETTh1
+Subdataset ETTh2
+Subdataset ETTm1
+Subdataset ETTm2
+Evaluating Dataset ET, context length : 520, prediction length : 96, collection : moiraiMoECosine_520_96_ET
+Subdataset ETTh1
+Subdataset ETTh2
+Subdataset ETTm1
+Subdataset ETTm2
+Evaluating Dataset ET, context length : 520, prediction length : 336, collection : moiraiMoECosine_520_336_ET
+Subdataset ETTh1
+Subdataset ETTh2
+Subdataset ETTm1
+Subdataset ETTm2
+Evaluating Dataset power, context length : 32, prediction length : 16, collection : moiraiMoECosine_32_16_power
+Subdataset power
+Evaluating Dataset power, context length : 64, prediction length : 16, collection : moiraiMoECosine_64_16_power
+Subdataset power
+Evaluating Dataset power, context length : 128, prediction length : 16, collection : moiraiMoECosine_128_16_power
+Subdataset power
+Evaluating Dataset power, context length : 520, prediction length : 30, collection : moiraiMoECosine_520_30_power
+Subdataset power
+Evaluating Dataset power, context length : 520, prediction length : 96, collection : moiraiMoECosine_520_96_power
+Subdataset power
+Evaluating Dataset power, context length : 520, prediction length : 336, collection : moiraiMoECosine_520_336_power
+Subdataset power
+Evaluating Dataset m4-monthly, context length : 32, prediction length : 16, collection : moiraiMoECosine_32_16_m4-monthly
+Subdataset m4-monthly
+Evaluating Dataset m4-monthly, context length : 64, prediction length : 16, collection : moiraiMoECosine_64_16_m4-monthly
+Subdataset m4-monthly
+Evaluating Dataset m4-monthly, context length : 128, prediction length : 16, collection : moiraiMoECosine_128_16_m4-monthly
+Subdataset m4-monthly
+Evaluating Dataset m4-monthly, context length : 520, prediction length : 30, collection : moiraiMoECosine_520_30_m4-monthly
+Subdataset m4-monthly
+Evaluating Dataset m4-monthly, context length : 520, prediction length : 96, collection : moiraiMoECosine_520_96_m4-monthly
+Subdataset m4-monthly
+Evaluating Dataset m4-monthly, context length : 520, prediction length : 336, collection : moiraiMoECosine_520_336_m4-monthly
+Subdataset m4-monthly
+Evaluating Dataset traffic, context length : 32, prediction length : 16, collection : moiraiMoECosine_32_16_traffic
+Subdataset traffic
+Evaluating Dataset traffic, context length : 64, prediction length : 16, collection : moiraiMoECosine_64_16_traffic
+Subdataset traffic
+Evaluating Dataset traffic, context length : 128, prediction length : 16, collection : moiraiMoECosine_128_16_traffic
+Subdataset traffic
+Evaluating Dataset traffic, context length : 520, prediction length : 30, collection : moiraiMoECosine_520_30_traffic
+Subdataset traffic
+Evaluating Dataset traffic, context length : 520, prediction length : 96, collection : moiraiMoECosine_520_96_traffic
+Subdataset traffic
+Evaluating Dataset traffic, context length : 520, prediction length : 336, collection : moiraiMoECosine_520_336_traffic
+Subdataset traffic
+Evaluating Dataset huaweiCloud, context length : 32, prediction length : 16, collection : moiraiMoECosine_32_16_huaweiCloud
+Subdataset datacenter1
+Subdataset datacenter2
+Subdataset datacenter3
+Subdataset datacenter4
+Evaluating Dataset huaweiCloud, context length : 64, prediction length : 16, collection : moiraiMoECosine_64_16_huaweiCloud
+Subdataset datacenter1
+Subdataset datacenter2
+Subdataset datacenter3
+Subdataset datacenter4
+Evaluating Dataset huaweiCloud, context length : 128, prediction length : 16, collection : moiraiMoECosine_128_16_huaweiCloud
+Subdataset datacenter1
+Subdataset datacenter2
+Subdataset datacenter3
+Subdataset datacenter4
+Evaluating Dataset huaweiCloud, context length : 520, prediction length : 30, collection : moiraiMoECosine_520_30_huaweiCloud
+Subdataset datacenter1
+Subdataset datacenter2
+Subdataset datacenter3
+Subdataset datacenter4
+Evaluating Dataset huaweiCloud, context length : 520, prediction length : 96, collection : moiraiMoECosine_520_96_huaweiCloud
+Subdataset datacenter1
+Subdataset datacenter2
+Subdataset datacenter3
+Subdataset datacenter4
+Evaluating Dataset huaweiCloud, context length : 520, prediction length : 336, collection : moiraiMoECosine_520_336_huaweiCloud
+Subdataset datacenter1
+Subdataset datacenter2
+Subdataset datacenter3
+Subdataset datacenter4
+Evaluating Dataset electricityUCI, context length : 520, prediction length : 336, collection : moiraiMoECosine_520_336_electricityUCI
+Subdataset electricity
+Evaluating Dataset electricityUCI, context length : 520, prediction length : 96, collection : moiraiMoECosine_520_96_electricityUCI
+Subdataset electricity
+Evaluating Dataset electricityUCI, context length : 520, prediction length : 30, collection : moiraiMoECosine_520_30_electricityUCI
+Subdataset electricity
+Evaluating Dataset electricityUCI, context length : 128, prediction length : 16, collection : moiraiMoECosine_128_16_electricityUCI
+Subdataset electricity
+Evaluating Dataset electricityUCI, context length : 64, prediction length : 16, collection : moiraiMoECosine_64_16_electricityUCI
+Subdataset electricity
+Evaluating Dataset electricityUCI, context length : 32, prediction length : 16, collection : moiraiMoECosine_32_16_electricityUCI
+Subdataset electricity
+Evaluating Dataset covid19Deaths, context length : 32, prediction length : 16, collection : moiraiMoECosine_32_16_covid19Deaths
+Subdataset covid19Deaths
+Evaluating Dataset covid19Deaths, context length : 64, prediction length : 16, collection : moiraiMoECosine_64_16_covid19Deaths
+Subdataset covid19Deaths
+Evaluating Dataset covid19Deaths, context length : 128, prediction length : 16, collection : moiraiMoECosine_128_16_covid19Deaths
+Subdataset covid19Deaths
+Evaluating Dataset fredMd, context length : 520, prediction length : 96, collection : moiraiMoECosine_520_96_fredMd
+Subdataset fredMd
+Evaluating Dataset fredMd, context length : 520, prediction length : 30, collection : moiraiMoECosine_520_30_fredMd
+Subdataset fredMd
+Evaluating Dataset fredMd, context length : 32, prediction length : 16, collection : moiraiMoECosine_32_16_fredMd
+Subdataset fredMd
+Evaluating Dataset fredMd, context length : 64, prediction length : 16, collection : moiraiMoECosine_64_16_fredMd
+Subdataset fredMd
+Evaluating Dataset fredMd, context length : 128, prediction length : 16, collection : moiraiMoECosine_128_16_fredMd
+Subdataset fredMd
+Evaluating Dataset nn5, context length : 520, prediction length : 96, collection : moiraiMoECosine_520_96_nn5
+Subdataset nn5
+Evaluating Dataset nn5, context length : 520, prediction length : 30, collection : moiraiMoECosine_520_30_nn5
+Subdataset nn5
+Evaluating Dataset nn5, context length : 32, prediction length : 16, collection : moiraiMoECosine_32_16_nn5
+Subdataset nn5
+Evaluating Dataset nn5, context length : 64, prediction length : 16, collection : moiraiMoECosine_64_16_nn5
+Subdataset nn5
+Evaluating Dataset nn5, context length : 128, prediction length : 16, collection : moiraiMoECosine_128_16_nn5
+Subdataset nn5
