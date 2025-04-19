@@ -296,6 +296,98 @@ vectorDatabase:
         "huaweiCloud",
         "electricityUCI",
       ]
+    moiraiMoEL2_32_16:
+      metric:
+        hnsw:space: "l2"
+      context: 32
+      prediction: 16
+      datasets: [
+        "ET",
+        "solarEnergy",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
+      ]
+    moiraiMoEL2_64_16:
+      metric:
+        hnsw:space: "l2"
+      context: 64
+      prediction: 16
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
+      ]
+    moiraiMoEL2_128_16:
+      metric:
+        hnsw:space: "l2"
+      context: 128
+      prediction: 16
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
+      ]
+    moiraiMoEL2_520_30:
+      metric:
+        hnsw:space: "l2"
+      context: 520
+      prediction: 30
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "fredMd",
+        "nn5",
+      ]
+    moiraiMoEL2_520_96:
+      metric:
+        hnsw:space: "l2"
+      context: 520
+      prediction: 96
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "fredMd",
+        "nn5",
+      ]
+    moiraiMoEL2_520_336:
+      metric:
+        hnsw:space: "l2"
+      context: 520
+      prediction: 336
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+      ]
     moiraiMoERafL2_32_16:
       metric:
         hnsw:space: "l2"
@@ -345,6 +437,55 @@ vectorDatabase:
         "fredMd",
         "nn5",
       ]
+    moiraiMoERafNormCos_32_16:
+      metric:
+        hnsw:space: "cosine"
+      context: 32
+      prediction: 16
+      datasets: [
+        "ET",
+        "solarEnergy",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
+      ]
+    moiraiMoERafNormCos_64_16:
+      metric:
+        hnsw:space: "cosine"
+      context: 64
+      prediction: 16
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
+      ]
+    moiraiMoERafNormCos_128_16:
+      metric:
+        hnsw:space: "cosine"
+      context: 128
+      prediction: 16
+      datasets: [
+        "ET",
+        "power",
+        "m4-monthly",
+        "traffic",
+        "huaweiCloud",
+        "electricityUCI",
+        "covid19Deaths",
+        "fredMd",
+        "nn5",
+      ]
 paths:
   data: ["data"]
   datasets: ["data", "datasets"]
@@ -357,6 +498,8 @@ files:
   evaluationReportsMoiraiMoERagMean: ["data", "reportsMoiraiMoERagMean.yaml"]
   evaluationReportsMoiraiMoERagSoftMax: ["data", "reportsMoiraiMoERagSoftMax.yaml"]
   evaluationReportsMoiraiMoERafSoftMax: ["data", "reportsMoiraiMoERafSoftMax.yaml"]
+  evaluationReportsMoiraiMoERafCosSoftMax: ["data", "reportsMoiraiMoERafCosSoftMax.yaml"]
+  evaluationReportsMoiraiMoERagOnlySoftMax: ["data", "reportsMoiraiMoERagOnlySoftMax.yaml"]
   evaluationReportsChatTime: ["data", "reportsChatTime.yaml"]
   evaluationReportsChatTimeRag: ["data", "reportsChatTimeRag.yaml"]
   evaluationFinalReportLineal: ["data" ,"reportsLineal.pdf"]
@@ -365,4 +508,7 @@ files:
   evaluationFinalReportMoiraiMoERagMean: ["data", "reportsMoiraiMoERagMean.pdf"]
   evaluationFinalReportMoiraiMoERagSoftMax: ["data", "reportsMoiraiMoERagSoftMax.pdf"]
   evaluationFinalReportMoiraiMoERafSoftMax: ["data", "reportsMoiraiMoERafSoftMax.pdf"]
+  evaluationFinalReportMoiraiMoERafCosSoftMax: ["data", "reportsMoiraiMoERafCosSoftMax.pdf"]
+  evaluationFinalReportMoiraiMoERagOnlySoftMax: ["data", "reportsMoiraiMoERagOnlySoftMax.pdf"]
+  evaluationFinalReportMoiraiMoERagL2SoftMax : ["data", "reportsMoiraiMoERagL2SoftMax.pdf"]
   evaluationFinalReportChatTimeRag: ["data", "reportsChatTimeRag.pdf"]

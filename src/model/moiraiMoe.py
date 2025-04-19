@@ -140,7 +140,7 @@ class MoiraiMoE(FileSystem):
         self.__modelRag : MoiraiMoEForecast = MoiraiMoEForecast(
             module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
             prediction_length=predictionLength,
-            context_length=contextLength + contextLength + predictionLength,
+            context_length= contextLength + predictionLength,
             patch_size=patchSize,
             num_samples=numSamples,
             target_dim=targetDim,
@@ -173,6 +173,16 @@ class MoiraiMoE(FileSystem):
             collectionName,
             dataset,
             lambda x : torch.tensor(x).reshape(1, len(x)),
+        )
+
+    def setRafCosCollection(self, collectionName : str, dataset : str):
+        """
+        Method to set RAF collection
+        """
+        self.__vectorDB.setCollection(
+            collectionName,
+            dataset,
+            lambda x : (torch.tensor(x).reshape(1, len(x)) - torch.mean(torch.tensor(x).reshape(1, len(x)))) / (torch.std(torch.tensor(x).reshape(1, len(x))) + 1e-8),
         )
 
     def __getFrequency(self, timestamps : pd.core.frame.DataFrame, timestampFormat : str) -> str:
@@ -266,7 +276,57 @@ class MoiraiMoE(FileSystem):
         )
         return next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5)
 
-    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False, cosine : bool = True) -> SampleForecast:
+    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False, cosine : bool = True, ragPredOnly : bool = False) -> SampleForecast:
+        """
+        Method to predict one sample, first columns must be the timestamp and second is the timeseries
+        """
+        if len(sample.columns) != 2:
+            raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
+
+        timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
+
+        sample.columns = ["datetime", "value"]
+        queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
+        queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors, cosine)
+        if queried is not None:
+            sampleNp : np.ndarray = sample["value"].to_numpy()
+            queriedMean, queriedStd = np.mean(queried), np.std(queried)
+            sampleMean, sampleStd = np.mean(sampleNp), np.std(sampleNp)
+
+            queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
+            sampleNormed : np.ndarray = (sampleNp - sampleMean) / (sampleStd + 1e-8)
+
+            difference : float = sampleNormed[0] - queryNormed[-1]
+            queryNormed += difference
+
+            queryNormedList : list = queryNormed[self.__contextLength:].tolist() if ragPredOnly else queryNormed.tolist()
+            newSample : list = queryNormedList + sampleNormed.tolist()
+
+            sampleGluonts : ListDataset = ListDataset(
+                [{
+                    "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+                    "target": newSample,
+                }],
+                freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
+            )
+            prediction : np.ndarray = next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5)
+
+            predictions : np.ndarray = (
+                [prediction] + [vector[self.__contextLength:] for vector in queriedVectors[0]],
+                [sum([(2 - vector) / len(queriedVectors[1]) for vector in queriedVectors[1]])] + [vector / len(queriedVectors[1]) for vector in queriedVectors[1]],
+            )
+            return (self.mergeQueries(predictions) if not softMax else self.mergeQueriesSoftMax(predictions, cosine) * (sampleStd + 1e-8) + sampleMean)
+        else:
+            sampleGluonts : ListDataset = ListDataset(
+                [{
+                    "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+                    "target": sample["value"].tolist(),
+                }],
+                freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
+            )
+            return next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5)
+
+    def rafInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False, cosine : bool = False) -> SampleForecast:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
         """
@@ -290,7 +350,6 @@ class MoiraiMoE(FileSystem):
             queryNormed += difference
 
             newSample : list = queryNormed.tolist() + sampleNormed.tolist()
-
             sampleGluonts : ListDataset = ListDataset(
                 [{
                     "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
@@ -309,38 +368,19 @@ class MoiraiMoE(FileSystem):
             )
             return next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5)
 
-    def rafInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False) -> SampleForecast:
+    def ragOnlyInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False, cosine : bool = True) -> SampleForecast:
         """
-        Method to predict one sample, first columns must be the timestamp and second is the timeseries
+        Method to predict one sample, first columns must be the timestamp and second is the timeseries using rag only
         """
         if len(sample.columns) != 2:
             raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
 
         timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
-
         sample.columns = ["datetime", "value"]
         queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
-        queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors, False)
+        queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors, cosine)
         if queried is not None:
-            sampleNp : np.ndarray = sample["value"].to_numpy()
-            queriedMean, queriedStd = np.mean(queried), np.std(queried)
-            sampleMean, sampleStd = np.mean(sampleNp), np.std(sampleNp)
-
-            queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
-            sampleNormed : np.ndarray = (sampleNp - sampleMean) / (sampleStd + 1e-8)
-
-            difference : float = sampleNormed[0] - queryNormed[-1]
-            queryNormed += difference
-
-            newSample : list = queryNormed.tolist() + sampleNormed.tolist()
-            sampleGluonts : ListDataset = ListDataset(
-                [{
-                    "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
-                    "target": newSample,
-                }],
-                freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
-            )
-            return (next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5) * (sampleStd + 1e-8)) + sampleMean
+            return queried[self.__contextLength:]
         else:
             sampleGluonts : ListDataset = ListDataset(
                 [{
