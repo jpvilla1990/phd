@@ -18,6 +18,7 @@ from gluonts.model.forecast import SampleForecast
 
 from utils.timeManager import TimeManager
 from utils.fileSystem import FileSystem
+from utils.utils import Utils
 
 from vectorDB.vectorDB import vectorDB
 from exceptions.modelException import ModelException
@@ -276,7 +277,15 @@ class MoiraiMoE(FileSystem):
         )
         return next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5)
 
-    def ragInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False, cosine : bool = True, ragPredOnly : bool = False) -> SampleForecast:
+    def ragInference(
+            self,
+            sample : pd.core.frame.DataFrame,
+            dataset : str,
+            softMax : bool = False,
+            cosine : bool = True,
+            ragPredOnly : bool = False,
+            plot : bool = False,
+        ) -> np.ndarray:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
         """
@@ -310,6 +319,13 @@ class MoiraiMoE(FileSystem):
                 freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
             )
             prediction : np.ndarray = next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5)
+
+            if plot:
+                Utils.plot(
+                    [query.tolist() for query in queriedVectors[0]],
+                    "rag.png",
+                    ":",
+                )
 
             predictions : np.ndarray = (
                 [prediction] + [vector[self.__contextLength:] for vector in queriedVectors[0]],

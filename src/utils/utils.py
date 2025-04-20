@@ -3,6 +3,7 @@ import yaml
 import pyarrow
 import pyarrow.feather as feather
 import pandas as pd
+import matplotlib.pyplot as plt
 
 class Utils(object):
     """
@@ -48,3 +49,18 @@ class Utils(object):
         """
         table : pyarrow.lib.Table = feather.read_table(f"{path}.arrow")
         return table.to_pandas()
+    
+    def plot(samples : list, filePath : str, style : str = "-"):
+        """
+        Method to plot several samples
+        """
+        for sample in samples:
+            plt.plot(sample, linestyle=style)
+
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.title('Samples')
+        plt.legend()
+        plt.grid(True)
+        plt.savefig(filePath, bbox_inches='tight')
+        plt.close()
