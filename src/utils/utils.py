@@ -50,15 +50,20 @@ class Utils(object):
         table : pyarrow.lib.Table = feather.read_table(f"{path}.arrow")
         return table.to_pandas()
     
-    def plot(samples : list, filePath : str, style : str = "-"):
+    def plot(samples : list, filePath : str, style : str = "-", context : int = -1, rag = False):
         """
         Method to plot several samples
         """
         for sample in samples:
             plt.plot(sample, linestyle=style)
-
         plt.xlabel('x')
         plt.ylabel('y')
+        if context > 0:
+            plt.axvline(x=context, color='red', linestyle='--', label='Division')
+            if rag:
+                predictionLength : int = int((len(samples[0]) - (2 * context)) / 2)
+                plt.axvline(x=context + predictionLength, color='red', linestyle='--', label='Division')
+                plt.axvline(x=context + predictionLength + context, color='red', linestyle='--', label='Division')
         plt.title('Samples')
         plt.legend()
         plt.grid(True)

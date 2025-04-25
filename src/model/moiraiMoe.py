@@ -305,12 +305,10 @@ class MoiraiMoE(FileSystem):
             queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
             sampleNormed : np.ndarray = (sampleNp - sampleMean) / (sampleStd + 1e-8)
 
-            difference : float = sampleNormed[0] - queryNormed[-1]
-            queryNormed += difference
+            #difference : float = sampleNormed[0] - queryNormed[-1]
+            #queryNormed += difference
 
-            queryNormedList : list = queryNormed[self.__contextLength:].tolist() if ragPredOnly else queryNormed.tolist()
-            newSample : list = queryNormedList + sampleNormed.tolist()
-
+            newSample : list = queryNormed.tolist() + sampleNormed.tolist()
             sampleGluonts : ListDataset = ListDataset(
                 [{
                     "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
@@ -318,20 +316,43 @@ class MoiraiMoE(FileSystem):
                 }],
                 freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
             )
-            prediction : np.ndarray = next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5)
+            predictionNormed : np.ndarray = next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5)
+            prediction : np.ndarray = (predictionNormed * (sampleStd + 1e-8)) + sampleMean
+
+            #predictions : np.ndarray = (
+            #    [prediction] + [vector[self.__contextLength:] for vector in queriedVectors[0]],
+            #    [sum([(2 - vector) / len(queriedVectors[1]) for vector in queriedVectors[1]])] + [vector / len(queriedVectors[1]) for vector in queriedVectors[1]],
+            #)
+            #prediction = self.mergeQueries(predictions) if not softMax else self.mergeQueriesSoftMax(predictions, cosine)
 
             if plot:
                 Utils.plot(
                     [query.tolist() for query in queriedVectors[0]],
                     "rag.png",
                     ":",
+                    self.__contextLength,
+                )
+                Utils.plot(
+                    [queried.tolist()],
+                    "ragAvg.png",
+                    ":",
+                    self.__contextLength,
+                )
+                Utils.plot(
+                    [newSample + predictionNormed.tolist()],
+                    "inputAndRag.png",
+                    ":",
+                    self.__contextLength,
+                    rag=True,
+                )
+                Utils.plot(
+                    [sample["value"].tolist() + prediction.tolist()],
+                    "pred.png",
+                    "-",
+                    self.__contextLength,
                 )
 
-            predictions : np.ndarray = (
-                [prediction] + [vector[self.__contextLength:] for vector in queriedVectors[0]],
-                [sum([(2 - vector) / len(queriedVectors[1]) for vector in queriedVectors[1]])] + [vector / len(queriedVectors[1]) for vector in queriedVectors[1]],
-            )
-            return (self.mergeQueries(predictions) if not softMax else self.mergeQueriesSoftMax(predictions, cosine) * (sampleStd + 1e-8) + sampleMean)
+            return prediction
         else:
             sampleGluonts : ListDataset = ListDataset(
                 [{
@@ -342,7 +363,15 @@ class MoiraiMoE(FileSystem):
             )
             return next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5)
 
-    def rafInference(self, sample : pd.core.frame.DataFrame, dataset : str, softMax : bool = False, cosine : bool = False) -> SampleForecast:
+    def rafInference(
+            self,
+            sample : pd.core.frame.DataFrame,
+            dataset : str,
+            softMax : bool = False,
+            cosine : bool = True,
+            ragPredOnly : bool = False,
+            plot : bool = False,
+        ) -> np.ndarray:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
         """
@@ -373,7 +402,36 @@ class MoiraiMoE(FileSystem):
                 }],
                 freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
             )
-            return (next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5) * (sampleStd + 1e-8)) + sampleMean
+            predictionNormed : np.ndarray = next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5)
+            prediction : np.ndarray = (predictionNormed * (sampleStd + 1e-8)) + sampleMean
+
+            if plot:
+                Utils.plot(
+                    [query.tolist() for query in queriedVectors[0]],
+                    "rag.png",
+                    ":",
+                    self.__contextLength,
+                )
+                Utils.plot(
+                    [queried.tolist()],
+                    "ragAvg.png",
+                    ":",
+                    self.__contextLength,
+                )
+                Utils.plot(
+                    [newSample + predictionNormed.tolist()],
+                    "inputAndRag.png",
+                    ":",
+                    self.__contextLength,
+                    rag=True,
+                )
+                Utils.plot(
+                    [sample["value"].tolist() + prediction.tolist()],
+                    "pred.png",
+                    "-",
+                    self.__contextLength,
+                )
+            return prediction
         else:
             sampleGluonts : ListDataset = ListDataset(
                 [{

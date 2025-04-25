@@ -7,14 +7,14 @@ from utils.utils import Utils
 CONTEXT : int = 128
 PREDICTION : int = 16
 NUMBER_SAMPLES : int = 100
-DATASET : str = "ET"
-SUBDATASET : str = "ETTh1"
+DATASET : str = "electricityUCI"
+SUBDATASET : str = "electricity"
 COLLECTION : str = "moiraiMoECosine_128_16"
 
-#from vectorDB.vectorDBingestion import VectorDBIngestion
+from vectorDB.vectorDBingestion import VectorDBIngestion
 
-#vectorDBingestion : VectorDBIngestion = VectorDBIngestion()
-#vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_128_16")
+vectorDBingestion : VectorDBIngestion = VectorDBIngestion()
+vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_128_16")
 
 dataset : Datasets = Datasets()
 model : MoiraiMoE = MoiraiMoE(
@@ -37,15 +37,11 @@ while True:
     Utils.plot(
         [
             sample["value"].tolist(),
-            sample.iloc[:CONTEXT]["value"].tolist() + pred.tolist(),
         ],
-        "pred.png",
+        "sample.png",
         "-",
+        CONTEXT,
     )
-    #model.plotSample(
-    #    sample.iloc[:CONTEXT],
-    #    sample.iloc[CONTEXT:CONTEXT+PREDICTION],
-    #    DATASET,
-    #)
+    exit()
     if sample is None: # Iterate all samples until the iterator returns empty
         break
