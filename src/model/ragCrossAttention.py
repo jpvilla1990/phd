@@ -53,10 +53,10 @@ class RagCrossAttention(torch.nn.Module):
         """
         seqLength = x.shape[2]
         remainder : int  = (seqLength - self.__patchSize) % self.__patchSize
-        padLen : int = self.__patchSize - remainder
+        padLen : int = self.__patchSize - remainder if remainder != 0 else 0
         x = F.pad(x, (0, padLen), value=0)
         return x.unfold(dimension=2, size=self.__patchSize, step=self.__patchSize)
-    
+
     def __joinPatches(
         self,
         x : torch.Tensor,
@@ -189,6 +189,25 @@ class RagCrossAttention(torch.nn.Module):
         xAugmented : torch.Tensor = self.__concat(x.squeeze(1), xInput)
 
         return xAugmented
+
+    def inference(
+        self, xInput : torch.Tensor,
+        context : torch.Tensor,
+        scores : torch.Tensor
+    ) -> torch.Tensor:
+        """
+        Inference pass for the embedding augmentation.
+        This method applies cross-attention to the input embeddings and returns the augmented embeddings.
+        :param x: Input embeddings to be augmented. [batches, seqLength]
+        :param context: Context embeddings to be used for augmentation. [batches, k, seqLength]
+        :param scores: similarity scores to be used for augmentation. [batches, k, 1]
+        :return: Augmented embeddings after applying cross-attention.
+        """
+        output : torch.Tensor = None
+        with torch.no_grad():
+            output = self.forward(xInput, context, scores)
+
+        return output
 
 if __name__ == "__main__":
     a = RagCrossAttention()

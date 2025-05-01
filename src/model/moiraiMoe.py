@@ -108,9 +108,9 @@ class MoiraiMoE(FileSystem):
         featDynamicRealDim : int = 0,
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
-        collectionName : str = "moiraiMoECosine_128_16",
     ):
         super().__init__()
+        self.__patchSize : int = patchSize
         self.__datasetsConfig : dict = self._getConfig()["datasets"]
         self.__timestampFormat : str = "%d-%m-%Y %H:%M:%S"
         self.__timeDiffsSeconds : dict = {
@@ -149,12 +149,91 @@ class MoiraiMoE(FileSystem):
             past_feat_dynamic_real_dim=pastFeatDynamicRealDim,
         )
 
+        self.__modelRagCA : MoiraiMoEForecast = MoiraiMoEForecast(
+            module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
+            prediction_length=predictionLength,
+            context_length= contextLength + contextLength,
+            patch_size=patchSize,
+            num_samples=numSamples,
+            target_dim=targetDim,
+            feat_dynamic_real_dim=featDynamicRealDim,
+            past_feat_dynamic_real_dim=pastFeatDynamicRealDim,
+        )
+
         self.__predictor : PyTorchPredictor = self.__model.create_predictor(batch_size=batchSize)
 
         self.__predictorRag : PyTorchPredictor = self.__modelRag.create_predictor(batch_size=batchSize)
 
         self.__moiraiMoEEmbeddings : MoiraiMoEEmbeddings = MoiraiMoEEmbeddings(self.__model.module)
         self.__vectorDB : vectorDB = vectorDB()
+
+    def __patching(
+        self,
+        x : torch.Tensor,
+    ) -> torch.Tensor:
+        """
+        Apply patching to the input tensor.
+        This method reshapes the input tensor into patches of a specified size.
+        :param x: Input tensor to be patched.
+        :return: Patches of the input tensor.
+        """
+        seqLength = x.shape[1]
+        remainder : int  = (seqLength - self.__patchSize) % self.__patchSize
+        padLen : int = self.__patchSize - remainder if remainder != 0 else 0
+        x = F.pad(x, (0, padLen), value=0)
+        x = x.unfold(dimension=1, size=self.__patchSize, step=self.__patchSize)
+        return torch.cat([x, torch.zeros(x.shape[0], 1, x.shape[2])], dim=1)
+
+    def forwardRagCA(self, x : torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass RAG Cross Attention
+        """
+        device : str = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        target : torch.Tensor = self.__patching(x)
+
+        batchSize : int = target.shape[0]
+        numPatches : int = target.shape[1]
+        patchSizeTensor : torch.Tensor = torch.full(
+            (batchSize, numPatches),
+            self.__patchSize,
+            device=device,
+        )
+        observedMask : torch.Tensor = torch.ones(
+            (batchSize, numPatches, self.__patchSize),
+            dtype=torch.bool,
+            device=device,
+        )
+        predictionMask : torch.Tensor = torch.zeros(
+            (batchSize, numPatches),
+            dtype=torch.bool,
+            device=device,
+        )
+        predictionMask[0][:][-1] = True
+        sampleId : torch.Tensor = torch.ones(
+            (batchSize, numPatches),
+            dtype=torch.int32,
+            device=device,
+        )
+        timeId : torch.Tensor = torch.arange(
+            numPatches,
+            dtype=torch.int32,
+            device=device,
+        ).unsqueeze(0).repeat(batchSize, 1)
+        variateId : torch.Tensor = torch.zeros(
+            (batchSize, numPatches),
+            dtype=torch.int32,
+            device=device,
+        )
+
+        return self.__modelRagCA.module(
+            target=target,
+            observed_mask=observedMask,
+            sample_id=sampleId,
+            time_id=timeId,
+            variate_id=variateId,
+            prediction_mask=predictionMask,
+            patch_size=patchSizeTensor,
+        )
 
     def setRagCollection(self, collectionName : str, dataset : str):
         """
