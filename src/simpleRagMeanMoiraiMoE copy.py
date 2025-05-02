@@ -1,0 +1,7 @@
+from vectorDB.vectorDBingestion import VectorDBIngestion
+
+vectorDBingestion : VectorDBIngestion = VectorDBIngestion()
+
+vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoETrainingCosine_32_16")
+vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoETrainingCosine_64_16")
+vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoETrainingCosine_128_16")
