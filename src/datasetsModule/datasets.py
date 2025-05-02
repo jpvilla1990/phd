@@ -91,10 +91,14 @@ class Datasets(FileSystem):
                 {dataset : datasetConfig}
             )
 
-        if self.__datasets[dataset]["format"] == "huggingFace":
+        if self.__datasets[dataset]["format"] == "huggingface":
             return HuggingFaceIterator(
                 dataset,
                 self.__loadDatasetConfig()[dataset],
+                self._createPath(
+                    self._getPaths()["datasets"],
+                    dataset,
+                ),
                 self.__datasets[dataset],
                 self._getConfig()["seed"],
             )

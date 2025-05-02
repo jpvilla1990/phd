@@ -6,9 +6,12 @@ training:
   batchSize: 32
   maxIterationsPerEpoch: 1000
   lengthCombinations:
-    - [32, 16]
-    - [64, 16]
-    - [128, 16]
+    - contextLength: 32
+      predictionLength: 16
+    - contextLength: 64
+      predictionLength: 16
+    - contextLength: 128
+      predictionLength: 16
 models:
   linealModel:
     type: ridge
