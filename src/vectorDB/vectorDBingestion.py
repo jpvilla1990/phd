@@ -42,7 +42,6 @@ class VectorDBIngestion(FileSystem):
             predictionLength = predictionLength,
             contextLength = contextLength,
             numSamples = 100,
-            collectionName = collectionName,
         )
         if raf:
             model.setRafCollection(collectionName, dataset)
@@ -98,6 +97,7 @@ class VectorDBIngestion(FileSystem):
                     continue
 
             except Exception as e:
+                raise e
                 print("Exception: " + str(e))
                 continue
 

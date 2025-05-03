@@ -318,7 +318,7 @@ vectorDatabase:
     moiraiMoETrainingCosine_64_16:
       metric:
         hnsw:space: "cosine"
-      context: 32
+      context: 64
       prediction: 16
       datasets: [
         "lotsaData",
@@ -326,7 +326,7 @@ vectorDatabase:
     moiraiMoETrainingCosine_128_16:
       metric:
         hnsw:space: "cosine"
-      context: 32
+      context: 128
       prediction: 16
       datasets: [
         "lotsaData",
