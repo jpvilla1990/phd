@@ -89,6 +89,10 @@ class MoiraiMoEEmbeddings(nn.Module):
         """
         output : torch.Tensor = None
         with torch.no_grad():
+            print("hello")
+            print(x.device)
+            print(patchSize)
+            print(batchSize)
             output = self(x, patchSize, batchSize)
 
         return output.to(self.__targetDevice)
