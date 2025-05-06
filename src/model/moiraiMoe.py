@@ -323,13 +323,12 @@ class MoiraiMoE(FileSystem):
         """
         Method to query vector
         """
-        batch.to("cpu")
-        print(batch)
+        batch = batch.to("cpu")
         for element in batch:
             queried, score = self.__vectorDB.queryTimeseries(element, k, metadata)
             print(queried)
             print(score)
-        batch.to(self.__device)
+        batch = batch.to(self.__device)
         return batch, torch.randn(1, 1, 1).to(batch.device)
         return self.__vectorDB.queryTimeseries(sample, k, metadata)
 
