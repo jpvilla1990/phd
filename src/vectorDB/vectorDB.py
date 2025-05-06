@@ -88,6 +88,9 @@ class vectorDB(FileSystem):
         """
         queryStr : str = ",".join(map(str, query.tolist()))
         queried : dict = {}
+        
+        import time
+        t0 = time.time()
         if metadata:
             queried = self.__collection.query(
                 n_results=k,
@@ -99,6 +102,8 @@ class vectorDB(FileSystem):
                 n_results=k,
                 query_texts=[queryStr],
             )
+
+        print(time.time() - t0)
 
         documents : list = queried["documents"][0]
         metadatas : list = queried["metadatas"][0]
@@ -112,4 +117,4 @@ class vectorDB(FileSystem):
 
         output : list = [f"{documents[index]},{predictions[index]}" for index in range(len(documents))]
 
-        return [np.array([float(sample) for sample in element.split(",")]) for element in output], scores
+        return np.ndarray([[float(sample) for sample in element.split(",")] for element in output], scores)
