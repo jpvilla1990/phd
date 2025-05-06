@@ -334,6 +334,10 @@ class MoiraiMoE(FileSystem):
                 queriedBatch = queriedTorch
                 scoreBatch = scoreTensor
             else:
+                print(queriedBatch.shape)
+                print(queriedTorch.shape)
+                print(scoreBatch.shape)
+                print(scoreTensor.shape)
                 torch.cat(queriedBatch, queriedTorch, dim=0)
                 torch.cat(scoreBatch, scoreTensor, dim=0)
         print(queriedBatch.shape)
