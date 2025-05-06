@@ -185,7 +185,7 @@ monash:
 vectorDatabase:
   maxNumberSamples: 10000
   scoreThreshold : 0.5
-  k : 16
+  k : 2
   collections:
     chatTimeCosine_32_16:
       metric:

@@ -88,7 +88,9 @@ class vectorDB(FileSystem):
         """
         queryStr : str = ",".join(map(str, query.tolist()))
         queried : dict = {}
-
+        
+        import time
+        t0 = time.time()
         if metadata:
             queried = self.__collection.query(
                 n_results=k,
@@ -100,6 +102,8 @@ class vectorDB(FileSystem):
                 n_results=k,
                 query_texts=[queryStr],
             )
+
+        print(time.time() - t0)
 
         documents : list = queried["documents"][0]
         metadatas : list = queried["metadatas"][0]
