@@ -27,7 +27,6 @@ class MoiraiMoEEmbeddings(nn.Module):
     def __init__(self, moiraRaiModule : MoiraiMoEModule):
         super().__init__()
         self.__device : str = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.__device = "cpu"
         self.__targetDevice : str = "cpu"
         # Extracting layers from the original model including first normalization layer before attention module
         self.scaler : uni2ts.module.packed_scaler.PackedStdScaler = moiraRaiModule.scaler
