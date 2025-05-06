@@ -30,9 +30,9 @@ class MoiraiMoEEmbeddings(nn.Module):
         self.__targetDevice : str = "cpu"
         # Extracting layers from the original model including first normalization layer before attention module
         self.scaler : uni2ts.module.packed_scaler.PackedStdScaler = moiraRaiModule.scaler
-        self.inProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.in_proj
-        self.resProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.res_proj
-        self.featProj : uni2ts.module.ts_embed.FeatLinear = moiraRaiModule.feat_proj
+        self.inProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.in_proj.to(self.__device)
+        self.resProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.res_proj.to(self.__device)
+        self.featProj : uni2ts.module.ts_embed.FeatLinear = moiraRaiModule.feat_proj.to(self.__device)
         self.norm : uni2ts.module.norm.RMSNorm = moiraRaiModule.encoder.layers[0].norm1
 
     def forward(
