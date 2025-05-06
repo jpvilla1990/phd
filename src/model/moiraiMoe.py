@@ -48,52 +48,34 @@ class MoiraiMoEEmbeddings(nn.Module):
         - `scaler` normalizes input.
         - `in_proj`, `res_proj`, and `feat_proj` apply transformations.
         """
-        print("a")
         seqLen : int = math.ceil(len(x) / patchSize) + 1
-        print("a")
         pad : np.ndarray = np.zeros((batchSize * (seqLen - 1) * patchSize) - len(x))
-        print("a")
         if len(pad) > 0:
-            print("a")
             x = np.concatenate([pad, x])
-        print("a")
         patchSizeTensor : torch.Tensor = torch.full((batchSize, seqLen), patchSize).to(self.__device)
-        print("a")
         target : torch.Tensor = F.pad(
             torch.tensor(x, dtype=torch.float32).reshape(batchSize, seqLen - 1, patchSize),
             (0, 0, 0, 1),
             value=0,
         ).to(self.__device)
-        print("a")
         observedMask : torch.Tensor = torch.ones((batchSize, seqLen, patchSize), dtype=torch.bool).to(self.__device)
-        print("a")
         predictionMask : torch.Tensor = torch.zeros((batchSize, seqLen), dtype=torch.bool).to(self.__device)
-        print("a")
         predictionMask[0][:][-1] = True
-        print("a")
         sampleId : torch.Tensor = torch.ones((batchSize, seqLen), dtype=torch.int32).to(self.__device)
-        print("a")
         variateId : torch.Tensor = torch.zeros((batchSize, seqLen), dtype=torch.int32).to(self.__device)
 
-        print("a")
         loc, scale = self.scaler(
             target,
             observedMask * ~predictionMask.unsqueeze(-1),
             sampleId,
             variateId,
         )
-        print("a")
         scaledTarget : torch.Tensor = (target - loc) / scale
-        print("a")
         inRepr : torch.Tensor = self.inProj(scaledTarget, patchSizeTensor)
-        print("a")
         inRepr : torch.Tensor = F.silu(inRepr)
-        print("a")
         inRepr : torch.Tensor = self.featProj(inRepr, patchSizeTensor)
-        print("a")
         resRepr : torch.Tensor = self.resProj(scaledTarget, patchSizeTensor)
 
-        print("a")
         # Combine or return outputs depending on your use case
         return self.norm(inRepr + resRepr)
 
@@ -109,6 +91,9 @@ class MoiraiMoEEmbeddings(nn.Module):
         output : torch.Tensor = None
         with torch.no_grad():
             output = self(x, patchSize, batchSize)
+        
+        print(output.shape)
+        print("###################")
 
         return output.to(self.__targetDevice)
 
