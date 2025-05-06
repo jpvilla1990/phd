@@ -91,7 +91,7 @@ class MoiraiMoEEmbeddings(nn.Module):
         with torch.no_grad():
             output = self(x, patchSize, batchSize)
 
-        return output
+        return output.to("cpu")
 
 class MoiraiMoE(FileSystem):
     """
