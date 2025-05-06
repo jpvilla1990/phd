@@ -333,6 +333,7 @@ class MoiraiMoE(FileSystem):
             
             queriedBatch.append(queriedTorch)
             scoreBatch.append(scoreTensor)
+            print(queriedTorch)
 
         queriedBatchTorch : torch.Tensor = torch.stack(queriedBatch)
         scoreBatchTorch : torch.Tensor = torch.stack(scoreBatch)
