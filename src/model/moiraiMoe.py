@@ -326,7 +326,10 @@ class MoiraiMoE(FileSystem):
         queriedBatch : torch.Tensor = None
         scoreBatch : torch.Tensor = None
         for element in batch:
+            import time
+            t0 = time.time()
             queried, score = self.__vectorDB.queryTimeseries(element, k, metadata)
+            print(time.time() - t0)
             queriedTorch : torch.Tensor = torch.Tensor(queried).unsqueeze(0)
             scoreTensor : torch.Tensor = torch.Tensor(score).unsqueeze(0)
             if queriedBatch is None:
