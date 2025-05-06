@@ -81,7 +81,7 @@ class TrainingRagCA(L.LightningModule):
         xContext : torch.Tensor = batch[:, :contextLength]
         xTarget : torch.Tensor = batch[:, contextLength:]
 
-        queried, scores = modelBackBone.queryBatchVector(xContext, k=self.__k, metadata={"dataset": self.__dataset})
+        queried, scores = modelBackBone.queryBatchVector(xContext, k=self.__k, metadata={})
 
         augmentedSample : torch.Tensor = self.modelRagCA.forward(
             xContext,
