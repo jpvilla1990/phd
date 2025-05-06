@@ -334,9 +334,10 @@ class MoiraiMoE(FileSystem):
             else:
                 torch.cat((queriedBatch, queriedTorch), dim=0)
                 torch.cat((scoreBatch, scoreTensor), dim=0)
-        batch = batch.to(self.__device)
-        return batch, torch.randn(1, 1, 1).to(batch.device)
-        return self.__vectorDB.queryTimeseries(sample, k, metadata)
+        queriedBatch = queriedBatch.to(self.__device)
+        scoreBatch = scoreBatch.to(self.__device)
+
+        return queriedBatch, scoreBatch
 
     def mergeQueries(self, query : tuple) -> np.ndarray:
         """
