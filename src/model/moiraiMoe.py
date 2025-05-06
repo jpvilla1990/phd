@@ -329,7 +329,6 @@ class MoiraiMoE(FileSystem):
             queried, score = self.__vectorDB.queryTimeseries(element, k, metadata)
             queriedTorch : torch.Tensor = torch.Tensor(queried).unsqueeze(0)
             scoreTensor : torch.Tensor = torch.Tensor(score).unsqueeze(0)
-            print(scoreTensor)
             if queriedBatch is None:
                 queriedBatch = queriedTorch
                 scoreBatch = scoreTensor
