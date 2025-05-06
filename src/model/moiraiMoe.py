@@ -89,11 +89,12 @@ class MoiraiMoEEmbeddings(nn.Module):
         Inference
         """
         output : torch.Tensor = None
+        import time
+        t0 = time.time()
         with torch.no_grad():
             output = self(x, patchSize, batchSize)
-        
-        print(output.shape)
-        print("###################")
+
+        print(time.time() - t0)
 
         return output.to(self.__targetDevice)
 
