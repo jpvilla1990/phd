@@ -70,10 +70,6 @@ class MoiraiMoEEmbeddings(nn.Module):
             variateId,
         )
         scaledTarget : torch.Tensor = (target - loc) / scale
-        print(scaledTarget)
-        print(patchSizeTensor)
-        for params in self.inProj.parameters():
-            print(params)
         inRepr : torch.Tensor = self.inProj(scaledTarget, patchSizeTensor)
         inRepr : torch.Tensor = F.silu(inRepr)
         inRepr : torch.Tensor = self.featProj(inRepr, patchSizeTensor)
@@ -93,9 +89,6 @@ class MoiraiMoEEmbeddings(nn.Module):
         """
         output : torch.Tensor = None
         with torch.no_grad():
-            print(x)
-            print(patchSize)
-            print(batchSize)
             output = self(x, patchSize, batchSize)
 
         return output.to(self.__targetDevice)

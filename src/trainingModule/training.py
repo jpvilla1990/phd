@@ -101,8 +101,6 @@ class TrainingRagCA(L.LightningModule):
         return loss
 
     def configure_optimizers(self):
-        print(self.__lr)
-        print(type(self.__lr))
         return torch.optim.AdamW(
             self.parameters(),
             lr=self.__lr,
