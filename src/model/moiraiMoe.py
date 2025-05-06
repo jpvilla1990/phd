@@ -33,7 +33,7 @@ class MoiraiMoEEmbeddings(nn.Module):
         self.inProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.in_proj.to(self.__device)
         self.resProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.res_proj.to(self.__device)
         self.featProj : uni2ts.module.ts_embed.FeatLinear = moiraRaiModule.feat_proj.to(self.__device)
-        self.norm : uni2ts.module.norm.RMSNorm = moiraRaiModule.encoder.layers[0].norm1
+        self.norm : uni2ts.module.norm.RMSNorm = moiraRaiModule.encoder.layers[0].norm1.to(self.__device)
 
     def forward(
             self,
