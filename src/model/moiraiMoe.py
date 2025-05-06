@@ -72,7 +72,8 @@ class MoiraiMoEEmbeddings(nn.Module):
         scaledTarget : torch.Tensor = (target - loc) / scale
         print(scaledTarget)
         print(patchSizeTensor)
-        print(self.inProj.parameters())
+        for params in self.inProj.parameters():
+            print(params)
         inRepr : torch.Tensor = self.inProj(scaledTarget, patchSizeTensor)
         inRepr : torch.Tensor = F.silu(inRepr)
         inRepr : torch.Tensor = self.featProj(inRepr, patchSizeTensor)
