@@ -112,4 +112,4 @@ class vectorDB(FileSystem):
 
         output : list = [f"{documents[index]},{predictions[index]}" for index in range(len(documents))]
 
-        return np.array([[float(sample) for sample in element.split(",")] for element in output]), scores
+        return [np.array([float(sample) for sample in element.split(",")]) for element in output], scores
