@@ -85,8 +85,8 @@ class TrainingRagCA(L.LightningModule):
 
         augmentedSample : torch.Tensor = self.modelRagCA.forward(
             xContext,
-            xContext,
-            torch.randn(1, 1, 1).to(xContext.device),
+            queried,
+            scores,
         )
 
         pred = modelBackBone.forwardRagCA(

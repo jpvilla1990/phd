@@ -323,7 +323,11 @@ class MoiraiMoE(FileSystem):
         """
         Method to query vector
         """
-        return batch, 1
+        for element in batch:
+            queried, score = self.__vectorDB.queryTimeseries(element, k, metadata)
+            print(queried)
+            print(score)
+        return batch, torch.randn(1, 1, 1).to(batch.device)
         return self.__vectorDB.queryTimeseries(sample, k, metadata)
 
     def mergeQueries(self, query : tuple) -> np.ndarray:
