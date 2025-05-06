@@ -11,6 +11,7 @@ class DatasetTrainingIterator(Dataset):
             config : dict,
             datasetsConfig : dict,
         ):
+        self.__config : dict = config
         self.__dataset : str = config["training"]["dataset"]
         Datasets().loadDataset(self.__dataset)
         self.__subdatasets = {key : None for key in list(datasetsConfig[self.__dataset].keys())}
@@ -20,7 +21,14 @@ class DatasetTrainingIterator(Dataset):
         random.seed(config["seed"])
         self.__iterators = self.getIterators(config["training"]["lengthCombinations"])
 
-        self.__previousSamples : torch.Tensor = None
+
+    def __resetIterators(self):
+        """
+        Reset the iterators for the dataset.
+        """
+        for key in list(self.__iterators.keys()):
+            for element in self.__subdatasets.keys():
+                self.__iterators[key].resetIteration(element, True, trainPartition=self.__config["trainPartition"])
 
     def getIterators(self, combinations : list) -> dict:
         """
@@ -35,27 +43,27 @@ class DatasetTrainingIterator(Dataset):
             for element in self.__subdatasets.keys():
                 if self.__subdatasets[element] is None:
                     self.__subdatasets[element] = list(iterator.getAvailableFeatures(element).keys())
-                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
+                iterator.resetIteration(element, True, trainPartition=self.__config["trainPartition"])
             iterators[f"{contextLength}_{predictionLength}"] = iterator
         return iterators
 
-    def __getitem__(self) -> tuple[torch.Tensor, int]:
+    def __getitem__(self, idx : int) -> tuple[torch.Tensor, int]:
         """
         Get a random sample from the dataset.
         This method retrieves a random sample from the dataset, ensuring that the sample is valid and does not contain any NaN values.
         """
-        samples : torch.Tensor = None
-        if self.__previousSamples is not None:
-            samples = self.__previousSamples
-            self.__previousSamples = None        
+        samples : torch.Tensor = None  
 
         running : bool = True
         batchIndex : int = 0
-        
+
         combination : str = random.choice(list(self.__iterators.keys()))
         iterator : DatasetIterator = self.__iterators[combination]
         contextLength : int = int(combination.split("_")[0])
         predictionLength : int = int(combination.split("_")[1])
+
+        if idx == 0:
+            self.__resetIterators()
 
         while running:
             subdataset : str = random.choice(list(self.__subdatasets.keys()))
@@ -64,12 +72,12 @@ class DatasetTrainingIterator(Dataset):
                 sample : pd.core.frame.DataFrame = iterator.iterateDataset(
                     subdataset,
                     self.__subdatasets[subdataset],
-                    False,
+                    True,
                 )
                 if sample is None:
-                    break
+                    continue
                 if len(sample) < predictionLength + contextLength:
-                    break
+                    continue
 
                 indexes : list = [index for index in range(1,len(features))]
                 random.shuffle(indexes)
@@ -79,16 +87,12 @@ class DatasetTrainingIterator(Dataset):
                         continue
 
                     torchSample : torch.Tensor = torch.tensor(
-                        sample[[index]].iloc[:contextLength].to_numpy(),
+                        sample[[index]].to_numpy(),
                         dtype=torch.float32,
                     ).permute(1,0)
 
                     if batchIndex >= self.__batchSize:
                         running = False
-                        if self.__previousSamples is None:
-                            self.__previousSamples = torchSample
-                        else:
-                            self.__previousSamples = torch.cat((self.__previousSamples, torchSample), dim=0)
                     else:
                         if samples is None:
                             samples = torchSample
@@ -97,6 +101,7 @@ class DatasetTrainingIterator(Dataset):
 
                     batchIndex += 1
             except Exception as e:
+                raise e
                 print("Exception: " + str(e))
                 continue
 

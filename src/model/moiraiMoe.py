@@ -108,6 +108,8 @@ class MoiraiMoE(FileSystem):
         featDynamicRealDim : int = 0,
         pastFeatDynamicRealDim : int = 0,
         batchSize : int = 1,
+        createPredictor : bool = True,
+        frozen : bool = True,
     ):
         super().__init__()
         self.__patchSize : int = patchSize
@@ -122,6 +124,8 @@ class MoiraiMoE(FileSystem):
             "M" : 60 * 60 * 24 * 30,
             "Y" : 60 * 60 * 24 * 365,
         }
+
+        self.__device : str = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.__scoreThreshold : float = self._getConfig()["vectorDatabase"]["scoreThreshold"]
         self.__k : int = self._getConfig()["vectorDatabase"]["k"]
@@ -160,12 +164,24 @@ class MoiraiMoE(FileSystem):
             past_feat_dynamic_real_dim=pastFeatDynamicRealDim,
         )
 
-        self.__predictor : PyTorchPredictor = self.__model.create_predictor(batch_size=batchSize)
-
-        self.__predictorRag : PyTorchPredictor = self.__modelRag.create_predictor(batch_size=batchSize)
-
         self.__moiraiMoEEmbeddings : MoiraiMoEEmbeddings = MoiraiMoEEmbeddings(self.__model.module)
         self.__vectorDB : vectorDB = vectorDB()
+
+        if createPredictor:
+            self.__predictor : PyTorchPredictor = self.__model.create_predictor(batch_size=batchSize)
+            self.__predictorRag : PyTorchPredictor = self.__modelRag.create_predictor(batch_size=batchSize)
+
+        if frozen:
+            for param in self.__model.module.parameters():
+                param.requires_grad = False
+            for param in self.__modelRag.module.parameters():
+                param.requires_grad = False
+            for param in self.__modelRagCA.module.parameters():
+                param.requires_grad = False
+
+        self.__model.module = self.__modelRagCA.module.to(self.__device)
+        self.__modelRag.module = self.__modelRagCA.module.to(self.__device)
+        self.__modelRagCA.module = self.__modelRagCA.module.to(self.__device)
 
     def __patching(
         self,
@@ -182,7 +198,8 @@ class MoiraiMoE(FileSystem):
         padLen : int = self.__patchSize - remainder if remainder != 0 else 0
         x = F.pad(x, (0, padLen), value=0)
         x = x.unfold(dimension=1, size=self.__patchSize, step=self.__patchSize)
-        return torch.cat([x, torch.zeros(x.shape[0], 1, x.shape[2])], dim=1)
+        zeros : torch.Tensor = torch.zeros(x.shape[0], 1, x.shape[2]).to(x.device)
+        return torch.cat([x, zeros], dim=1)
 
     def forwardRagCA(self, x : torch.Tensor) -> torch.Tensor:
         """
@@ -218,7 +235,10 @@ class MoiraiMoE(FileSystem):
             numPatches,
             dtype=torch.int32,
             device=device,
-        ).unsqueeze(0).repeat(batchSize, 1)
+        )
+        timeId = timeId.unsqueeze(0)
+        timeId = timeId.repeat(batchSize, 1)
+
         variateId : torch.Tensor = torch.zeros(
             (batchSize, numPatches),
             dtype=torch.int32,
@@ -297,6 +317,13 @@ class MoiraiMoE(FileSystem):
         """
         Method to query vector
         """
+        return self.__vectorDB.queryTimeseries(sample, k, metadata)
+
+    def queryBatchVector(self, batch : torch.Tensor, k : int = 1, metadata : dict = {}) -> tuple:
+        """
+        Method to query vector
+        """
+        return batch, 1
         return self.__vectorDB.queryTimeseries(sample, k, metadata)
 
     def mergeQueries(self, query : tuple) -> np.ndarray:

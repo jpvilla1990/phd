@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from utils.utils import Utils
 from utils.fileSystem import FileSystem
 from datasetsModule.datasets import Datasets
@@ -32,7 +33,15 @@ class VectorDBIngestion(FileSystem):
             self.__loadDatabaseTracking() | entry,
         )
 
-    def ingestDatasetMoiraiMoE(self, dataset : str, collectionName : str, contextLength : int, predictionLength : int, raf : bool = False):
+    def ingestDatasetMoiraiMoE(
+        self,
+        dataset : str,
+        collectionName : str,
+        contextLength : int,
+        predictionLength : int,
+        raf : bool = False,
+        train : bool = True,
+    ):
         """
         Method to ingest dataset in a collection for moiraiMoE
         """
@@ -71,13 +80,13 @@ class VectorDBIngestion(FileSystem):
 
                 running : bool = True
                 while running:
-                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=True)
+                    sample : pd.core.frame.DataFrame = iterator.iterateDataset(element, features, train=train)
                     if sample is None:
                         break
                     if len(sample) < predictionLength + contextLength:
                         break
 
-                    for index in range(1,len(features)): 
+                    for index in range(1,len(features)):
                         if sample[index].isna().any().any():
                             continue
                         model.ingestVector(
@@ -108,7 +117,7 @@ class VectorDBIngestion(FileSystem):
         databaseTracking[f"{collectionName}_{dataset}"][dataset] = iterations
         self.__writeDatabaseTracking(databaseTracking)
 
-    def ingestDatasetsMoiraiMoE(self, collection : str, raf : bool = False):
+    def ingestDatasetsMoiraiMoE(self, collection : str, raf : bool = False, train : bool = True):
         """
         Method to ingest all datasets to MoiraiMoE
         """
@@ -127,6 +136,7 @@ class VectorDBIngestion(FileSystem):
                 collections["context"],
                 collections["prediction"],
                 raf,
+                train,
             )
 
     def ingestDatasetChatTime(self, dataset : str, collectionName : str, contextLength : int, predictionLength : int):

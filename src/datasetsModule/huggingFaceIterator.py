@@ -10,7 +10,15 @@ class HuggingFaceIterator(object):
     """
     Class to handle iterators on the datasets
     """
-    def __init__(self, name : str, datasets : dict, datasetPath : str, datasetConfig : dict, seed : int = 42):
+    def __init__(
+        self,
+        name : str,
+        datasets : dict,
+        datasetPath : str,
+        datasetConfig : dict,
+        seed : int = 42,
+        maxNaN : float = 0.25,
+    ):
         random.seed(seed)
         self.__seed : int = seed
         self.__datasets : dict = datasets
@@ -18,6 +26,7 @@ class HuggingFaceIterator(object):
         self.__name : str = name
         self.__sampleSize : int = 1
         self.__datasetPath : str = datasetPath
+        self.__maxNaN : float = maxNaN
 
         self.__features : dict = {}
         self.__datasetSizes : dict = {}
@@ -27,6 +36,22 @@ class HuggingFaceIterator(object):
         self.__indexIterator : dict = {subDataset : {} for subDataset in self.__datasets}
 
         self.__buffer : dict = {subDataset : [] for subDataset in self.__datasets}
+
+    def __preprocesNan(self, sequence : list) -> list:
+        """
+        Method to preprocess NaN values
+        """
+        if np.isnan(sequence).sum() / len(sequence) > self.__maxNaN:
+            return []
+
+        sequenceNumpy : np.ndarray = np.array(sequence)
+        nans : np.ndarray = np.isnan(sequenceNumpy)
+        not_nans : np.ndarray = ~nans
+        indices : np.ndarray = np.arange(len(sequenceNumpy))
+
+        sequenceNumpy[nans] = np.interp(indices[nans], indices[not_nans], sequenceNumpy[not_nans])
+
+        return sequenceNumpy.tolist()
 
     def setSampleSize(self, sampleSize : int):
         """
@@ -46,7 +71,8 @@ class HuggingFaceIterator(object):
 
         features : dict = {}
 
-        index : int = 0
+        index : int = 1
+        features["index"] = 0
         for feature in list(self.__datasetsLoader[subdataset].features.keys()):
             if isinstance(self.__datasetsLoader[subdataset].features[feature], Sequence):
                 features[feature] = index
@@ -62,7 +88,7 @@ class HuggingFaceIterator(object):
         if subdataset not in self.__datasetsLoader:
             self.__datasetsLoader[subdataset] = load_dataset(self.__datasetConfig["datasetName"], subdataset, split="train", cache_dir=self.__datasetPath)
 
-        splittedDataset :  DatasetDict = self.__datasetsLoader[subdataset].train_test_split(test_size=trainPartition, shuffle=randomOrder, seed=self.__seed)
+        splittedDataset :  DatasetDict = self.__datasetsLoader[subdataset].train_test_split(test_size=1-trainPartition, shuffle=randomOrder, seed=self.__seed)
 
         self.__splittedDatasets[subdataset] = {
             "train" : splittedDataset["train"],
@@ -86,6 +112,9 @@ class HuggingFaceIterator(object):
         category : str = "test"
         if train:
             category = "train"
+
+        if len(self.__indexIterator[subdataset][category]) == 0:
+            return None
 
         sample : pd.core.frame.Dataframe = self.loadSample(
             subdataset=subdataset,
@@ -118,8 +147,6 @@ class HuggingFaceIterator(object):
                 cache_dir=self.__datasetPath,
             )
 
-
-
         if len(features) == 0:
             features = [key for key in self.getAvailableFeatures(subdataset)]
 
@@ -132,14 +159,36 @@ class HuggingFaceIterator(object):
             sampleDict : dict = self.__datasetsLoader[subdataset][sampleIndex]
             bufferElementTemplate : dict = {feature : [] for feature in featuresIndices}
             bufferElementTemplate["index"] = list(range(0, self.__sampleSize))
-            for feature in featuresIndices:
+            for featureIndex in range(1, len(featuresIndices)):
+                feature : int = featuresIndices[featureIndex]
                 index : int = 0
-                for sequence in sampleDict[features[feature]]:
-                    for indexSample in range(0, len(sequence), self.__sampleSize):
+
+                if type(sampleDict[features[feature]][0]) == list:
+                    for sequence in sampleDict[features[feature]]:
+                        for indexSample in range(0, len(sequence), self.__sampleSize):
+                            if len(self.__buffer[subdataset]) <= index:
+                                self.__buffer[subdataset].append(bufferElementTemplate.copy())
+
+                            preprocessedSequence : list = self.__preprocesNan(
+                                sequence[indexSample:indexSample+self.__sampleSize]
+                            )
+                            if len(preprocessedSequence) == 0:
+                                continue
+                            self.__buffer[subdataset][index][feature] = preprocessedSequence
+                            index += 1
+                elif(
+                    type(sampleDict[features[feature]][0]) == int or type(sampleDict[features[feature]][0]) == float
+                ):
+                    for indexSample in range(0, len(sampleDict[features[feature]]), self.__sampleSize):
                         if len(self.__buffer[subdataset]) <= index:
                             self.__buffer[subdataset].append(bufferElementTemplate.copy())
 
-                        self.__buffer[subdataset][index][feature] = sequence[indexSample:indexSample+self.__sampleSize]
+                        preprocessedSequence : list = self.__preprocesNan(
+                            sampleDict[features[feature]][indexSample:indexSample+self.__sampleSize]
+                        )
+                        if len(preprocessedSequence) == 0:
+                            continue
+                        self.__buffer[subdataset][index][feature] = preprocessedSequence
                         index += 1
 
             for index in range(len(self.__buffer[subdataset])):

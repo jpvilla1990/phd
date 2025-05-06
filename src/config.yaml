@@ -1,15 +1,24 @@
 seed: 42
 trainPartition: 0.8
 maxTestSamples: 10000
+maxNan: 0.25
 training:
   dataset: lotsaData
-  batchSize: 32
+  collectionPrefix: moiraiMoETrainingCosine
+  k : 16
+  batchSize: 1024
+  lr: 1e-3
+  weightDecay: 1e-1
+  beta1: 0.9
+  beta2: 0.98
+  eps: 1e-6
   maxIterationsPerEpoch: 1000
+  epochs: 100
   lengthCombinations:
-    - contextLength: 32
-      predictionLength: 16
-    - contextLength: 64
-      predictionLength: 16
+    #- contextLength: 32
+    #  predictionLength: 16
+    #- contextLength: 64
+    #  predictionLength: 16
     - contextLength: 128
       predictionLength: 16
 models:
@@ -135,7 +144,7 @@ datasets:
     subdatasets:
       buildings_900k : ["buildings_900k", "0.0.0"]
       # buildings_bench
-      sceaux : ["Salesforce___lotsa_data", "sceaux", "0.0.0"]
+      # only one sample sceaux : ["Salesforce___lotsa_data", "sceaux", "0.0.0"]
       borealis : ["Salesforce___lotsa_data", "borealis", "0.0.0"]
       ideal : ["Salesforce___lotsa_data", "ideal", "0.0.0"]
       bdg-2_panther : ["Salesforce___lotsa_data", "bdg-2_panther", "0.0.0"]
@@ -174,7 +183,7 @@ datasets:
 monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
-  maxNumberSamples: 10000
+  maxNumberSamples: 100000
   scoreThreshold : 0.5
   k : 16
   collections:
@@ -525,6 +534,7 @@ paths:
   data: ["data"]
   datasets: ["data", "datasets"]
   vectorDatabase: ["data", "vectorDatabase"]
+  RagCAModels: ["data", "models", "RagCA"]
 files:
   datasets: ["data", "datasets", "datasets.yaml"]
   databaseTracking: ["data", "databaseTracking.yaml"]

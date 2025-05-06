@@ -214,3 +214,9 @@ print(sample[1].values)
 print("queried")
 print(queried)
 ```
+
+### See logs
+
+```bash
+tensorboard --logdir src/lightning_logs
+```

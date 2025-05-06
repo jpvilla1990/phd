@@ -452,7 +452,6 @@ class Evaluation(FileSystem):
             predictionLength = predictionLength,
             contextLength = contextLength,
             numSamples = numberSamples,
-            collectionName=collection,
         )
         model.setRagCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
@@ -502,6 +501,8 @@ class Evaluation(FileSystem):
                             if sample[index].isna().any().any():
                                 continue
                             pred : np.ndarray = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset)
+                            print(pred)
+                            exit()
 
                             mase : float = self.__getMASE(
                                 sample[index].iloc[:contextLength].values,
@@ -596,7 +597,6 @@ class Evaluation(FileSystem):
             predictionLength = predictionLength,
             contextLength = contextLength,
             numSamples = numberSamples,
-            collectionName=collection,
         )
         model.setRagCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
@@ -739,7 +739,6 @@ class Evaluation(FileSystem):
             predictionLength = predictionLength,
             contextLength = contextLength,
             numSamples = numberSamples,
-            collectionName=collection,
         )
         model.setRafCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
@@ -882,7 +881,6 @@ class Evaluation(FileSystem):
             predictionLength = predictionLength,
             contextLength = contextLength,
             numSamples = numberSamples,
-            collectionName=collection,
         )
         model.setRafCosCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
@@ -1025,7 +1023,6 @@ class Evaluation(FileSystem):
             predictionLength = predictionLength,
             contextLength = contextLength,
             numSamples = numberSamples,
-            collectionName=collection,
         )
         model.setRagCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)

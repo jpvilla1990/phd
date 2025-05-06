@@ -101,6 +101,7 @@ class Datasets(FileSystem):
                 ),
                 self.__datasets[dataset],
                 self._getConfig()["seed"],
+                self._getConfig()["maxNan"],
             )
         else:
             return DatasetIterator(
