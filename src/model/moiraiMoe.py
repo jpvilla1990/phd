@@ -26,8 +26,7 @@ from exceptions.modelException import ModelException
 class MoiraiMoEEmbeddings(nn.Module):
     def __init__(self, moiraRaiModule : MoiraiMoEModule):
         super().__init__()
-        self.__device : str = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.__targetDevice : str = "cpu"
+        self.__device : str = "cpu"
         # Extracting layers from the original model including first normalization layer before attention module
         self.scaler : uni2ts.module.packed_scaler.PackedStdScaler = moiraRaiModule.scaler
         self.inProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.in_proj.to(self.__device)
@@ -91,7 +90,7 @@ class MoiraiMoEEmbeddings(nn.Module):
         with torch.no_grad():
             output = self(x, patchSize, batchSize)
 
-        return output.to(self.__targetDevice)
+        return output
 
 class MoiraiMoE(FileSystem):
     """
@@ -323,22 +322,18 @@ class MoiraiMoE(FileSystem):
         """
         Method to query vector
         """
-        batch = batch.to("cpu")
         queriedBatch : torch.Tensor = None
         scoreBatch : torch.Tensor = None
         for element in batch:
             queried, score = self.__vectorDB.queryTimeseries(element, k, metadata)
-            #queriedTorch : torch.Tensor = torch.Tensor(queried).to(self.__device).unsqueeze(0)
-            #scoreTensor : torch.Tensor = torch.Tensor(score).to(self.__device).unsqueeze(0)
-            #if queriedBatch is None:
-            #    queriedBatch = queriedTorch
-            #    scoreBatch = scoreTensor
-            #else:
-            #    torch.cat((queriedBatch, queriedTorch), dim=0)
-            #    torch.cat((scoreBatch, scoreTensor), dim=0)
-        print(queriedBatch.shape)
-        print(scoreBatch.shape)
-        print(queried)
+            queriedTorch : torch.Tensor = torch.Tensor(queried).to(self.__device).unsqueeze(0)
+            scoreTensor : torch.Tensor = torch.Tensor(score).to(self.__device).unsqueeze(0)
+            if queriedBatch is None:
+                queriedBatch = queriedTorch
+                scoreBatch = scoreTensor
+            else:
+                torch.cat((queriedBatch, queriedTorch), dim=0)
+                torch.cat((scoreBatch, scoreTensor), dim=0)
         batch = batch.to(self.__device)
         return batch, torch.randn(1, 1, 1).to(batch.device)
         return self.__vectorDB.queryTimeseries(sample, k, metadata)
