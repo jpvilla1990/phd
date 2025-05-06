@@ -6,7 +6,7 @@ training:
   dataset: lotsaData
   collectionPrefix: moiraiMoETrainingCosine
   k : 16
-  batchSize: 32
+  batchSize: 1024
   lr: 1e-3
   weightDecay: 1e-1
   beta1: 0.9
@@ -183,7 +183,7 @@ datasets:
 monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
-  maxNumberSamples: 100000
+  maxNumberSamples: 10000
   scoreThreshold : 0.5
   k : 16
   collections:
