@@ -86,6 +86,7 @@ class vectorDB(FileSystem):
 
         return list[context + prediction], scores
         """
+        print(queried.device)
         queryStr : str = ",".join(map(str, query.tolist()))
         queried : dict = {}
         if metadata:
