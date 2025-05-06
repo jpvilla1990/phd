@@ -6,7 +6,7 @@ training:
   dataset: lotsaData
   collectionPrefix: moiraiMoETrainingCosine
   k : 16
-  batchSize: 1024
+  batchSize: 32
   lr: 1e-3
   weightDecay: 1e-1
   beta1: 0.9

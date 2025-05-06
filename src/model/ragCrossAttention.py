@@ -165,11 +165,13 @@ class RagCrossAttention(torch.nn.Module):
         This method applies cross-attention to the input embeddings and returns the augmented embeddings.
         :param x: Input embeddings to be augmented. [batches, seqLength]
         :param context: Context embeddings to be used for augmentation. [batches, k, seqLength]
-        :param scores: similarity scores to be used for augmentation. [batches, k, 1]
+        :param scores: similarity scores to be used for augmentation. [batches, k]
         :return: Augmented embeddings after applying cross-attention.
         """
-        xInput.to(self.__device)
-        context.to(self.__device)
+        xInput = xInput.to(self.__device)
+        context = context.to(self.__device)
+        scores = scores.to(self.__device)
+        scores = scores.unsqueeze(-1)
 
         x : torch.Tensor = xInput.unsqueeze(1)
 
