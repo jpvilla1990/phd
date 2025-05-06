@@ -26,7 +26,7 @@ from exceptions.modelException import ModelException
 class MoiraiMoEEmbeddings(nn.Module):
     def __init__(self, moiraRaiModule : MoiraiMoEModule):
         super().__init__()
-        self.__device : str = "cpu"
+        self.__device : str = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         # Extracting layers from the original model including first normalization layer before attention module
         self.scaler : uni2ts.module.packed_scaler.PackedStdScaler = moiraRaiModule.scaler
         self.inProj : uni2ts.module.ts_embed.MultiInSizeLinear = moiraRaiModule.in_proj.to(self.__device)
@@ -70,10 +70,6 @@ class MoiraiMoEEmbeddings(nn.Module):
         )
         scaledTarget : torch.Tensor = (target - loc) / scale
         scaledTarget = scaledTarget.to(self.__device)
-        print(scaledTarget.device)
-        print(patchSizeTensor.device)
-        for params in self.inProj.parameters():
-            print(params.device)
         inRepr : torch.Tensor = self.inProj(scaledTarget, patchSizeTensor)
         inRepr : torch.Tensor = F.silu(inRepr)
         inRepr : torch.Tensor = self.featProj(inRepr, patchSizeTensor)
