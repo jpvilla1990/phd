@@ -90,6 +90,9 @@ class vectorDB(FileSystem):
         queryStr : str = ",".join(map(str, query.tolist()))
         queried : dict = {}
         if metadata:
+            print(k)
+            print(queryStr)
+            print(metadata)
             queried = self.__collection.query(
                 n_results=k,
                 query_texts=[queryStr],
