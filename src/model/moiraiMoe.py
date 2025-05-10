@@ -22,6 +22,7 @@ from utils.utils import Utils
 
 from vectorDB.vectorDB import vectorDB
 from exceptions.modelException import ModelException
+from model.ragCrossAttention import RagCrossAttention
 
 class MoiraiMoEEmbeddings(nn.Module):
     def __init__(self, moiraRaiModule : MoiraiMoEModule):
@@ -153,7 +154,12 @@ class MoiraiMoE(FileSystem):
             past_feat_dynamic_real_dim=pastFeatDynamicRealDim,
         )
 
-        self.__modelRagCA : MoiraiMoEForecast = MoiraiMoEForecast(
+        self.__modelRagCA : RagCrossAttention = RagCrossAttention(
+            patchSize=self.__patchSize,
+            pretrainedModel=self._getFiles()["paramsRagCA"],
+        )
+
+        self.__modelRagCABackBone : MoiraiMoEForecast = MoiraiMoEForecast(
             module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
             prediction_length=predictionLength,
             context_length= contextLength + contextLength,
@@ -176,12 +182,12 @@ class MoiraiMoE(FileSystem):
                 param.requires_grad = False
             for param in self.__modelRag.module.parameters():
                 param.requires_grad = False
-            for param in self.__modelRagCA.module.parameters():
+            for param in self.__modelRagCABackBone.module.parameters():
                 param.requires_grad = False
 
-        self.__model.module = self.__modelRagCA.module.to(self.__device)
-        self.__modelRag.module = self.__modelRagCA.module.to(self.__device)
-        self.__modelRagCA.module = self.__modelRagCA.module.to(self.__device)
+        self.__model.module = self.__model.module.to(self.__device)
+        self.__modelRag.module = self.__modelRag.module.to(self.__device)
+        self.__modelRagCABackBone.module = self.__modelRagCABackBone.module.to(self.__device)
 
     def __patching(
         self,
@@ -245,7 +251,7 @@ class MoiraiMoE(FileSystem):
             device=device,
         )
 
-        return self.__modelRagCA.module(
+        return self.__modelRagCABackBone.module(
             target=target,
             observed_mask=observedMask,
             sample_id=sampleId,
@@ -423,9 +429,6 @@ class MoiraiMoE(FileSystem):
             queryNormed : np.ndarray = (queried - queriedMean) / (queriedStd + 1e-8)
             sampleNormed : np.ndarray = (sampleNp - sampleMean) / (sampleStd + 1e-8)
 
-            #difference : float = sampleNormed[0] - queryNormed[-1]
-            #queryNormed += difference
-
             newSample : list = queryNormed.tolist() + sampleNormed.tolist()
             sampleGluonts : ListDataset = ListDataset(
                 [{
@@ -436,12 +439,6 @@ class MoiraiMoE(FileSystem):
             )
             predictionNormed : np.ndarray = next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5)
             prediction : np.ndarray = (predictionNormed * (sampleStd + 1e-8)) + sampleMean
-
-            #predictions : np.ndarray = (
-            #    [prediction] + [vector[self.__contextLength:] for vector in queriedVectors[0]],
-            #    [sum([(2 - vector) / len(queriedVectors[1]) for vector in queriedVectors[1]])] + [vector / len(queriedVectors[1]) for vector in queriedVectors[1]],
-            #)
-            #prediction = self.mergeQueries(predictions) if not softMax else self.mergeQueriesSoftMax(predictions, cosine)
 
             if plot:
                 Utils.plot(
@@ -462,6 +459,79 @@ class MoiraiMoE(FileSystem):
                     ":",
                     self.__contextLength,
                     rag=True,
+                )
+                Utils.plot(
+                    [sample["value"].tolist() + prediction.tolist()],
+                    "pred.png",
+                    "-",
+                    self.__contextLength,
+                )
+
+            return prediction
+        else:
+            sampleGluonts : ListDataset = ListDataset(
+                [{
+                    "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+                    "target": sample["value"].tolist(),
+                }],
+                freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
+            )
+            return next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5)
+
+    def ragCaInference(
+            self,
+            sample : pd.core.frame.DataFrame,
+            dataset : str,
+            cosine : bool = True,
+            plot : bool = False,
+        ) -> np.ndarray:
+        """
+        Method to predict one sample, first columns must be the timestamp and second is the timeseries
+        """
+        if len(sample.columns) != 2:
+            raise ModelException("MoiraiMoE predictor accepts only two columns, timestamp and timeseries itself")
+
+        timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
+
+        sample.columns = ["datetime", "value"]
+        queried, score = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
+        if queried is not None:
+            torchSample : torch.Tensor = torch.tensor(
+                sample["value"].to_numpy(),
+                dtype=torch.float32,
+            ).unsqueeze(0)
+            xContext : torch.Tensor = torchSample[:, :self.__contextLength]
+            queriedTorch : torch.Tensor = torch.Tensor(queried).unsqueeze(0)
+            scoreTensor : torch.Tensor = torch.Tensor(score).unsqueeze(0)
+
+            augmentedSample : torch.Tensor = self.__modelRagCA.inference(
+                xContext,
+                queriedTorch,
+                scoreTensor,
+            ).to("cpu")
+
+            newSample : list = augmentedSample[0].tolist()
+            sampleGluonts : ListDataset = ListDataset(
+                [{
+                    "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+                    "target": newSample,
+                }],
+                freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
+            )
+            prediction : np.ndarray = next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5)
+
+            if plot:
+                Utils.plot(
+                    [query.tolist() for query in queried],
+                    "rag.png",
+                    ":",
+                    self.__contextLength,
+                )
+                Utils.plot(
+                    [augmentedSample[0].tolist()],
+                    "augmentedRag.png",
+                    ":",
+                    self.__contextLength,
                 )
                 Utils.plot(
                     [sample["value"].tolist() + prediction.tolist()],

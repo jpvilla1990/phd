@@ -2,71 +2,47 @@ ET:
   128,16:
     ETTh1:
       MAE:
-        mean: 1.2895126675065607
-        median: 0.7502000592648983
+        mean: 1.2868981532114558
+        median: 0.7364577949047086
       MASE:
-        mean: 1.6580816844718502
-        median: 1.296002203964775
+        mean: 1.606972912421682
+        median: 1.2576938868607077
       MSE:
-        mean: 6.3021120316250485
-        median: 0.8525682959244585
-      normalizedMAE:
-        mean: 0.09858552875735392
-        median: 0.05735412406567303
-      normalizedMSE:
-        mean: 0.03683504747345248
-        median: 0.004983153821630817
+        mean: 6.5233634800558
+        median: 0.8342356672751787
       numberIterations: 2500
     ETTh2:
       MAE:
-        mean: 1.82700554397363
-        median: 1.2885078191757202
+        mean: 1.8345770331978242
+        median: 1.3459897041320792
       MASE:
-        mean: 1.725883098703199
-        median: 1.1950997989979013
+        mean: 1.7800376981312063
+        median: 1.2200962561656121
       MSE:
-        mean: 10.007494737842986
-        median: 2.5210908785763904
-      normalizedMAE:
-        mean: 0.13967781172986501
-        median: 0.09850870632162835
-      normalizedMSE:
-        mean: 0.05849254058146586
-        median: 0.014735457213588052
+        mean: 8.894526360630145
+        median: 2.7581032941197905
       numberIterations: 2500
     ETTm1:
       MAE:
-        mean: 1.2717177877802268
-        median: 0.6395877376198769
+        mean: 1.185280273802126
+        median: 0.6262065283954144
       MASE:
-        mean: 3.0765893700435094
-        median: 2.0099600860517857
+        mean: 2.8236452432656463
+        median: 1.9420940294610065
       MSE:
-        mean: 7.883143661477545
-        median: 0.57992778478188
-      normalizedMAE:
-        mean: 0.0972250786654705
-        median: 0.04889761604428326
-      normalizedMSE:
-        mean: 0.046075977315765966
-        median: 0.0033896045288338704
+        mean: 6.049140662573521
+        median: 0.5683304978473593
       numberIterations: 2500
     ETTm2:
       MAE:
-        mean: 1.490637928333929
-        median: 1.063635803759098
+        mean: 1.4841643699329974
+        median: 1.0466569811105728
       MASE:
-        mean: 3.4897203626537894
-        median: 1.7663333887382635
+        mean: 2.960837315248155
+        median: 1.7615950406562657
       MSE:
-        mean: 6.1685164539487465
-        median: 1.6953298330853959
-      normalizedMAE:
-        mean: 0.11396191138992393
-        median: 0.08131684221575151
-      normalizedMSE:
-        mean: 0.03605419822462042
-        median: 0.009908988379052703
+        mean: 6.441425675271501
+        median: 1.581382309854694
       numberIterations: 2500
   32,16:
     ETTh1:
@@ -1083,6 +1059,184 @@ huaweiCloud:
         mean: 0.00012005933318918735
         median: 2.5623293203218786e-08
       numberIterations: 2500
+lotsaData:
+  128,16:
+    BEIJING_SUBWAY_30MIN:
+      MAE:
+        mean: 8.830133122450206
+        median: 0.05197994550690055
+      MASE:
+        mean: 4.472396783873556
+        median: 2.313450263467179
+      MSE:
+        mean: 1074.6881338441679
+        median: 0.0030743320168129112
+      numberIterations: 312
+    LOOP_SEATTLE:
+      MAE:
+        mean: 3.7442293538210483
+        median: 2.2339656352996826
+      MASE:
+        mean: 0.9231972300853962
+        median: 0.7175290306241405
+      MSE:
+        mean: 52.410353359941915
+        median: 8.11074751198612
+      numberIterations: 312
+    LOS_LOOP:
+      MAE:
+        mean: 4.968645014056583
+        median: 1.7832461595535278
+      MASE:
+        mean: 1.880560928273498
+        median: 0.5781927924922865
+      MSE:
+        mean: 141.89838501604535
+        median: 6.347401866215478
+      numberIterations: 312
+    PEMS03:
+      MAE:
+        mean: 20.607537189737343
+        median: 16.866618156433105
+      MASE:
+        mean: 1.3935530486346939
+        median: 1.2085900163104433
+      MSE:
+        mean: 946.9325447333994
+        median: 416.04929519994766
+      numberIterations: 312
+    PEMS04:
+      MAE:
+        mean: 5.988618821002419
+        median: 1.338472843170166
+      MASE:
+        mean: 1.128832162326967
+        median: 0.9878087210733275
+      MSE:
+        mean: 137.25878777958258
+        median: 3.061118914954477
+      numberIterations: 312
+    PEMS07:
+      MAE:
+        mean: 25.74814567504785
+        median: 21.44951629638672
+      MASE:
+        mean: 1.245291884159574
+        median: 1.2297811810260422
+      MSE:
+        mean: 1656.9210680072676
+        median: 690.7752689598128
+      numberIterations: 312
+    PEMS_BAY:
+      MAE:
+        mean: 1.0676489984377837
+        median: 0.9322335720062256
+      MASE:
+        mean: 1.2744292266082116
+        median: 1.094170292452886
+      MSE:
+        mean: 2.274155343609235
+        median: 1.3058705830808321
+      numberIterations: 312
+    Q-TRAFFIC:
+      MAE:
+        mean: 3.554239492385815
+        median: 2.241089701652527
+      MASE:
+        mean: 2.139793508412293
+        median: 1.5669298868628663
+      MSE:
+        mean: 40.723185484579915
+        median: 7.545632045265165
+      numberIterations: 312
+    SHMETRO:
+      MAE:
+        mean: 18.838183385630447
+        median: 13.553492784500122
+      MASE:
+        mean: 1.1495124220565336
+        median: 0.9774835350071172
+      MSE:
+        mean: 933.8119275053189
+        median: 314.97962572119684
+      numberIterations: 312
+    alibaba_cluster_trace_2018:
+      MAE:
+        mean: 0.5086656580439
+        median: 0.1279740408062935
+      MASE:
+        mean: 5.64392470025053
+        median: 0.8642297240993787
+      MSE:
+        mean: 2.0119428839881746
+        median: 0.02302440470952405
+      numberIterations: 312
+    azure_vm_traces_2017:
+      MAE:
+        mean: 3.264047272739192
+        median: 1.37438053637743
+      MASE:
+        mean: 1.0497623000709428
+        median: 0.708115768348297
+      MSE:
+        mean: 51.15319173298486
+        median: 3.8256991289490134
+      numberIterations: 312
+    bdg-2_rat:
+      MAE:
+        mean: 9.02566731108042
+        median: 3.792477548122406
+      MASE:
+        mean: 2.122405561636337
+        median: 1.4926884887610754
+      MSE:
+        mean: 365.5484498279486
+        median: 20.187212939276264
+      numberIterations: 312
+    borg_cluster_data_2011:
+      MAE:
+        mean: 0.01529135933243127
+        median: 2.044732343620126e-05
+      MASE:
+        mean: 5.647292935809724
+        median: 1.3474349668684316
+      MSE:
+        mean: 0.00947455364184464
+        median: 6.66968524788876e-10
+      numberIterations: 312
+    buildings_900k:
+      MAE:
+        mean: 0.21476807949511567
+        median: 0.14294296223670244
+      MASE:
+        mean: 1.6372198899508268
+        median: 1.1153939166374163
+      MSE:
+        mean: 0.17602539418238883
+        median: 0.032218933237834084
+      numberIterations: 312
+    cmip6:
+      MAE:
+        mean: 231.72124618139023
+        median: 205.94384765625
+      MASE:
+        mean: 2.8764219288547714
+        median: 2.5303041797871786
+      MSE:
+        mean: 102581.23662348282
+        median: 56696.98398399353
+      numberIterations: 312
+    era5:
+      MAE:
+        mean: 46.301043459578445
+        median: 2.4199951488990337
+      MASE:
+        mean: 4.598753221986045
+        median: 3.237298998102349
+      MSE:
+        mean: 12723.288736908686
+        median: 7.6309233750776215
+      numberIterations: 312
 m4-monthly:
   128,16:
     m4-monthly:

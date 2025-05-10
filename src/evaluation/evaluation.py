@@ -21,7 +21,6 @@ class Evaluation(FileSystem):
         super().__init__()
         random.seed(self._getConfig()["seed"])
         self.__dataset : Datasets = Datasets()
-        self.__datasetMetadata : dict = {}
 
     def __loadReport(self, report : str) -> dict:
         """
@@ -151,12 +150,13 @@ class Evaluation(FileSystem):
         doc.build(elements)
 
     def evaluateLinearModel(
-            self,
-            contextLength : int,
-            predictionLength : int,
-            dataset : str,
-            subdataset : str = "",
-        ) -> dict:
+        self,
+        contextLength : int,
+        predictionLength : int,
+        dataset : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+    ) -> dict:
         """
         Method to evaluate model
         """
@@ -168,7 +168,6 @@ class Evaluation(FileSystem):
             contextLength = contextLength,
         )
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
-        self.__datasetMetadata = iterator.getDatasetMetadata()
         iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
@@ -184,9 +183,7 @@ class Evaluation(FileSystem):
             try:
                 print(f"Subdataset {element}")
                 reportMAE : np.ndarray = np.array([])
-                reportNMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
-                reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
@@ -199,7 +196,7 @@ class Evaluation(FileSystem):
                             iterator.iterateDataset,
                             element,
                             features,
-                            False,
+                            trainSet,
                         )
                         sample : pd.core.frame.DataFrame = futureSample.result()
                         if sample is None:
@@ -240,10 +237,8 @@ class Evaluation(FileSystem):
                                 reportMASE = np.append(reportMASE, [mase])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
-                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
-                                reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
                             iterations += 1
 
@@ -270,17 +265,9 @@ class Evaluation(FileSystem):
                         "mean" : float(reportMAE.mean()),
                         "median" : float(np.median(reportMAE)),
                     },
-                    "normalizedMAE" : {
-                        "mean" : float(reportNMAE.mean()),
-                        "median" : float(np.median(reportNMAE)),
-                    },
                     "MSE" : {
                         "mean" : float(reportMSE.mean()),
                         "median" : float(np.median(reportMSE)),
-                    },
-                    "normalizedMSE" : {
-                        "mean" : float(reportNMSE.mean()),
-                        "median" : float(np.median(reportNMSE)),
                     },
                     "numberIterations" : iterations,
                 }
@@ -288,20 +275,20 @@ class Evaluation(FileSystem):
                 self.__writeReport(report, "evaluationReportsLineal")
 
             except Exception as e:
-                raise e
                 print("Exception: " + str(e))
                 continue
 
         return report
 
     def evaluateMoiraiMoE(
-            self,
-            contextLength : int,
-            predictionLength : int,
-            numberSamples : int,
-            dataset : str,
-            subdataset : str = "",
-        ) -> dict:
+        self,
+        contextLength : int,
+        predictionLength : int,
+        numberSamples : int,
+        dataset : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+    ) -> dict:
         """
         Method to evaluate model
         """
@@ -314,7 +301,6 @@ class Evaluation(FileSystem):
             numSamples = numberSamples,
         )
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
-        self.__datasetMetadata = iterator.getDatasetMetadata()
         iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
@@ -330,9 +316,7 @@ class Evaluation(FileSystem):
             try:
                 print(f"Subdataset {element}")
                 reportMAE : np.ndarray = np.array([])
-                reportNMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
-                reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
@@ -345,7 +329,7 @@ class Evaluation(FileSystem):
                             iterator.iterateDataset,
                             element,
                             features,
-                            False,
+                            trainSet,
                         )
                         sample : pd.core.frame.DataFrame = futureSample.result()
                         if sample is None:
@@ -380,10 +364,8 @@ class Evaluation(FileSystem):
                                 reportMASE = np.append(reportMASE, [mase])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
-                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
-                                reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
                             iterations += 1
 
@@ -410,17 +392,9 @@ class Evaluation(FileSystem):
                         "mean" : float(reportMAE.mean()),
                         "median" : float(np.median(reportMAE)),
                     },
-                    "normalizedMAE" : {
-                        "mean" : float(reportNMAE.mean()),
-                        "median" : float(np.median(reportNMAE)),
-                    },
                     "MSE" : {
                         "mean" : float(reportMSE.mean()),
                         "median" : float(np.median(reportMSE)),
-                    },
-                    "normalizedMSE" : {
-                        "mean" : float(reportNMSE.mean()),
-                        "median" : float(np.median(reportNMSE)),
                     },
                     "numberIterations" : iterations,
                 }
@@ -434,14 +408,15 @@ class Evaluation(FileSystem):
         return report
 
     def evaluateMoiraiMoERagMean(
-            self,
-            contextLength : int,
-            predictionLength : int,
-            numberSamples : int,
-            dataset : str,
-            collection : str,
-            subdataset : str = "",
-        ) -> dict:
+        self,
+        contextLength : int,
+        predictionLength : int,
+        numberSamples : int,
+        dataset : str,
+        collection : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+    ) -> dict:
         """
         Method to evaluate model
         """
@@ -455,7 +430,6 @@ class Evaluation(FileSystem):
         )
         model.setRagCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
-        self.__datasetMetadata = iterator.getDatasetMetadata()
         iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
@@ -471,9 +445,7 @@ class Evaluation(FileSystem):
             try:
                 print(f"Subdataset {element}")
                 reportMAE : np.ndarray = np.array([])
-                reportNMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
-                reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
@@ -486,7 +458,7 @@ class Evaluation(FileSystem):
                             iterator.iterateDataset,
                             element,
                             features,
-                            False,
+                            trainSet,
                         )
                         sample : pd.core.frame.DataFrame = futureSample.result()
                         if sample is None:
@@ -501,8 +473,6 @@ class Evaluation(FileSystem):
                             if sample[index].isna().any().any():
                                 continue
                             pred : np.ndarray = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset)
-                            print(pred)
-                            exit()
 
                             mase : float = self.__getMASE(
                                 sample[index].iloc[:contextLength].values,
@@ -524,10 +494,8 @@ class Evaluation(FileSystem):
                                 reportMASE = np.append(reportMASE, [mase])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
-                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
-                                reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
                             iterations += 1
 
@@ -554,17 +522,9 @@ class Evaluation(FileSystem):
                         "mean" : float(reportMAE.mean()),
                         "median" : float(np.median(reportMAE)),
                     },
-                    "normalizedMAE" : {
-                        "mean" : float(reportNMAE.mean()),
-                        "median" : float(np.median(reportNMAE)),
-                    },
                     "MSE" : {
                         "mean" : float(reportMSE.mean()),
                         "median" : float(np.median(reportMSE)),
-                    },
-                    "normalizedMSE" : {
-                        "mean" : float(reportNMSE.mean()),
-                        "median" : float(np.median(reportNMSE)),
                     },
                     "numberIterations" : iterations,
                 }
@@ -578,15 +538,16 @@ class Evaluation(FileSystem):
         return report
 
     def evaluateMoiraiMoERagSoftMax(
-            self,
-            contextLength : int,
-            predictionLength : int,
-            numberSamples : int,
-            dataset : str,
-            collection : str,
-            subdataset : str = "",
-            cosine : bool = True,
-        ) -> dict:
+        self,
+        contextLength : int,
+        predictionLength : int,
+        numberSamples : int,
+        dataset : str,
+        collection : str,
+        subdataset : str = "",
+        cosine : bool = True,
+        trainSet : bool = False,
+    ) -> dict:
         """
         Method to evaluate model
         """
@@ -600,7 +561,6 @@ class Evaluation(FileSystem):
         )
         model.setRagCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
-        self.__datasetMetadata = iterator.getDatasetMetadata()
         iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
@@ -616,9 +576,7 @@ class Evaluation(FileSystem):
             try:
                 print(f"Subdataset {element}")
                 reportMAE : np.ndarray = np.array([])
-                reportNMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
-                reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
@@ -631,7 +589,7 @@ class Evaluation(FileSystem):
                             iterator.iterateDataset,
                             element,
                             features,
-                            False,
+                            trainSet,
                         )
                         sample : pd.core.frame.DataFrame = futureSample.result()
                         if sample is None:
@@ -667,10 +625,8 @@ class Evaluation(FileSystem):
                                 reportMASE = np.append(reportMASE, [mase])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
-                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
-                                reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
                             iterations += 1
 
@@ -697,17 +653,9 @@ class Evaluation(FileSystem):
                         "mean" : float(reportMAE.mean()),
                         "median" : float(np.median(reportMAE)),
                     },
-                    "normalizedMAE" : {
-                        "mean" : float(reportNMAE.mean()),
-                        "median" : float(np.median(reportNMAE)),
-                    },
                     "MSE" : {
                         "mean" : float(reportMSE.mean()),
                         "median" : float(np.median(reportMSE)),
-                    },
-                    "normalizedMSE" : {
-                        "mean" : float(reportNMSE.mean()),
-                        "median" : float(np.median(reportNMSE)),
                     },
                     "numberIterations" : iterations,
                 }
@@ -721,14 +669,15 @@ class Evaluation(FileSystem):
         return report
 
     def evaluateMoiraiMoERafSoftMax(
-            self,
-            contextLength : int,
-            predictionLength : int,
-            numberSamples : int,
-            dataset : str,
-            collection : str,
-            subdataset : str = "",
-        ) -> dict:
+        self,
+        contextLength : int,
+        predictionLength : int,
+        numberSamples : int,
+        dataset : str,
+        collection : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+    ) -> dict:
         """
         Method to evaluate model
         """
@@ -742,7 +691,6 @@ class Evaluation(FileSystem):
         )
         model.setRafCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
-        self.__datasetMetadata = iterator.getDatasetMetadata()
         iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
@@ -758,9 +706,7 @@ class Evaluation(FileSystem):
             try:
                 print(f"Subdataset {element}")
                 reportMAE : np.ndarray = np.array([])
-                reportNMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
-                reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
@@ -773,7 +719,7 @@ class Evaluation(FileSystem):
                             iterator.iterateDataset,
                             element,
                             features,
-                            False,
+                            trainSet,
                         )
                         sample : pd.core.frame.DataFrame = futureSample.result()
                         if sample is None:
@@ -809,10 +755,8 @@ class Evaluation(FileSystem):
                                 reportMASE = np.append(reportMASE, [mase])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
-                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
-                                reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
                             iterations += 1
 
@@ -839,17 +783,9 @@ class Evaluation(FileSystem):
                         "mean" : float(reportMAE.mean()),
                         "median" : float(np.median(reportMAE)),
                     },
-                    "normalizedMAE" : {
-                        "mean" : float(reportNMAE.mean()),
-                        "median" : float(np.median(reportNMAE)),
-                    },
                     "MSE" : {
                         "mean" : float(reportMSE.mean()),
                         "median" : float(np.median(reportMSE)),
-                    },
-                    "normalizedMSE" : {
-                        "mean" : float(reportNMSE.mean()),
-                        "median" : float(np.median(reportNMSE)),
                     },
                     "numberIterations" : iterations,
                 }
@@ -863,14 +799,15 @@ class Evaluation(FileSystem):
         return report
 
     def evaluateMoiraiMoERafCosSoftMax(
-            self,
-            contextLength : int,
-            predictionLength : int,
-            numberSamples : int,
-            dataset : str,
-            collection : str,
-            subdataset : str = "",
-        ) -> dict:
+        self,
+        contextLength : int,
+        predictionLength : int,
+        numberSamples : int,
+        dataset : str,
+        collection : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+    ) -> dict:
         """
         Method to evaluate model
         """
@@ -884,7 +821,6 @@ class Evaluation(FileSystem):
         )
         model.setRafCosCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
-        self.__datasetMetadata = iterator.getDatasetMetadata()
         iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
@@ -900,9 +836,7 @@ class Evaluation(FileSystem):
             try:
                 print(f"Subdataset {element}")
                 reportMAE : np.ndarray = np.array([])
-                reportNMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
-                reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
@@ -915,7 +849,7 @@ class Evaluation(FileSystem):
                             iterator.iterateDataset,
                             element,
                             features,
-                            False,
+                            trainSet,
                         )
                         sample : pd.core.frame.DataFrame = futureSample.result()
                         if sample is None:
@@ -951,10 +885,8 @@ class Evaluation(FileSystem):
                                 reportMASE = np.append(reportMASE, [mase])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
-                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
-                                reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
                             iterations += 1
 
@@ -981,17 +913,9 @@ class Evaluation(FileSystem):
                         "mean" : float(reportMAE.mean()),
                         "median" : float(np.median(reportMAE)),
                     },
-                    "normalizedMAE" : {
-                        "mean" : float(reportNMAE.mean()),
-                        "median" : float(np.median(reportNMAE)),
-                    },
                     "MSE" : {
                         "mean" : float(reportMSE.mean()),
                         "median" : float(np.median(reportMSE)),
-                    },
-                    "normalizedMSE" : {
-                        "mean" : float(reportNMSE.mean()),
-                        "median" : float(np.median(reportNMSE)),
                     },
                     "numberIterations" : iterations,
                 }
@@ -1005,14 +929,15 @@ class Evaluation(FileSystem):
         return report
 
     def evaluateRagPrediction(
-            self,
-            contextLength : int,
-            predictionLength : int,
-            numberSamples : int,
-            dataset : str,
-            collection : str,
-            subdataset : str = "",
-        ) -> dict:
+        self,
+        contextLength : int,
+        predictionLength : int,
+        numberSamples : int,
+        dataset : str,
+        collection : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+    ) -> dict:
         """
         Method to evaluate model
         """
@@ -1026,7 +951,6 @@ class Evaluation(FileSystem):
         )
         model.setRagCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
-        self.__datasetMetadata = iterator.getDatasetMetadata()
         iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
@@ -1042,9 +966,7 @@ class Evaluation(FileSystem):
             try:
                 print(f"Subdataset {element}")
                 reportMAE : np.ndarray = np.array([])
-                reportNMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
-                reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
@@ -1057,7 +979,7 @@ class Evaluation(FileSystem):
                             iterator.iterateDataset,
                             element,
                             features,
-                            False,
+                            trainSet,
                         )
                         sample : pd.core.frame.DataFrame = futureSample.result()
                         if sample is None:
@@ -1093,10 +1015,8 @@ class Evaluation(FileSystem):
                                 reportMASE = np.append(reportMASE, [mase])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
-                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
-                                reportNMSE = np.append(reportNMSE, [abs(mse / (self.__datasetMetadata["std"] ** 2))])
 
                             iterations += 1
 
@@ -1123,17 +1043,9 @@ class Evaluation(FileSystem):
                         "mean" : float(reportMAE.mean()),
                         "median" : float(np.median(reportMAE)),
                     },
-                    "normalizedMAE" : {
-                        "mean" : float(reportNMAE.mean()),
-                        "median" : float(np.median(reportNMAE)),
-                    },
                     "MSE" : {
                         "mean" : float(reportMSE.mean()),
                         "median" : float(np.median(reportMSE)),
-                    },
-                    "normalizedMSE" : {
-                        "mean" : float(reportNMSE.mean()),
-                        "median" : float(np.median(reportNMSE)),
                     },
                     "numberIterations" : iterations,
                 }
@@ -1147,12 +1059,13 @@ class Evaluation(FileSystem):
         return report
 
     def evaluateChatTimes(
-            self,
-            contextLength : int,
-            predictionLength : int,
-            dataset : str,
-            subdataset : str = "",
-        ) -> dict:
+        self,
+        contextLength : int,
+        predictionLength : int,
+        dataset : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+    ) -> dict:
         """
         Method to evaluate model
         """
@@ -1164,7 +1077,6 @@ class Evaluation(FileSystem):
             contextLength = contextLength,
         )
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
-        self.__datasetMetadata = iterator.getDatasetMetadata()
         iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
@@ -1180,9 +1092,7 @@ class Evaluation(FileSystem):
             try:
                 print(f"Subdataset {element}")
                 reportMAE : np.ndarray = np.array([])
-                reportNMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
-                reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
@@ -1195,7 +1105,7 @@ class Evaluation(FileSystem):
                             iterator.iterateDataset,
                             element,
                             features,
-                            False,
+                            trainSet,
                         )
                         sample : pd.core.frame.DataFrame = futureSample.result()
                         if sample is None:
@@ -1232,10 +1142,8 @@ class Evaluation(FileSystem):
                                 reportMASE = np.append(reportMASE, [mase])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
-                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
-                                reportNMSE = np.append(reportNMSE, [abs(mse / self.__datasetMetadata["std"])])
 
                             iterations += 1
 
@@ -1262,17 +1170,9 @@ class Evaluation(FileSystem):
                         "mean" : float(reportMAE.mean()),
                         "median" : float(np.median(reportMAE)),
                     },
-                    "normalizedMAE" : {
-                        "mean" : float(reportNMAE.mean()),
-                        "median" : float(np.median(reportNMAE)),
-                    },
                     "MSE" : {
                         "mean" : float(reportMSE.mean()),
                         "median" : float(np.median(reportMSE)),
-                    },
-                    "normalizedMSE" : {
-                        "mean" : float(reportNMSE.mean()),
-                        "median" : float(np.median(reportNMSE)),
                     },
                     "numberIterations" : iterations,
                 }
@@ -1286,13 +1186,14 @@ class Evaluation(FileSystem):
         return report
 
     def evaluateChatTimesRag(
-            self,
-            contextLength : int,
-            predictionLength : int,
-            dataset : str,
-            collection : str,
-            subdataset : str = "",
-        ) -> dict:
+        self,
+        contextLength : int,
+        predictionLength : int,
+        dataset : str,
+        collection : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+    ) -> dict:
         """
         Method to evaluate model
         """
@@ -1306,7 +1207,6 @@ class Evaluation(FileSystem):
         )
         model.setRagCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
-        self.__datasetMetadata = iterator.getDatasetMetadata()
         iterator.setSampleSize(contextLength + predictionLength)
 
         if subdataset == "":
@@ -1322,9 +1222,7 @@ class Evaluation(FileSystem):
             try:
                 print(f"Subdataset {element}")
                 reportMAE : np.ndarray = np.array([])
-                reportNMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
-                reportNMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
@@ -1337,7 +1235,7 @@ class Evaluation(FileSystem):
                             iterator.iterateDataset,
                             element,
                             features,
-                            False,
+                            trainSet,
                         )
                         sample : pd.core.frame.DataFrame = futureSample.result()
                         if sample is None:
@@ -1374,10 +1272,8 @@ class Evaluation(FileSystem):
                                 reportMASE = np.append(reportMASE, [mase])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
-                                reportNMAE = np.append(reportNMAE, [abs(mae / self.__datasetMetadata["std"])])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
-                                reportNMSE = np.append(reportNMSE, [abs(mse / self.__datasetMetadata["std"])])
 
                             iterations += 1
 
@@ -1404,17 +1300,9 @@ class Evaluation(FileSystem):
                         "mean" : float(reportMAE.mean()),
                         "median" : float(np.median(reportMAE)),
                     },
-                    "normalizedMAE" : {
-                        "mean" : float(reportNMAE.mean()),
-                        "median" : float(np.median(reportNMAE)),
-                    },
                     "MSE" : {
                         "mean" : float(reportMSE.mean()),
                         "median" : float(np.median(reportMSE)),
-                    },
-                    "normalizedMSE" : {
-                        "mean" : float(reportNMSE.mean()),
-                        "median" : float(np.median(reportNMSE)),
                     },
                     "numberIterations" : iterations,
                 }
@@ -1422,6 +1310,141 @@ class Evaluation(FileSystem):
                 self.__writeReport(report, "evaluationReportsChatTimeRag")
 
             except Exception as e:
+                print("Exception: " + str(e))
+                continue
+
+        return report
+
+    def evaluateMoiraiMoERagCA(
+        self,
+        contextLength : int,
+        predictionLength : int,
+        numberSamples : int,
+        dataset : str,
+        collection : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+    ) -> dict:
+        """
+        Method to evaluate model RAG CA
+        """
+        print(f"Evaluating Dataset {dataset}, context length : {contextLength}, prediction length : {predictionLength}, collection : {collection}_{dataset}")
+        maxTestSamples : int = self._getConfig()["maxTestSamples"]
+        subdatasets : list = []
+        model : MoiraiMoE = MoiraiMoE(
+            predictionLength = predictionLength,
+            contextLength = contextLength,
+            numSamples = numberSamples,
+        )
+        model.setRagCollection(collection, dataset)
+        iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
+        iterator.setSampleSize(contextLength + predictionLength)
+
+        if subdataset == "":
+            datasetConfig : dict = Utils.readYaml(
+                self._getFiles()["datasets"]
+            )
+            subdatasets = list(datasetConfig[dataset].keys())
+        else:
+            subdatasets.append(subdataset)
+
+        maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
+        for element in subdatasets:
+            try:
+                print(f"Subdataset {element}")
+                reportMAE : np.ndarray = np.array([])
+                reportMSE : np.ndarray = np.array([])
+                reportMASE : np.ndarray = np.array([])
+                iterations : int = 0
+                running : bool = True
+                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
+                features : list = list(iterator.getAvailableFeatures(element).keys())
+
+                while running:
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                        futureSample : concurrent.futures._base.Future = executor.submit(
+                            iterator.iterateDataset,
+                            element,
+                            features,
+                            trainSet,
+                        )
+                        sample : pd.core.frame.DataFrame = futureSample.result()
+                        if sample is None:
+                            break
+                        if len(sample) < predictionLength + contextLength:
+                            break
+
+                        indexes : list = [index for index in range(1,len(features))]
+                        random.shuffle(indexes)
+                        for i in range(len(indexes)):
+                            index : int = indexes[i]
+                            if sample[index].isna().any().any():
+                                continue
+                            pred : np.ndarray = model.ragCaInference(
+                                sample[[0, index]].iloc[:contextLength],
+                                dataset,
+                                plot=True,
+                            )
+
+                            mase : float = self.__getMASE(
+                                sample[index].iloc[:contextLength].values,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            mae : float = self.__getMAE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            mse : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            if mase:
+                                reportMASE = np.append(reportMASE, [mase])
+                            if mae:
+                                reportMAE = np.append(reportMAE, [mae])
+                            if mse:
+                                reportMSE = np.append(reportMSE, [mse])
+
+                            iterations += 1
+
+                            if iterations >= maxTestSamplesPerSubdataset:
+                                running = False
+                                break
+
+                if iterations <= 0:
+                    continue
+
+                report : dict = self.__loadReport("evaluationReportsMoiraiMoERagCA")
+
+                if dataset not in report:
+                    report[dataset] = dict()
+                if f"{contextLength},{predictionLength}" not in report[dataset]:
+                    report[dataset][f"{contextLength},{predictionLength}"] = dict()
+
+                report[dataset][f"{contextLength},{predictionLength}"][element] = {
+                    "MASE" : {
+                        "mean" : float(reportMASE.mean()),
+                        "median" : float(np.median(reportMASE)),
+                    },
+                    "MAE" : {
+                        "mean" : float(reportMAE.mean()),
+                        "median" : float(np.median(reportMAE)),
+                    },
+                    "MSE" : {
+                        "mean" : float(reportMSE.mean()),
+                        "median" : float(np.median(reportMSE)),
+                    },
+                    "numberIterations" : iterations,
+                }
+
+                self.__writeReport(report, "evaluationReportsMoiraiMoERagCA")
+
+            except Exception as e:
+                raise e
                 print("Exception: " + str(e))
                 continue
 

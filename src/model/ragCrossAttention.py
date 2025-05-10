@@ -11,6 +11,7 @@ class RagCrossAttention(torch.nn.Module):
         self,
         patchSize : int = 16,
         numHeads : int = 8,
+        pretrainedModel : str = "",
     ):
         """
         Initialize the EmbeddingAugmentation class.
@@ -26,6 +27,11 @@ class RagCrossAttention(torch.nn.Module):
             num_heads=numHeads,
             batch_first=True
         )
+
+        if pretrainedModel != "":
+            self.load_state_dict(
+                torch.load(pretrainedModel, map_location=self.__device, weights_only=False),
+            )
 
     def __concat(
         self,

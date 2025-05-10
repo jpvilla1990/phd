@@ -31,9 +31,12 @@ class TimeManager(object):
         """
         Method to get timediff in seconds
         """
-        return abs(int((
-            datetime.strptime(startStr, timestampFormart) - datetime.strptime(endStr, timestampFormart)
-        ).total_seconds()))
+        try:
+            return abs(int((
+                datetime.strptime(startStr, timestampFormart) - datetime.strptime(endStr, timestampFormart)
+            ).total_seconds()))
+        except TypeError as e:
+            return 60
 
     def nextTimeStamp(timestamp : str, formatTime : str, period : int) -> str:
         """
@@ -48,6 +51,8 @@ class TimeManager(object):
         try:
             dt : datetime = datetime.strptime(timestamp, originalFormat)
             return dt.strftime(targetFormat)
+        except TypeError as e:
+            return datetime.now().strftime(targetFormat)
         except ValueError as e:
             raise Exception(f"Invalid date format: {timestamp} - {e}")
 

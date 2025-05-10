@@ -12,8 +12,8 @@ training:
   beta1: 0.9
   beta2: 0.98
   eps: 1e-6
-  maxIterationsPerEpoch: 1000
-  epochs: 100
+  maxIterationsPerEpoch: 100000
+  epochs: 1
   lengthCombinations:
     #- contextLength: 32
     #  predictionLength: 16
@@ -21,6 +21,7 @@ training:
     #  predictionLength: 16
     - contextLength: 128
       predictionLength: 16
+  checkpoint: ""
 models:
   linealModel:
     type: ridge
@@ -141,6 +142,7 @@ datasets:
     datasetName : Salesforce/lotsa_data
     type : "huggingface"
     format: "huggingface"
+    timeformat: "%Y-%m-%d %H:%M:%S"
     subdatasets:
       buildings_900k : ["buildings_900k", "0.0.0"]
       # buildings_bench
@@ -541,6 +543,7 @@ files:
   evaluationReportsLineal: ["data", "reportsLineal.yaml"]
   evaluationReportsMoiraiMoE: ["data", "reportsMoiraiMoE.yaml"]
   evaluationReportsMoiraiMoERagMean: ["data", "reportsMoiraiMoERagMean.yaml"]
+  evaluationReportsMoiraiMoERagCA : ["data", "reportsMoiraiMoERagCA.yaml"]
   evaluationReportsMoiraiMoERagSoftMax: ["data", "reportsMoiraiMoERagSoftMax.yaml"]
   evaluationReportsMoiraiMoERafSoftMax: ["data", "reportsMoiraiMoERafSoftMax.yaml"]
   evaluationReportsMoiraiMoERafCosSoftMax: ["data", "reportsMoiraiMoERafCosSoftMax.yaml"]
@@ -551,9 +554,11 @@ files:
   evaluationFinalReportMoiraiMoE: ["data" ,"reportsMoiraiMoE.pdf"]
   evaluationFinalReportChatTime: ["data" ,"reportsChatTime.pdf"]
   evaluationFinalReportMoiraiMoERagMean: ["data", "reportsMoiraiMoERagMean.pdf"]
+  evaluationFinalReportMoiraiMoERagCA: ["data", "reportsMoiraiMoERagCA.pdf"]
   evaluationFinalReportMoiraiMoERagSoftMax: ["data", "reportsMoiraiMoERagSoftMax.pdf"]
   evaluationFinalReportMoiraiMoERafSoftMax: ["data", "reportsMoiraiMoERafSoftMax.pdf"]
   evaluationFinalReportMoiraiMoERafCosSoftMax: ["data", "reportsMoiraiMoERafCosSoftMax.pdf"]
   evaluationFinalReportMoiraiMoERagOnlySoftMax: ["data", "reportsMoiraiMoERagOnlySoftMax.pdf"]
   evaluationFinalReportMoiraiMoERagL2SoftMax : ["data", "reportsMoiraiMoERagL2SoftMax.pdf"]
   evaluationFinalReportChatTimeRag: ["data", "reportsChatTimeRag.pdf"]
+  paramsRagCA: ["data", "models", "training_ragca_state.pth"]

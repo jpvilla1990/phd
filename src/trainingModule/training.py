@@ -1,3 +1,4 @@
+import os
 import torch
 import lightning as L
 from lightning.pytorch.callbacks import ModelCheckpoint
@@ -60,7 +61,7 @@ class TrainingRagCA(L.LightningModule):
             batch : tuple[torch.Tensor, int],
             batch_idx : int,
         ) -> torch.Tensor:
-        """s
+        """
         Training step for the model.
         :param batch: Batch of data to be used for training. [B, L]
         :return: Loss value for the batch.
@@ -127,7 +128,7 @@ class Training(FileSystem):
         )
         return reports if type(reports) == dict else dict()
 
-    def __writeReport(self, entry : dict, report : str):
+    def __writeReport(self, enztry : dict, report : str):
         """
         Method to write in dataset config
         """
@@ -135,6 +136,24 @@ class Training(FileSystem):
             self._getFiles()[report],
             self.__loadReport(report) | entry,
         )
+
+    def saveModelState(self, parametersFile : str):
+        """
+        Method to get RAG CA state
+        """
+        parametersFile = os.path.join(self._getPaths()["RagCAModels"], parametersFile)
+        model : RagCrossAttention = TrainingRagCA.load_from_checkpoint(
+            parametersFile,
+            dataset=self._getConfig()["training"]["dataset"],
+            collectionPrefix=self._getConfig()["training"]["collectionPrefix"],
+            k=self._getConfig()["training"]["k"],
+            batchSize=self.__batchSize,
+            lr=float(self._getConfig()["training"]["lr"]),
+            weightDecay=float(self._getConfig()["training"]["weightDecay"]),
+            betas=(float(self._getConfig()["training"]["beta1"]), float(self._getConfig()["training"]["beta2"])),
+            eps=float(self._getConfig()["training"]["eps"]),
+        ).modelRagCA
+        torch.save(model.state_dict(), self._getFiles()["paramsRagCA"])
 
     def trainRagCA(
             self,
@@ -165,15 +184,29 @@ class Training(FileSystem):
                 ModelCheckpoint(
                     monitor="train_loss",
                     dirpath=self._getPaths()["RagCAModels"],
-                    filename=f"RagCA-{self._getConfig()['training']['dataset']}-{{epoch:02d}}-{{train_loss:.2f}}",
+                    filename=f"RagCA-{self._getConfig()['training']['dataset']}-{{epoch:02d}}-{{step:02d}}-{{train_loss:.2f}}",
                     save_top_k=1,
                     mode="min",
-                    every_n_train_steps=1000,
                     save_weights_only=False,
+                    every_n_train_steps=1,
+                    save_on_train_epoch_end=False,
                 ),
-            ]
+            ],
         )
-        trainer.fit(model, tsLoader)
+        if self._getConfig()["training"]["checkpoint"] != "":
+            trainer.fit(
+                model,
+                tsLoader, 
+                ckpt_path = os.path.join(
+                    self._getPaths()["RagCAModels"],
+                    self._getConfig()["training"]["checkpoint"],
+                ),
+            )
+        else:
+            trainer.fit(
+                model,
+                tsLoader, 
+            )
 
 if __name__ == "__main__":
     training = Training()
