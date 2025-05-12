@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn.functional as F
 
@@ -11,7 +12,9 @@ class RagCrossAttention(torch.nn.Module):
         self,
         patchSize : int = 16,
         numHeads : int = 8,
+        innerDim : int = 256,
         pretrainedModel : str = "",
+        loadPretrainedModel : bool = False,
     ):
         """
         Initialize the EmbeddingAugmentation class.
@@ -22,16 +25,21 @@ class RagCrossAttention(torch.nn.Module):
         self.__device : str = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.__patchSize : int = patchSize
 
+        self.__linealInput = torch.nn.Linear(patchSize, innerDim).to(self.__device)
+
         self.__crossAttentionModule : torch.nn.MultiheadAttention = torch.nn.MultiheadAttention(
-            embed_dim=patchSize,
+            embed_dim=innerDim,
             num_heads=numHeads,
             batch_first=True
-        )
+        ).to(self.__device)
 
-        if pretrainedModel != "":
-            self.load_state_dict(
-                torch.load(pretrainedModel, map_location=self.__device, weights_only=False),
-            )
+        self.__linealOutput = torch.nn.Linear(innerDim, patchSize).to(self.__device)
+
+        if loadPretrainedModel:
+            if os.path.exists(pretrainedModel):
+                self.load_state_dict(
+                    torch.load(pretrainedModel, map_location=self.__device, weights_only=False),
+                )
 
     def __concat(
         self,
@@ -89,7 +97,7 @@ class RagCrossAttention(torch.nn.Module):
         std : torch.Tensor = x.std(dim=(1,2,3), keepdim=True) + 1e-6
         x = (x - mean) / std
         return x, mean, std
-    
+
     def __denormalization(
         self,
         x : torch.Tensor,
@@ -157,9 +165,12 @@ class RagCrossAttention(torch.nn.Module):
         batchSize = x.shape[0]
         dModel = x.shape[-1]
         query = x.view(batchSize, -1, dModel)
+        queryProj : torch.Tensor = self.__linealInput(query)
         keyValue = context.view(batchSize, -1, dModel)
-        x = self.__crossAttentionModule(query, keyValue, keyValue)
-        return x[0].unsqueeze(1)
+        keyValueProj : torch.Tensor = self.__linealInput(keyValue)
+        x = self.__crossAttentionModule(queryProj, keyValueProj, keyValueProj)
+        x = self.__linealOutput(x[0].unsqueeze(1))
+        return x
 
     def forward(
         self, xInput : torch.Tensor,
@@ -196,7 +207,7 @@ class RagCrossAttention(torch.nn.Module):
 
         xAugmented : torch.Tensor = self.__concat(x.squeeze(1), xInput)
 
-        return xAugmented
+        return x.squeeze(1)
 
     def inference(
         self, xInput : torch.Tensor,

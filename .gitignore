@@ -5,6 +5,8 @@ src/data/*
 *nohup*
 !src/data/reports*.yaml
 !src/data/reports*.pdf
+!src/data/models/RagCA_loss_0.56.ckpt
 src/reports
 .venv
 lightning_logs
+milvus/volumes

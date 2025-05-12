@@ -9,3 +9,4 @@ vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoETrainingCosine_128_16", trai
 
 training :Training = Training()
 training.trainRagCA()
+#training.saveModelState("RagCA-lotsaData-epoch=00-step=4046-train_loss=-3.19.ckpt")

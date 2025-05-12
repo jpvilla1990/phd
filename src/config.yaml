@@ -189,6 +189,11 @@ vectorDatabase:
   scoreThreshold : 0.5
   k : 16
   collections:
+    testcollection:
+      metric:
+        hnsw:space: "cosine"
+      context: 10
+      prediction: 5
     chatTimeCosine_32_16:
       metric:
         hnsw:space: "cosine"

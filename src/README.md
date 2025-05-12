@@ -1,5 +1,11 @@
 # PhD
 
+## Milvus Vector database client
+
+```bash
+cd milvus
+sudo docker compose up
+```
 
 ## Examples
 

@@ -1,26 +1,24 @@
 from vectorDB.vectorDBingestion import VectorDBIngestion
 from evaluation.evaluation import Evaluation
 from trainingModule.training import Training
-training = Training()
-training.trainRagCA()
-exit()
-training.saveModelState("RagCA-lotsaData-epoch=02-train_loss=0.43.ckpt")
 
 vectorDBingestion : VectorDBIngestion = VectorDBIngestion()
 evaluation : Evaluation = Evaluation()
+training :Training = Training()
 
 vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_32_16")
 vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_64_16")
 vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoECosine_128_16")
 
-report : dict = evaluation.evaluateMoiraiMoE(
-    contextLength=128,
-    predictionLength=16,
-    numberSamples=100,
-    dataset="lotsaData",
-    trainSet=True,
-)
-
+#report : dict = evaluation.evaluateMoiraiMoE(
+#    contextLength=128,
+#    predictionLength=16,
+#    numberSamples=100,
+#    dataset="lotsaData",
+#    trainSet=True,
+#)
+#report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoE",reportTargetName="evaluationFinalReportMoiraiMoE")
+training.saveModelState("RagCA-lotsaData-epoch=00-step=1485-train_loss=-1.89.ckpt")
 report : dict = evaluation.evaluateMoiraiMoERagCA(
     contextLength=128,
     predictionLength=16,
@@ -29,7 +27,8 @@ report : dict = evaluation.evaluateMoiraiMoERagCA(
     collection="moiraiMoETrainingCosine_128_16",
     trainSet=True,
 )
-#exit()
+report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERagCA",reportTargetName="evaluationFinalReportMoiraiMoERagCA")
+exit()
 report : dict = evaluation.evaluateMoiraiMoERagCA(
     contextLength=128,
     predictionLength=16,

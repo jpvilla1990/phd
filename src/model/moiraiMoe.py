@@ -162,7 +162,7 @@ class MoiraiMoE(FileSystem):
         self.__modelRagCABackBone : MoiraiMoEForecast = MoiraiMoEForecast(
             module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
             prediction_length=predictionLength,
-            context_length= contextLength + contextLength,
+            context_length= contextLength,
             patch_size=patchSize,
             num_samples=numSamples,
             target_dim=targetDim,
@@ -205,7 +205,7 @@ class MoiraiMoE(FileSystem):
         x = F.pad(x, (0, padLen), value=0)
         x = x.unfold(dimension=1, size=self.__patchSize, step=self.__patchSize)
         zeros : torch.Tensor = torch.zeros(x.shape[0], 1, x.shape[2]).to(x.device)
-        return torch.cat([x, zeros], dim=1)
+        return torch.cat([zeros, x, zeros], dim=1)
 
     def forwardRagCA(self, x : torch.Tensor) -> torch.Tensor:
         """
@@ -226,29 +226,31 @@ class MoiraiMoE(FileSystem):
             dtype=torch.bool,
             device=device,
         )
+        observedMask[:,0,:] = False
         predictionMask : torch.Tensor = torch.zeros(
             (batchSize, numPatches),
             dtype=torch.bool,
             device=device,
         )
-        predictionMask[0][:][-1] = True
+        predictionMask[:,-1] = True
         sampleId : torch.Tensor = torch.ones(
             (batchSize, numPatches),
             dtype=torch.int32,
             device=device,
         )
+        sampleId[:,0] = 0
         timeId : torch.Tensor = torch.arange(
-            numPatches,
-            dtype=torch.int32,
+            numPatches - 1,
             device=device,
         )
         timeId = timeId.unsqueeze(0)
         timeId = timeId.repeat(batchSize, 1)
+        timeId = F.pad(timeId, (1, 0), value=0)
 
         variateId : torch.Tensor = torch.zeros(
             (batchSize, numPatches),
-            dtype=torch.int32,
             device=device,
+            dtype=torch.int64,
         )
 
         return self.__modelRagCABackBone.module(
@@ -494,13 +496,11 @@ class MoiraiMoE(FileSystem):
         timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
 
         sample.columns = ["datetime", "value"]
-        queried, score = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
+        query : torch.tensor = torch.tensor(sample["value"].to_numpy())
+        query = torch.ones(query.shape)
+        queried, score = self.queryVector(query, k=self.__k, metadata={"dataset" : dataset})
         if queried is not None:
-            torchSample : torch.Tensor = torch.tensor(
-                sample["value"].to_numpy(),
-                dtype=torch.float32,
-            ).unsqueeze(0)
-            xContext : torch.Tensor = torchSample[:, :self.__contextLength]
+            xContext : torch.Tensor = query.unsqueeze(0)
             queriedTorch : torch.Tensor = torch.Tensor(queried).unsqueeze(0)
             scoreTensor : torch.Tensor = torch.Tensor(score).unsqueeze(0)
 
@@ -509,7 +509,6 @@ class MoiraiMoE(FileSystem):
                 queriedTorch,
                 scoreTensor,
             ).to("cpu")
-
             newSample : list = augmentedSample[0].tolist()
             sampleGluonts : ListDataset = ListDataset(
                 [{

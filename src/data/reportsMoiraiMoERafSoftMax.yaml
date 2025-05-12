@@ -10,12 +10,6 @@ ET:
       MSE:
         mean: 5.156731901147931
         median: 0.8942364118573822
-      normalizedMAE:
-        mean: 0.09357672099318694
-        median: 0.05894773617230514
-      normalizedMSE:
-        mean: 0.030140445525794826
-        median: 0.005226698687354633
       numberIterations: 2500
     ETTh2:
       MAE:
@@ -27,12 +21,6 @@ ET:
       MSE:
         mean: 10.02519242683706
         median: 2.6424972535760327
-      normalizedMAE:
-        mean: 0.14122756444902146
-        median: 0.10292710344317928
-      normalizedMSE:
-        mean: 0.05859598133450163
-        median: 0.015445062114968782
       numberIterations: 2500
     ETTm1:
       MAE:
@@ -44,12 +32,6 @@ ET:
       MSE:
         mean: 7.30771946734107
         median: 0.5574423798304355
-      normalizedMAE:
-        mean: 0.09523412708832542
-        median: 0.047515483894897376
-      normalizedMSE:
-        mean: 0.04271269570445434
-        median: 0.0032581801817753034
       numberIterations: 2500
     ETTm2:
       MAE:
@@ -61,12 +43,6 @@ ET:
       MSE:
         mean: 6.020616092265326
         median: 1.7284734984681762
-      normalizedMAE:
-        mean: 0.1133677320998542
-        median: 0.08268053605089583
-      normalizedMSE:
-        mean: 0.0351897393231266
-        median: 0.010102708909835483
       numberIterations: 2500
   32,16:
     ETTh1:
@@ -79,12 +55,6 @@ ET:
       MSE:
         mean: 8.22951868678625
         median: 1.1604265828246603
-      normalizedMAE:
-        mean: 0.11456462860615614
-        median: 0.06772147571756953
-      normalizedMSE:
-        mean: 0.048100495514877446
-        median: 0.006782546557932362
       numberIterations: 2500
     ETTh2:
       MAE:
@@ -96,12 +66,6 @@ ET:
       MSE:
         mean: 15.075517391184912
         median: 3.4314182946470813
-      normalizedMAE:
-        mean: 0.16322710423403536
-        median: 0.11600386786453222
-      normalizedMSE:
-        mean: 0.08811449177744377
-        median: 0.02005620578471473
       numberIterations: 2500
     ETTm1:
       MAE:
@@ -113,12 +77,6 @@ ET:
       MSE:
         mean: 6.659277154031081
         median: 0.6128827559401976
-      normalizedMAE:
-        mean: 0.09576883163647502
-        median: 0.04987243820962106
-      normalizedMSE:
-        mean: 0.03892263242492077
-        median: 0.003582222165748502
       numberIterations: 2500
     ETTm2:
       MAE:
@@ -130,12 +88,6 @@ ET:
       MSE:
         mean: 6.676824679538125
         median: 1.7053996872477266
-      normalizedMAE:
-        mean: 0.11996813341510858
-        median: 0.08257517356356006
-      normalizedMSE:
-        mean: 0.03902519549137374
-        median: 0.009967845402580505
       numberIterations: 2500
   64,16:
     ETTh1:
@@ -148,12 +100,6 @@ ET:
       MSE:
         mean: 7.7088098342213724
         median: 1.0789145947965153
-      normalizedMAE:
-        mean: 0.1103725546886189
-        median: 0.06468343407813018
-      normalizedMSE:
-        mean: 0.04505701815239578
-        median: 0.006306119300910403
       numberIterations: 2500
     ETTh2:
       MAE:
@@ -165,12 +111,6 @@ ET:
       MSE:
         mean: 12.97745345961493
         median: 2.993384330279837
-      normalizedMAE:
-        mean: 0.1538584671760415
-        median: 0.10838364457503805
-      normalizedMSE:
-        mean: 0.07585157354718966
-        median: 0.017495952683614036
       numberIterations: 2500
     ETTm1:
       MAE:
@@ -182,12 +122,6 @@ ET:
       MSE:
         mean: 7.252193949446323
         median: 0.5786491433851878
-      normalizedMAE:
-        mean: 0.09457119975456313
-        median: 0.048140660340130995
-      normalizedMSE:
-        mean: 0.04238815607752015
-        median: 0.0033821310316455733
       numberIterations: 2500
     ETTm2:
       MAE:
@@ -199,12 +133,6 @@ ET:
       MSE:
         mean: 7.000607460162354
         median: 1.6810148524316444
-      normalizedMAE:
-        mean: 0.11714970576182789
-        median: 0.08299293300912428
-      normalizedMSE:
-        mean: 0.040917664878704595
-        median: 0.009825319128281464
       numberIterations: 2500
 covid19Deaths:
   128,16:
@@ -218,12 +146,6 @@ covid19Deaths:
       MSE:
         mean: 51047.50513822098
         median: 0.8375114866066724
-      normalizedMAE:
-        mean: 0.005234345418442244
-        median: 0.0001018109225158797
-      normalizedMSE:
-        mean: 0.0009265829383762589
-        median: 1.5201993752341957e-08
       numberIterations: 3724
   32,16:
     covid19Deaths:
@@ -236,12 +158,6 @@ covid19Deaths:
       MSE:
         mean: 146037.69710112258
         median: 0.7863230003245221
-      normalizedMAE:
-        mean: 0.006460080802316726
-        median: 9.262487500582969e-05
-      normalizedMSE:
-        mean: 0.0026507865198752783
-        median: 1.4272851810891132e-08
       numberIterations: 8778
   64,16:
     covid19Deaths:
@@ -254,12 +170,6 @@ covid19Deaths:
       MSE:
         mean: 171739.19456573942
         median: 1.5628214145526718
-      normalizedMAE:
-        mean: 0.0074790078138292585
-        median: 0.00013628755291291794
-      normalizedMSE:
-        mean: 0.0031173043051608107
-        median: 2.8367373773362477e-08
       numberIterations: 7182
 electricityUCI:
   128,16:
@@ -273,12 +183,6 @@ electricityUCI:
       MSE:
         mean: 2856262.5109043233
         median: 231.2318208938425
-      normalizedMAE:
-        mean: 0.03502616257781636
-        median: 0.003858273260683547
-      normalizedMSE:
-        mean: 0.27473068821644214
-        median: 2.2241120012317524e-05
       numberIterations: 10000
   32,16:
     electricity:
@@ -291,12 +195,6 @@ electricityUCI:
       MSE:
         mean: 3063289.9623961067
         median: 277.22926219328724
-      normalizedMAE:
-        mean: 0.038595846085947745
-        median: 0.0042546923621002005
-      normalizedMSE:
-        mean: 0.2946437018175715
-        median: 2.666540127363299e-05
       numberIterations: 10000
   64,16:
     electricity:
@@ -309,12 +207,6 @@ electricityUCI:
       MSE:
         mean: 448501.7380197606
         median: 192.3912260551528
-      normalizedMAE:
-        mean: 0.022837749615828674
-        median: 0.0034702947193277845
-      normalizedMSE:
-        mean: 0.04313930903830943
-        median: 1.8505222730456427e-05
       numberIterations: 10000
 fredMd:
   128,16:
@@ -328,12 +220,6 @@ fredMd:
       MSE:
         mean: 455675799.9278217
         median: 7.528514023335488
-      normalizedMAE:
-        mean: 0.014018612481208868
-        median: 2.1427440975844653e-05
-      normalizedMSE:
-        mean: 0.03956843034767304
-        median: 6.537355786746091e-10
       numberIterations: 10000
   32,16:
     fredMd:
@@ -346,12 +232,6 @@ fredMd:
       MSE:
         mean: 471852298.84222704
         median: 6.590519632201785
-      normalizedMAE:
-        mean: 0.014360786463220821
-        median: 2.042565426482922e-05
-      normalizedMSE:
-        mean: 0.040973110321165684
-        median: 5.722852015908123e-10
       numberIterations: 10000
   64,16:
     fredMd:
@@ -364,12 +244,6 @@ fredMd:
       MSE:
         mean: 339355496.428318
         median: 6.170765464519645
-      normalizedMAE:
-        mean: 0.012018748050838258
-        median: 1.970695177793414e-05
-      normalizedMSE:
-        mean: 0.029467802164720718
-        median: 5.358360121677464e-10
       numberIterations: 10000
 huaweiCloud:
   128,16:
@@ -383,12 +257,6 @@ huaweiCloud:
       MSE:
         mean: 5251147150.480675
         median: 203707.94110984122
-      normalizedMAE:
-        mean: 0.045579098198758286
-        median: 0.0013425763540748262
-      normalizedMSE:
-        mean: 0.069926787927898
-        median: 2.7126724102394824e-06
       numberIterations: 2500
     datacenter2:
       MAE:
@@ -400,12 +268,6 @@ huaweiCloud:
       MSE:
         mean: 12621709284.28397
         median: 182537.2632565474
-      normalizedMAE:
-        mean: 0.043239515753821546
-        median: 0.0012747380642679207
-      normalizedMSE:
-        mean: 0.16807671983233533
-        median: 2.4307535345893087e-06
       numberIterations: 2500
     datacenter3:
       MAE:
@@ -417,12 +279,6 @@ huaweiCloud:
       MSE:
         mean: 76296067.46127748
         median: 29070.497360290494
-      normalizedMAE:
-        mean: 0.011975696817159716
-        median: 0.0005064579314372462
-      normalizedMSE:
-        mean: 0.0010159949390504104
-        median: 3.871166519653662e-07
       numberIterations: 2500
     datacenter4:
       MAE:
@@ -434,12 +290,6 @@ huaweiCloud:
       MSE:
         mean: 5209483.026965651
         median: 1195.7257972352027
-      normalizedMAE:
-        mean: 0.002060696694759245
-        median: 8.811895551916806e-05
-      normalizedMSE:
-        mean: 6.93719685244901e-05
-        median: 1.592285682482333e-08
       numberIterations: 2500
   32,16:
     datacenter1:
@@ -452,12 +302,6 @@ huaweiCloud:
       MSE:
         mean: 7007182855.961906
         median: 197549.4716260177
-      normalizedMAE:
-        mean: 0.04364724744278194
-        median: 0.0013493709491687019
-      normalizedMSE:
-        mean: 0.09331099957768249
-        median: 2.630663284001925e-06
       numberIterations: 2500
     datacenter2:
       MAE:
@@ -469,12 +313,6 @@ huaweiCloud:
       MSE:
         mean: 10585666030.927523
         median: 177907.40097202407
-      normalizedMAE:
-        mean: 0.03909561063832385
-        median: 0.0012507977518225128
-      normalizedMSE:
-        mean: 0.1409637937021942
-        median: 2.36910007319743e-06
       numberIterations: 2500
     datacenter3:
       MAE:
@@ -486,12 +324,6 @@ huaweiCloud:
       MSE:
         mean: 98589606.92357305
         median: 34022.063255271874
-      normalizedMAE:
-        mean: 0.012573709163641625
-        median: 0.000542791525823754
-      normalizedMSE:
-        mean: 0.0013128663771321766
-        median: 4.5305407255691855e-07
       numberIterations: 2500
     datacenter4:
       MAE:
@@ -503,12 +335,6 @@ huaweiCloud:
       MSE:
         mean: 10070908.37849236
         median: 2451.5422868301093
-      normalizedMAE:
-        mean: 0.0028289038909960137
-        median: 0.0001164456621389547
-      normalizedMSE:
-        mean: 0.00013410903451061421
-        median: 3.264591006019534e-08
       numberIterations: 2500
   64,16:
     datacenter1:
@@ -521,12 +347,6 @@ huaweiCloud:
       MSE:
         mean: 4912692332.0399
         median: 198859.3215289116
-      normalizedMAE:
-        mean: 0.0380919633915855
-        median: 0.0013344206179026756
-      normalizedMSE:
-        mean: 0.06541976162791766
-        median: 2.648105872021698e-06
       numberIterations: 2500
     datacenter2:
       MAE:
@@ -538,12 +358,6 @@ huaweiCloud:
       MSE:
         mean: 7803174794.500213
         median: 166581.53929272492
-      normalizedMAE:
-        mean: 0.03729439694117698
-        median: 0.0012357091360690083
-      normalizedMSE:
-        mean: 0.10391080908280931
-        median: 2.2182794800863488e-06
       numberIterations: 2500
     datacenter3:
       MAE:
@@ -555,12 +369,6 @@ huaweiCloud:
       MSE:
         mean: 158782024.696634
         median: 34511.03311091103
-      normalizedMAE:
-        mean: 0.014060339931218772
-        median: 0.0005714390825227662
-      normalizedMSE:
-        mean: 0.002114417411956822
-        median: 4.595654291078931e-07
       numberIterations: 2500
     datacenter4:
       MAE:
@@ -572,12 +380,6 @@ huaweiCloud:
       MSE:
         mean: 7856656.0665581925
         median: 1988.9515708266044
-      normalizedMAE:
-        mean: 0.0025516196621686647
-        median: 0.00011334036683163777
-      normalizedMSE:
-        mean: 0.00010462299129026662
-        median: 2.648583075401353e-08
       numberIterations: 2500
 m4-monthly:
   128,16:
@@ -591,12 +393,6 @@ m4-monthly:
       MSE:
         mean: 864334.6526952321
         median: 26259.994247388095
-      normalizedMAE:
-        mean: 0.10588312752879686
-        median: 0.0412063994208944
-      normalizedMSE:
-        mean: 0.07976734731254943
-        median: 0.0024234711347336816
       numberIterations: 10000
   32,16:
     m4-monthly:
@@ -609,12 +405,6 @@ m4-monthly:
       MSE:
         mean: 912895.1236342788
         median: 42542.00242051363
-      normalizedMAE:
-        mean: 0.11875871344495838
-        median: 0.05195119280450722
-      normalizedMSE:
-        mean: 0.08424887531675147
-        median: 0.003926098151759488
       numberIterations: 10000
   64,16:
     m4-monthly:
@@ -627,12 +417,6 @@ m4-monthly:
       MSE:
         mean: 666162.9046726272
         median: 30571.210548701667
-      normalizedMAE:
-        mean: 0.10323365603239168
-        median: 0.043982834403992886
-      normalizedMSE:
-        mean: 0.06147855766057654
-        median: 0.0028213428236380286
       numberIterations: 10000
 nn5:
   128,16:
@@ -646,12 +430,6 @@ nn5:
       MSE:
         mean: 35.32137756359117
         median: 18.19074714420252
-      normalizedMAE:
-        mean: 0.39725265991194975
-        median: 0.335867383123182
-      normalizedMSE:
-        mean: 0.3739231603026836
-        median: 0.1925729439114112
       numberIterations: 10000
   32,16:
     nn5:
@@ -664,12 +442,6 @@ nn5:
       MSE:
         mean: 42.129773889956844
         median: 24.55920385354112
-      normalizedMAE:
-        mean: 0.454312086851355
-        median: 0.39074668102196464
-      normalizedMSE:
-        mean: 0.4459989751930979
-        median: 0.2599914202921667
       numberIterations: 10000
   64,16:
     nn5:
@@ -682,12 +454,6 @@ nn5:
       MSE:
         mean: 36.15276126356875
         median: 19.991562387795927
-      normalizedMAE:
-        mean: 0.4080680456785542
-        median: 0.34905083786553115
-      normalizedMSE:
-        mean: 0.3827244484166612
-        median: 0.21163693782822246
       numberIterations: 10000
 power:
   128,16:
@@ -701,12 +467,6 @@ power:
       MSE:
         mean: 879675.2872053623
         median: 4142.133004228901
-      normalizedMAE:
-        mean: 0.032345844951957706
-        median: 0.004365346626062881
-      normalizedMSE:
-        mean: 0.0072495306674560025
-        median: 3.413591433065785e-05
       numberIterations: 10000
   32,16:
     power:
@@ -719,12 +479,6 @@ power:
       MSE:
         mean: 1070891.0441292478
         median: 5313.3347138524205
-      normalizedMAE:
-        mean: 0.03608586490889561
-        median: 0.005044404669925966
-      normalizedMSE:
-        mean: 0.008825367244978162
-        median: 4.378795620927713e-05
       numberIterations: 10000
   64,16:
     power:
@@ -737,12 +491,6 @@ power:
       MSE:
         mean: 1133476.6820900198
         median: 4996.99952513197
-      normalizedMAE:
-        mean: 0.03731456225348287
-        median: 0.004973691500457164
-      normalizedMSE:
-        mean: 0.009341144496355003
-        median: 4.118099238389798e-05
       numberIterations: 10000
 traffic:
   128,16:
@@ -756,12 +504,6 @@ traffic:
       MSE:
         mean: 8.971220250046352
         median: 2.029518409700813
-      normalizedMAE:
-        mean: 0.06547212889062093
-        median: 0.04819498401104105
-      normalizedMSE:
-        mean: 0.016329744769221555
-        median: 0.0036942039891038753
       numberIterations: 10000
   32,16:
     traffic:
@@ -774,12 +516,6 @@ traffic:
       MSE:
         mean: 9.11889818801078
         median: 2.1820402811435926
-      normalizedMAE:
-        mean: 0.06575549158718447
-        median: 0.049744552793168216
-      normalizedMSE:
-        mean: 0.016598553578702248
-        median: 0.003971829904304402
       numberIterations: 10000
   64,16:
     traffic:
@@ -792,10 +528,4 @@ traffic:
       MSE:
         mean: 7.435935198016798
         median: 2.0587084865708505
-      normalizedMAE:
-        mean: 0.06345076361467203
-        median: 0.048262357893561245
-      normalizedMSE:
-        mean: 0.013535162499600639
-        median: 0.0037473368396856235
       numberIterations: 10000
