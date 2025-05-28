@@ -2,6 +2,7 @@ seed: 42
 trainPartition: 0.8
 maxTestSamples: 10000
 maxNan: 0.25
+minUniqueElementRatio: 0.02
 training:
   dataset: lotsaData
   collectionPrefix: moiraiMoETrainingCosine
@@ -13,15 +14,15 @@ training:
   beta2: 0.98
   eps: 1e-6
   maxIterationsPerEpoch: 100000
-  epochs: 1
+  epochs: 44
   lengthCombinations:
-    #- contextLength: 32
-    #  predictionLength: 16
-    #- contextLength: 64
-    #  predictionLength: 16
+    - contextLength: 32
+      predictionLength: 16
+    - contextLength: 64
+      predictionLength: 16
     - contextLength: 128
       predictionLength: 16
-  checkpoint: ""
+  checkpoint: "RagCA-128_16-lotsaData-epoch=42-step=043000.ckpt"
 models:
   linealModel:
     type: ridge
@@ -186,7 +187,7 @@ monash:
   timeFormat: "%Y-%m-%d %H-%M-%S"
 vectorDatabase:
   maxNumberSamples: 10000
-  scoreThreshold : 0.5
+  scoreThreshold : 0.0
   k : 16
   collections:
     testcollection:

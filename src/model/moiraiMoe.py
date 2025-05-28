@@ -111,6 +111,7 @@ class MoiraiMoE(FileSystem):
         batchSize : int = 1,
         createPredictor : bool = True,
         frozen : bool = True,
+        loadPretrainedModel : bool = False,
     ):
         super().__init__()
         self.__patchSize : int = patchSize
@@ -130,6 +131,7 @@ class MoiraiMoE(FileSystem):
 
         self.__scoreThreshold : float = self._getConfig()["vectorDatabase"]["scoreThreshold"]
         self.__k : int = self._getConfig()["vectorDatabase"]["k"]
+        self.__numberSamples : int = numSamples
 
         self.__contextLength : int = contextLength
         self.__model : MoiraiMoEForecast = MoiraiMoEForecast(
@@ -157,12 +159,13 @@ class MoiraiMoE(FileSystem):
         self.__modelRagCA : RagCrossAttention = RagCrossAttention(
             patchSize=self.__patchSize,
             pretrainedModel=self._getFiles()["paramsRagCA"],
+            loadPretrainedModel=loadPretrainedModel,
         )
 
         self.__modelRagCABackBone : MoiraiMoEForecast = MoiraiMoEForecast(
             module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
             prediction_length=predictionLength,
-            context_length= contextLength,
+            context_length= contextLength + contextLength,
             patch_size=patchSize,
             num_samples=numSamples,
             target_dim=targetDim,
@@ -207,7 +210,7 @@ class MoiraiMoE(FileSystem):
         zeros : torch.Tensor = torch.zeros(x.shape[0], 1, x.shape[2]).to(x.device)
         return torch.cat([zeros, x, zeros], dim=1)
 
-    def forwardRagCA(self, x : torch.Tensor) -> torch.Tensor:
+    def forwardRagCA(self, x : torch.Tensor, moiraiMoEOnly : bool = False) -> torch.Tensor:
         """
         Forward pass RAG Cross Attention
         """
@@ -253,15 +256,26 @@ class MoiraiMoE(FileSystem):
             dtype=torch.int64,
         )
 
-        return self.__modelRagCABackBone.module(
-            target=target,
-            observed_mask=observedMask,
-            sample_id=sampleId,
-            time_id=timeId,
-            variate_id=variateId,
-            prediction_mask=predictionMask,
-            patch_size=patchSizeTensor,
-        )
+        if moiraiMoEOnly:
+            return self.__model.module(
+                target=target,
+                observed_mask=observedMask,
+                sample_id=sampleId,
+                time_id=timeId,
+                variate_id=variateId,
+                prediction_mask=predictionMask,
+                patch_size=patchSizeTensor,
+            )
+        else:
+            return self.__modelRagCABackBone.module(
+                target=target,
+                observed_mask=observedMask,
+                sample_id=sampleId,
+                time_id=timeId,
+                variate_id=variateId,
+                prediction_mask=predictionMask,
+                patch_size=patchSizeTensor,
+            )
 
     def setRagCollection(self, collectionName : str, dataset : str):
         """
@@ -496,8 +510,7 @@ class MoiraiMoE(FileSystem):
         timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
 
         sample.columns = ["datetime", "value"]
-        query : torch.tensor = torch.tensor(sample["value"].to_numpy())
-        query = torch.ones(query.shape)
+        query : torch.tensor = torch.tensor(sample["value"].to_numpy(), dtype=torch.float32)
         queried, score = self.queryVector(query, k=self.__k, metadata={"dataset" : dataset})
         if queried is not None:
             xContext : torch.Tensor = query.unsqueeze(0)
@@ -508,16 +521,23 @@ class MoiraiMoE(FileSystem):
                 xContext,
                 queriedTorch,
                 scoreTensor,
-            ).to("cpu")
-            newSample : list = augmentedSample[0].tolist()
-            sampleGluonts : ListDataset = ListDataset(
-                [{
-                    "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
-                    "target": newSample,
-                }],
-                freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
             )
-            prediction : np.ndarray = next(iter(self.__predictorRag.predict(sampleGluonts))).quantile(0.5)
+
+            pred = self.forwardRagCA(
+                augmentedSample,
+                False,
+            )
+
+            prediction :np.ndarray = pred.sample(torch.Size((self.__numberSamples,))).median(dim=0).values[:,-2,:].clone().to("cpu").squeeze(0).numpy()
+            #newSample : list = augmentedSample[0].tolist()
+            #sampleGluonts : ListDataset = ListDataset(
+            #    [{
+            #        "start": TimeManager.convertTimeFormat(sample["datetime"].iloc[0], timestampFormat, self.__timestampFormat),
+            #        "target": newSample,
+            #    }],
+            #    freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
+            #)
+            #prediction : np.ndarray = next(iter(self.__predictorRag.predict(sampleGluonts))).mean
 
             if plot:
                 Utils.plot(
@@ -529,8 +549,7 @@ class MoiraiMoE(FileSystem):
                 Utils.plot(
                     [augmentedSample[0].tolist()],
                     "augmentedRag.png",
-                    ":",
-                    self.__contextLength,
+                    
                 )
                 Utils.plot(
                     [sample["value"].tolist() + prediction.tolist()],

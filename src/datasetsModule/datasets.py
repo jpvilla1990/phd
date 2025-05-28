@@ -102,6 +102,7 @@ class Datasets(FileSystem):
                 self.__datasets[dataset],
                 self._getConfig()["seed"],
                 self._getConfig()["maxNan"],
+                self._getConfig()["minUniqueElementRatio"],
             )
         else:
             return DatasetIterator(

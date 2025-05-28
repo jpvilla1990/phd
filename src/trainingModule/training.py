@@ -1,4 +1,5 @@
 import os
+import concurrent.futures
 import torch
 import lightning as L
 from lightning.pytorch.callbacks import ModelCheckpoint
@@ -9,6 +10,7 @@ from utils.utils import Utils
 from model.moiraiMoe import MoiraiMoE
 from datasetsModule.datasetTrainingIterator import DatasetTrainingIterator
 from model.ragCrossAttention import RagCrossAttention
+from utils.utils import Utils
 
 class TrainingRagCA(L.LightningModule):
     def __init__(
@@ -38,6 +40,20 @@ class TrainingRagCA(L.LightningModule):
 
         self.backBoneModels : dict = {}
 
+    def __getMASE(self, context : torch.Tensor, groundTruth : torch.Tensor, prediction : torch.Tensor) -> torch.Tensor:
+        """
+        Method to calculate MEAN ABSOLUTE SCALED ERROR
+        """
+        meanAbsoluteError : torch.Tensor = (torch.abs(prediction - groundTruth)).mean(dim=1)
+
+        meanAbsoluteDeviation : torch.Tensor = torch.abs(context[:, :-1] - context[:, 1:]).mean(dim=1)
+
+        mase : torch.Tensor = meanAbsoluteError / meanAbsoluteDeviation
+
+        mask = torch.isfinite(mase)
+
+        return mase[mask].mean()
+
     def getBackBoneModel(self, contextLength : int, predictionLength : int) -> MoiraiMoE:
         """
         Method to get the backbone model
@@ -52,6 +68,7 @@ class TrainingRagCA(L.LightningModule):
                 batchSize = self.__batchSize,
                 createPredictor=False,
                 frozen=True,
+                loadPretrainedModel=True,
             )
             self.backBoneModels[index].setRagCollection(f"{self.__collectionPrefix}_{index}", self.__dataset)
         return self.backBoneModels[index]
@@ -82,8 +99,6 @@ class TrainingRagCA(L.LightningModule):
         xContext : torch.Tensor = batch[:, :contextLength]
         xTarget : torch.Tensor = batch[:, contextLength:]
 
-        xContext = torch.ones(xContext.shape, device="cuda")
-
         queried, scores = modelBackBone.queryBatchVector(xContext, k=self.__k, metadata={})
 
         augmentedSample : torch.Tensor = self.modelRagCA.forward(
@@ -92,13 +107,49 @@ class TrainingRagCA(L.LightningModule):
             scores,
         )
 
-        pred = modelBackBone.forwardRagCA(
-            augmentedSample,
+        pred : torch.Tensor = None
+        refPred : torch.Tensor = None
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future1 : concurrent.futures._base.Future = executor.submit(modelBackBone.forwardRagCA, augmentedSample, False)
+            future2 : concurrent.futures._base.Future = executor.submit(modelBackBone.forwardRagCA, xContext, True)
+
+            pred = future1.result()
+            refPred = future2.result()
+
+        logProbPred : torch.Tensor = -pred.log_prob(xTarget.unsqueeze(1))[:,-2,:]
+        logProbRef : torch.Tensor = -refPred.log_prob(xTarget.unsqueeze(1))[:,-2,:]
+        predSample : torch.Tensor = pred.sample(torch.Size((self.numberSamples,))).mean(dim=0)[:,-2,:].clone()
+        refPredSample : torch.Tensor = refPred.sample(torch.Size((self.numberSamples,))).mean(dim=0)[:,-2,:].clone()
+        masePred : torch.Tensor = self.__getMASE(xContext, xTarget, predSample)
+        maseRefPred : torch.Tensor = self.__getMASE(xContext, xTarget, refPredSample)
+        #lossPred : torch.Tensor = masePred - maseRefPred
+        loss : torch.Tensor = logProbPred - logProbRef
+        #loss = -pred.log_prob(xTarget)[:,-1,:]
+        #loss = loss.logsumexp(dim=0).mean()# + lossPred.mean()
+        loss = loss.mean()
+        print(loss)
+        #print(lossPred)
+        print(f"MASE Pred: {masePred}, MASE Ref: {maseRefPred}")
+
+        Utils.plot(
+            [
+                xContext[0].tolist() + xContext[0].tolist() + xTarget[0].tolist(),
+                augmentedSample[0].tolist() + predSample[0].tolist(),
+            ],
+            "train_pred.png",
+            "-",
+            contextLength,
         )
 
-        xTarget = xTarget.unsqueeze(1)
-        loss = -pred.log_prob(xTarget)
-        loss = loss.mean()
+        Utils.plot(
+            [
+                xContext[0].tolist() + xTarget[0].tolist(),
+                xContext[0].tolist() + refPredSample[0].tolist(),
+            ],
+            "train_ref.png",
+            "-",
+            contextLength,
+        )
 
         self.log("train_loss", loss, on_step=True, on_epoch=True)
         return loss
@@ -159,6 +210,7 @@ class Training(FileSystem):
 
     def trainRagCA(
             self,
+            modelName : str,
         ):
         """
         Method to train the RagCA model
@@ -184,13 +236,10 @@ class Training(FileSystem):
             log_every_n_steps=1,
             callbacks=[
                 ModelCheckpoint(
-                    monitor="train_loss",
                     dirpath=self._getPaths()["RagCAModels"],
-                    filename=f"RagCA-{self._getConfig()['training']['dataset']}-{{epoch:02d}}-{{step:02d}}-{{train_loss:.2f}}",
-                    save_top_k=1,
-                    mode="min",
-                    save_weights_only=False,
-                    every_n_train_steps=1,
+                    filename=f"RagCA-{modelName}-{self._getConfig()['training']['dataset']}-{{epoch:02d}}-{{step:06d}}",
+                    save_top_k=-1,
+                    every_n_train_steps=100,
                     save_on_train_epoch_end=False,
                 ),
             ],

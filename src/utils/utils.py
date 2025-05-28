@@ -65,7 +65,7 @@ class Utils(object):
                 plt.axvline(x=context + predictionLength, color='red', linestyle='--', label='Division')
                 plt.axvline(x=context + predictionLength + context, color='red', linestyle='--', label='Division')
         plt.title('Samples')
-        plt.legend()
+        #plt.legend()
         plt.grid(True)
         plt.savefig(filePath, bbox_inches='tight')
         plt.close()

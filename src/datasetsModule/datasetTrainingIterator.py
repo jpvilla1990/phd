@@ -91,6 +91,13 @@ class DatasetTrainingIterator(Dataset):
                         dtype=torch.float32,
                     ).permute(1,0)
 
+                    mean = torchSample.mean()
+                    if torch.all(torch.abs(torchSample - mean) < 0.1):
+                        continue
+
+                    if (torchSample == 0.0).float().mean() > 0.75:
+                        continue
+
                     if batchIndex >= self.__batchSize:
                         running = False
                     else:

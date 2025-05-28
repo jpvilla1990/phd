@@ -8,5 +8,5 @@ vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoETrainingCosine_64_16", train
 vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoETrainingCosine_128_16", train=False)
 
 training :Training = Training()
-training.trainRagCA()
+training.trainRagCA("128_16")
 #training.saveModelState("RagCA-lotsaData-epoch=00-step=4046-train_loss=-3.19.ckpt")

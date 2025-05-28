@@ -18,6 +18,7 @@ class HuggingFaceIterator(object):
         datasetConfig : dict,
         seed : int = 42,
         maxNaN : float = 0.25,
+        minUniqueElementRatio : float = 0.02,
     ):
         random.seed(seed)
         self.__seed : int = seed
@@ -27,6 +28,7 @@ class HuggingFaceIterator(object):
         self.__sampleSize : int = 1
         self.__datasetPath : str = datasetPath
         self.__maxNaN : float = maxNaN
+        self.__minUniqueElementRatio : float = minUniqueElementRatio
 
         self.__features : dict = {}
         self.__datasetSizes : dict = {}
@@ -37,11 +39,25 @@ class HuggingFaceIterator(object):
 
         self.__buffer : dict = {subDataset : [] for subDataset in self.__datasets}
 
-    def __preprocesNan(self, sequence : list) -> list:
+    def __preproces(self, sequence : list) -> list:
         """
-        Method to preprocess NaN values
+        Method to preprocess NaN and zeros
         """
+        mean : float = np.mean(sequence)
         if np.isnan(sequence).sum() / len(sequence) > self.__maxNaN:
+            return []
+
+        if (
+            len(
+                {element : None for element in sequence}
+            ) / len(sequence)
+        ) < self.__minUniqueElementRatio:
+            return []
+
+        if all(element - mean < 1e-2 and element - mean > -1e-2 for element in sequence): # Discard straight lines
+            return []
+
+        if all(element == 0.0 for element in sequence):
             return []
 
         sequenceNumpy : np.ndarray = np.array(sequence)
@@ -169,8 +185,8 @@ class HuggingFaceIterator(object):
                             if len(self.__buffer[subdataset]) <= index:
                                 self.__buffer[subdataset].append(bufferElementTemplate.copy())
 
-                            preprocessedSequence : list = self.__preprocesNan(
-                                sequence[indexSample:indexSample+self.__sampleSize]
+                            preprocessedSequence : list = self.__preproces(
+                                sequence[indexSample:indexSample+self.__sampleSize].copy()
                             )
                             if len(preprocessedSequence) == 0:
                                 continue
@@ -183,8 +199,8 @@ class HuggingFaceIterator(object):
                         if len(self.__buffer[subdataset]) <= index:
                             self.__buffer[subdataset].append(bufferElementTemplate.copy())
 
-                        preprocessedSequence : list = self.__preprocesNan(
-                            sampleDict[features[feature]][indexSample:indexSample+self.__sampleSize]
+                        preprocessedSequence : list = self.__preproces(
+                            sampleDict[features[feature]][indexSample:indexSample+self.__sampleSize].copy()
                         )
                         if len(preprocessedSequence) == 0:
                             continue

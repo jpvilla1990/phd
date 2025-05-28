@@ -25,6 +25,8 @@ class RagCrossAttention(torch.nn.Module):
         self.__device : str = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.__patchSize : int = patchSize
 
+        self.__dropout : torch.nn.Dropout = torch.nn.Dropout(p=0.25)
+
         self.__linealInput = torch.nn.Linear(patchSize, innerDim).to(self.__device)
 
         self.__crossAttentionModule : torch.nn.MultiheadAttention = torch.nn.MultiheadAttention(
@@ -166,11 +168,53 @@ class RagCrossAttention(torch.nn.Module):
         dModel = x.shape[-1]
         query = x.view(batchSize, -1, dModel)
         queryProj : torch.Tensor = self.__linealInput(query)
+        queryProj = self.__dropout(queryProj)
+
         keyValue = context.view(batchSize, -1, dModel)
         keyValueProj : torch.Tensor = self.__linealInput(keyValue)
+        keyValueProj = self.__dropout(keyValueProj)
+
         x = self.__crossAttentionModule(queryProj, keyValueProj, keyValueProj)
-        x = self.__linealOutput(x[0].unsqueeze(1))
+        x = self.__dropout(x[0])
+
+        x = self.__linealOutput(x.unsqueeze(1))
         return x
+
+    def gaussian_kernel_1d(self, kernel_size=5, sigma=1.0, device="cpu"):
+        """Create a 1D Gaussian kernel."""
+        half_size = kernel_size // 2
+        x = torch.arange(-half_size, half_size + 1, device=device).float()
+        kernel = torch.exp(-0.5 * (x / sigma) ** 2)
+        kernel /= kernel.sum()
+        return kernel.view(1, 1, -1)  # shape: [1, 1, K]
+
+    def iterative_gaussian_smooth_to_match(self, a, b, tol=1e-4, max_steps=20, kernel_size=7, sigma=1.5):
+        """
+        Smooth `a` using Gaussian kernel until it matches curvature of `b`.
+        """
+        a = a.clone()
+        device = a.device
+
+        original_mean = a.mean(dim=1, keepdim=True)
+        kernel = self.gaussian_kernel_1d(kernel_size, sigma, device=device)
+
+        for _ in range(max_steps):
+            d2a = a[:, 2:] - 2 * a[:, 1:-1] + a[:, :-2]
+            d2b = b[:, 2:] - 2 * b[:, 1:-1] + b[:, :-2]
+            smoothness_a = d2a.abs().mean(dim=1)
+            smoothness_b = d2b.abs().mean(dim=1)
+
+            if torch.all(smoothness_a <= smoothness_b + tol):
+                break
+
+            # Apply 1D Gaussian smoothing
+            a_unsq = a.unsqueeze(1)  # [B, 1, L]
+            a_smooth = F.conv1d(a_unsq, kernel, padding=kernel_size//2, groups=1).squeeze(1)
+
+            # Keep mean
+            a = a_smooth - a_smooth.mean(dim=1, keepdim=True) + original_mean
+
+        return a
 
     def forward(
         self, xInput : torch.Tensor,
@@ -205,9 +249,13 @@ class RagCrossAttention(torch.nn.Module):
 
         x = self.__joinPatches(x)
 
-        xAugmented : torch.Tensor = self.__concat(x.squeeze(1), xInput)
+        xAugmented = x.squeeze(1)
 
-        return x.squeeze(1)
+        #x = self.iterative_gaussian_smooth_to_match(x, xInput)
+
+        xAugmented : torch.Tensor = self.__concat(xAugmented, xInput)
+
+        return xAugmented
 
     def inference(
         self, xInput : torch.Tensor,
@@ -223,6 +271,7 @@ class RagCrossAttention(torch.nn.Module):
         :return: Augmented embeddings after applying cross-attention.
         """
         output : torch.Tensor = None
+        self.eval()
         with torch.no_grad():
             output = self.forward(xInput, context, scores)
 

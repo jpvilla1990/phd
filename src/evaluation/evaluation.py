@@ -1335,6 +1335,7 @@ class Evaluation(FileSystem):
             predictionLength = predictionLength,
             contextLength = contextLength,
             numSamples = numberSamples,
+            loadPretrainedModel=True,
         )
         model.setRagCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
@@ -1386,6 +1387,15 @@ class Evaluation(FileSystem):
                                 plot=True,
                             )
 
+                            Utils.plot(
+                                [
+                                    sample[index].tolist(),
+                                    sample[index].iloc[:contextLength].to_list() + pred.tolist(),
+                                ],
+                                "ground_truth_pred.png",
+                                "-",
+                                contextLength,
+                            )
                             mase : float = self.__getMASE(
                                 sample[index].iloc[:contextLength].values,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
