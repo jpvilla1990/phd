@@ -116,6 +116,22 @@ class HuggingFaceIterator(object):
             "test" : [index for index in range(len(splittedDataset["test"]))],
         }
 
+    def releaseIterator(self, subdataset : str):
+        """
+        Method to release iterator
+        """
+        if subdataset in self.__datasetsLoader:
+            del self.__datasetsLoader[subdataset]
+
+        if subdataset in self.__splittedDatasets:
+            del self.__splittedDatasets[subdataset]
+
+        if subdataset in self.__indexIterator:
+            del self.__indexIterator[subdataset]
+
+        if subdataset in self.__buffer:
+            del self.__buffer[subdataset]
+
     def iterateDataset(
             self,
             subdataset : str,

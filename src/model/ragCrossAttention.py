@@ -25,17 +25,21 @@ class RagCrossAttention(torch.nn.Module):
         self.__device : str = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.__patchSize : int = patchSize
 
-        self.__dropout : torch.nn.Dropout = torch.nn.Dropout(p=0.25)
+        #self.__dropout : torch.nn.Dropout = torch.nn.Dropout(p=0.05)
 
-        self.__linealInput = torch.nn.Linear(patchSize, innerDim).to(self.__device)
+        #self.__linealInput = torch.nn.Linear(patchSize, innerDim).to(self.__device)
 
-        self.__crossAttentionModule : torch.nn.MultiheadAttention = torch.nn.MultiheadAttention(
-            embed_dim=innerDim,
-            num_heads=numHeads,
-            batch_first=True
-        ).to(self.__device)
+        #self.__crossAttentionModule : torch.nn.MultiheadAttention = torch.nn.MultiheadAttention(
+        #    embed_dim=innerDim,
+        #    num_heads=numHeads,
+        #    batch_first=True
+        #).to(self.__device)
 
-        self.__linealOutput = torch.nn.Linear(innerDim, patchSize).to(self.__device)
+        #self.__linealOutput = torch.nn.Linear(innerDim, patchSize).to(self.__device)
+
+        self.__linealScalerInput : torch.nn.Linear = torch.nn.Linear(patchSize, 256).to(self.__device)
+        self.__linealScalerOutput : torch.nn.Linear = torch.nn.Linear(256, 1).to(self.__device)
+        self.__sigmoid : torch.nn.Sigmoid = torch.nn.Sigmoid()
 
         if loadPretrainedModel:
             if os.path.exists(pretrainedModel):
@@ -188,35 +192,32 @@ class RagCrossAttention(torch.nn.Module):
         kernel /= kernel.sum()
         return kernel.view(1, 1, -1)  # shape: [1, 1, K]
 
-    def iterative_gaussian_smooth_to_match(self, a, b, tol=1e-4, max_steps=20, kernel_size=7, sigma=1.5):
+    def smooth(self, signal, target):
         """
         Smooth `a` using Gaussian kernel until it matches curvature of `b`.
         """
-        a = a.clone()
-        device = a.device
-
-        original_mean = a.mean(dim=1, keepdim=True)
-        kernel = self.gaussian_kernel_1d(kernel_size, sigma, device=device)
-
-        for _ in range(max_steps):
-            d2a = a[:, 2:] - 2 * a[:, 1:-1] + a[:, :-2]
-            d2b = b[:, 2:] - 2 * b[:, 1:-1] + b[:, :-2]
-            smoothness_a = d2a.abs().mean(dim=1)
-            smoothness_b = d2b.abs().mean(dim=1)
-
-            if torch.all(smoothness_a <= smoothness_b + tol):
+        d2target = target[:, 2:] - 2 * target[:, 1:-1] + target[:, :-2]
+        smoothness_target = d2target.abs().mean(dim=1)
+        for i in range(target.shape[0]):
+            d2signal = signal[i, 2:] - 2 * signal[i, 1:-1] + signal[i, :-2]
+            smoothness_signal = d2signal.abs().mean()
+            if smoothness_signal <= smoothness_target[i]:
                 break
 
-            # Apply 1D Gaussian smoothing
-            a_unsq = a.unsqueeze(1)  # [B, 1, L]
-            a_smooth = F.conv1d(a_unsq, kernel, padding=kernel_size//2, groups=1).squeeze(1)
+            kernelSize = 5
+            padding : int = kernelSize // 2
+            totalPadding = kernelSize - 1
+            padLeft = totalPadding // 2
+            padRight = totalPadding - padLeft
+            kernel = torch.ones(1, 1, kernelSize).to(self.__device) / kernelSize
+            smoothed : torch.Tensor = signal[i].unsqueeze(0).unsqueeze(0)  # (1, 1, length)
+            signalPadded = F.pad(smoothed, (padLeft, padRight))
+            filtered : torch.Tensor = F.conv1d(signalPadded, kernel)
+            signal[i] = filtered.squeeze(0).squeeze(0)
 
-            # Keep mean
-            a = a_smooth - a_smooth.mean(dim=1, keepdim=True) + original_mean
+        return signal
 
-        return a
-
-    def forward(
+    def forward2(
         self, xInput : torch.Tensor,
         context : torch.Tensor,
         scores : torch.Tensor
@@ -251,9 +252,64 @@ class RagCrossAttention(torch.nn.Module):
 
         xAugmented = x.squeeze(1)
 
-        #x = self.iterative_gaussian_smooth_to_match(x, xInput)
+        xAzgmented = self.smooth(xAugmented, xInput)
 
         xAugmented : torch.Tensor = self.__concat(xAugmented, xInput)
+
+        return xAugmented
+
+    def forward(
+        self, xInput : torch.Tensor,
+        context : torch.Tensor,
+        scores : torch.Tensor
+    ) -> torch.Tensor:
+        """
+        Forward pass for the embedding augmentation.
+        This method applies cross-attention to the input embeddings and returns the augmented embeddings.
+        :param x: Input embeddings to be augmented. [batches, seqLength]
+        :param context: Context embeddings to be used for augmentation. [batches, k, seqLength]
+        :param scores: similarity scores to be used for augmentation. [batches, k]
+        :return: Augmented embeddings after applying cross-attention.
+        """
+        xInput = xInput.to(self.__device)
+        context = context.to(self.__device)
+        scores = scores.to(self.__device)
+
+        #scoresTotal : torch.Tensor = scores.sum(dim=1)
+        #contextWeighted : torch.Tensor = context * scores.unsqueeze(-1)
+        #contextWeighted = contextWeighted.sum(dim=1)
+
+        #contextWeighted = contextWeighted / scoresTotal.unsqueeze(-1)
+
+        x : torch.Tensor = xInput.unsqueeze(1)
+        #contextWeighted = contextWeighted.unsqueeze(1)
+        context = context.mean(dim=1)
+        context = context.unsqueeze(1)
+
+        x = self.__patching(x)
+        x, xMean, xStd = self.__normalization(x)
+
+        context = self.__patching(context)
+        context = (context - xMean) / xStd
+
+        scaleContext : torch.Tensor = self.__linealScalerInput(context)
+        scaleX : torch.Tensor = self.__linealScalerInput(x)
+
+        scaleContext = self.__linealScalerOutput(scaleContext).squeeze(1).squeeze(-1)
+        scaleX = self.__linealScalerOutput(scaleX).squeeze(1).squeeze(-1)
+
+        scale : torch.Tensor = scaleContext.mean(1) - scaleX.mean(1)
+        scale = self.__sigmoid(scale)
+
+        context = context + scale.view(scale.shape[0],1,1,1)
+
+        augmentedContext = self.__denormalization(context, xMean, xStd)
+
+        augmentedContext = self.__joinPatches(augmentedContext)
+
+        augmentedContext = augmentedContext.squeeze(1)
+
+        xAugmented : torch.Tensor = self.__concat(augmentedContext, xInput)
 
         return xAugmented
 

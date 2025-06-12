@@ -119,7 +119,7 @@ class vectorDB(FileSystem):
             where={"dataset" : dataset}
         )
 
-    def queryTimeseries(self, query : np.ndarray, k : int = 1, metadata : dict = {}) -> tuple:
+    def queryTimeseries(self, query : np.ndarray, k : int = 1) -> tuple:
         """
         Method to query element from vector database
 
@@ -128,17 +128,10 @@ class vectorDB(FileSystem):
         queryStr : str = ",".join(map(str, query.tolist()))
         queried : dict = {}
 
-        if metadata:
-            queried = self.__collection.query(
-                n_results=k,
-                query_texts=[queryStr],
-                where=metadata,
-            )
-        else:
-            queried = self.__collection.query(
-                n_results=k,
-                query_texts=[queryStr],
-            )
+        queried = self.__collection.query(
+            n_results=k,
+            query_texts=[queryStr],
+        )
 
         documents : list = queried["documents"][0]
         metadatas : list = queried["metadatas"][0]

@@ -1,20 +1,21 @@
 seed: 42
 trainPartition: 0.8
 maxTestSamples: 10000
-maxNan: 0.25
+maxNan: 0.01
 minUniqueElementRatio: 0.02
 training:
+  maxSamplesPerSubdataset: 500000
   dataset: lotsaData
-  collectionPrefix: moiraiMoETrainingCosine
+  collectionPrefix: moiraiMoETrainingRafL2
   k : 16
-  batchSize: 1024
+  batchSize: 3000
   lr: 1e-3
   weightDecay: 1e-1
   beta1: 0.9
   beta2: 0.98
   eps: 1e-6
-  maxIterationsPerEpoch: 100000
-  epochs: 44
+  maxIterationsPerEpoch: 1000
+  epochs: 100
   lengthCombinations:
     - contextLength: 32
       predictionLength: 16
@@ -22,7 +23,7 @@ training:
       predictionLength: 16
     - contextLength: 128
       predictionLength: 16
-  checkpoint: "RagCA-128_16-lotsaData-epoch=42-step=043000.ckpt"
+  checkpoint: ""
 models:
   linealModel:
     type: ridge
@@ -348,6 +349,54 @@ vectorDatabase:
       datasets: [
         "lotsaData",
       ]
+    moiraiMoETrainingL2_32_16:
+      metric:
+        hnsw:space: "l2"
+      context: 32
+      prediction: 16
+      datasets: [
+        "lotsaData",
+      ]
+    moiraiMoETrainingL2_64_16:
+      metric:
+        hnsw:space: "l2"
+      context: 64
+      prediction: 16
+      datasets: [
+        "lotsaData",
+      ]
+    moiraiMoETrainingL2_128_16:
+      metric:
+        hnsw:space: "l2"
+      context: 128
+      prediction: 16
+      datasets: [
+        "lotsaData",
+      ]
+    moiraiMoETrainingRafL2_32_16:
+      metric:
+        hnsw:space: "l2"
+      context: 32
+      prediction: 16
+      datasets: [
+        "lotsaData",
+      ]
+    moiraiMoETrainingRafL2_64_16:
+      metric:
+        hnsw:space: "l2"
+      context: 64
+      prediction: 16
+      datasets: [
+        "lotsaData",
+      ]
+    moiraiMoETrainingRafL2_128_16:
+      metric:
+        hnsw:space: "l2"
+      context: 128
+      prediction: 16
+      datasets: [
+        "lotsaData",
+      ]
     moiraiMoEL2_32_16:
       metric:
         hnsw:space: "l2"
@@ -543,6 +592,7 @@ paths:
   datasets: ["data", "datasets"]
   vectorDatabase: ["data", "vectorDatabase"]
   RagCAModels: ["data", "models", "RagCA"]
+  lmdbDatabasePath: ["data", "datasets", "lmdbDatabases"]
 files:
   datasets: ["data", "datasets", "datasets.yaml"]
   databaseTracking: ["data", "databaseTracking.yaml"]
@@ -568,3 +618,4 @@ files:
   evaluationFinalReportMoiraiMoERagL2SoftMax : ["data", "reportsMoiraiMoERagL2SoftMax.pdf"]
   evaluationFinalReportChatTimeRag: ["data", "reportsChatTimeRag.pdf"]
   paramsRagCA: ["data", "models", "training_ragca_state.pth"]
+  lmdbDatabasesConfig: ["data", "datasets", "lmdbDatabases", "lmdbDatabasesConfig.yaml"]

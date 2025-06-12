@@ -24,6 +24,7 @@ class TrainingRagCA(L.LightningModule):
         weightDecay : float = 1e-1,
         betas : tuple = (0.9, 0.98),
         eps : float = 1e-6,
+        loadPretrainedModel : bool = False,
     ):
         super().__init__()
         self.__dataset : str = dataset
@@ -35,8 +36,11 @@ class TrainingRagCA(L.LightningModule):
         self.__weightDecay : float = weightDecay
         self.__betas : tuple = betas
         self.__eps : float = eps
+        self.__loadPretrainedModel : bool = loadPretrainedModel
 
-        self.modelRagCA : RagCrossAttention = RagCrossAttention()
+        self.modelRagCA : RagCrossAttention = RagCrossAttention(
+            loadPretrainedModel=self.__loadPretrainedModel,
+        )
 
         self.backBoneModels : dict = {}
 
@@ -68,9 +72,9 @@ class TrainingRagCA(L.LightningModule):
                 batchSize = self.__batchSize,
                 createPredictor=False,
                 frozen=True,
-                loadPretrainedModel=True,
+                loadPretrainedModel=self.__loadPretrainedModel,
             )
-            self.backBoneModels[index].setRagCollection(f"{self.__collectionPrefix}_{index}", self.__dataset)
+            self.backBoneModels[index].setRafCollection(f"{self.__collectionPrefix}_{index}", self.__dataset)
         return self.backBoneModels[index]
 
     def training_step(
@@ -99,7 +103,7 @@ class TrainingRagCA(L.LightningModule):
         xContext : torch.Tensor = batch[:, :contextLength]
         xTarget : torch.Tensor = batch[:, contextLength:]
 
-        queried, scores = modelBackBone.queryBatchVector(xContext, k=self.__k, metadata={})
+        queried, scores = modelBackBone.queryBatchVector(xContext, k=self.__k)
 
         augmentedSample : torch.Tensor = self.modelRagCA.forward(
             xContext,
@@ -228,6 +232,7 @@ class Training(FileSystem):
         tsDataset = DatasetTrainingIterator(
             self._getConfig(),
             Utils.readYaml(self._getFiles()["datasets"]),
+            balanced=True,
         )
         tsLoader = DataLoader(tsDataset, batch_size=1, num_workers=0)
         trainer = L.Trainer(
@@ -259,6 +264,14 @@ class Training(FileSystem):
                 tsLoader, 
             )
 
+    def test(self):
+        tsDataset = DatasetTrainingIterator(
+            self._getConfig(),
+            Utils.readYaml(self._getFiles()["datasets"]),
+            balanced=True,
+        )
+        a = tsDataset.test(0)
+
 if __name__ == "__main__":
-    training = Training()
-    training.trainRagCA()
+    training : Training = Training()
+    #training.trainRagCA()

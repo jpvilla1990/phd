@@ -335,20 +335,20 @@ class MoiraiMoE(FileSystem):
         """
         self.__vectorDB.deleteCollection(collectionName, dataset)
 
-    def queryVector(self, sample : np.ndarray, k : int = 1, metadata : dict = {}) -> tuple:
+    def queryVector(self, sample : np.ndarray, k : int = 1) -> tuple:
         """
         Method to query vector
         """
-        return self.__vectorDB.queryTimeseries(sample, k, metadata)
+        return self.__vectorDB.queryTimeseries(sample, k)
 
-    def queryBatchVector(self, batch : torch.Tensor, k : int = 1, metadata : dict = {}) -> tuple:
+    def queryBatchVector(self, batch : torch.Tensor, k : int = 1) -> tuple:
         """
         Method to query vector
         """
         queriedBatch : torch.Tensor = None
         scoreBatch : torch.Tensor = None
         for element in batch:
-            queried, score = self.__vectorDB.queryTimeseries(element, k, metadata)
+            queried, score = self.__vectorDB.queryTimeseries(element, k)
             queriedTorch : torch.Tensor = torch.Tensor(queried).unsqueeze(0)
             scoreTensor : torch.Tensor = torch.Tensor(score).unsqueeze(0)
             if queriedBatch is None:
@@ -364,6 +364,8 @@ class MoiraiMoE(FileSystem):
         """
         Method to merge queries
         """
+        if len(query[0]) == 0:
+            return None
         merged : np.ndarray = np.zeros_like(query[0][0])
         nElements : int = 0
         for index in range(len(query[0])):
@@ -435,7 +437,7 @@ class MoiraiMoE(FileSystem):
         timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
 
         sample.columns = ["datetime", "value"]
-        queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
+        queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k)
         queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors, cosine)
         if queried is not None:
             sampleNp : np.ndarray = sample["value"].to_numpy()
@@ -511,7 +513,7 @@ class MoiraiMoE(FileSystem):
 
         sample.columns = ["datetime", "value"]
         query : torch.tensor = torch.tensor(sample["value"].to_numpy(), dtype=torch.float32)
-        queried, score = self.queryVector(query, k=self.__k, metadata={"dataset" : dataset})
+        queried, score = self.queryVector(query, k=self.__k)
         if queried is not None:
             xContext : torch.Tensor = query.unsqueeze(0)
             queriedTorch : torch.Tensor = torch.Tensor(queried).unsqueeze(0)
@@ -587,7 +589,7 @@ class MoiraiMoE(FileSystem):
         timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
 
         sample.columns = ["datetime", "value"]
-        queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
+        queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k)
         queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors, cosine)
         if queried is not None:
             sampleNp : np.ndarray = sample["value"].to_numpy()
@@ -657,7 +659,7 @@ class MoiraiMoE(FileSystem):
 
         timestampFormat : str = self.__datasetsConfig[dataset]["timeformat"]
         sample.columns = ["datetime", "value"]
-        queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k, metadata={"dataset" : dataset})
+        queriedVectors : tuple = self.queryVector(sample["value"], k=self.__k)
         queried : np.ndarray = self.mergeQueries(queriedVectors) if not softMax else self.mergeQueriesSoftMax(queriedVectors, cosine)
         if queried is not None:
             return queried[self.__contextLength:]

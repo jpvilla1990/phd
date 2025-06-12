@@ -1324,6 +1324,7 @@ class Evaluation(FileSystem):
         collection : str,
         subdataset : str = "",
         trainSet : bool = False,
+        raf : bool = True,
     ) -> dict:
         """
         Method to evaluate model RAG CA
@@ -1337,9 +1338,25 @@ class Evaluation(FileSystem):
             numSamples = numberSamples,
             loadPretrainedModel=True,
         )
-        model.setRagCollection(collection, dataset)
+        if raf:
+            model.setRafCollection(collection, dataset)
+        else:
+            model.setRagCollection(collection, dataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
         iterator.setSampleSize(contextLength + predictionLength)
+
+        modelRaf : MoiraiMoE = MoiraiMoE(
+            predictionLength = predictionLength,
+            contextLength = contextLength,
+            numSamples = numberSamples,
+        )
+        #collection = f"moiraiMoETrainingRafL2_{contextLength}_{predictionLength}"
+        if "cosine" in collection:
+            modelRaf.setRafCollection(collection.replace("Cosine","RafL2"), "lotsaData")
+        elif "L2" in collection and "RafL2" not in collection:
+            modelRaf.setRafCollection(collection.replace("L2","RafL2"), "lotsaData")
+        else:
+            modelRaf.setRafCollection(collection, "lotsaData")
 
         if subdataset == "":
             datasetConfig : dict = Utils.readYaml(
@@ -1356,6 +1373,9 @@ class Evaluation(FileSystem):
                 reportMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
+                reportMASERef : np.ndarray = np.array([])
+                reportMASERefBase : np.ndarray = np.array([])
+                reportMASERaf : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
@@ -1381,11 +1401,39 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
-                            pred : np.ndarray = model.ragCaInference(
-                                sample[[0, index]].iloc[:contextLength],
-                                dataset,
-                                plot=True,
-                            )
+
+                            pred : np.ndarray = None
+                            refPred : np.ndarray = None
+                            with concurrent.futures.ThreadPoolExecutor() as executor2:
+                                futurePred : concurrent.futures._base.Future = executor2.submit(
+                                    model.ragCaInference,
+                                    sample[[0, index]].iloc[:contextLength],
+                                    dataset,
+                                    cosine=False,
+                                    plot=True,
+                                )
+                                futurePredRef : concurrent.futures._base.Future = executor2.submit(
+                                    model.ragInference,
+                                    sample[[0, index]].iloc[:contextLength],
+                                    dataset,
+                                    cosine=False,
+                                )
+                                futurePredRefBase : concurrent.futures._base.Future = executor2.submit(
+                                    model.inference,
+                                    sample[[0, index]].iloc[:contextLength],
+                                    dataset,
+                                )
+                                futurePredRaf : concurrent.futures._base.Future = executor2.submit(
+                                    modelRaf.rafInference,
+                                    sample[[0, index]].iloc[:contextLength],
+                                    dataset,
+                                    False,
+                                    False,
+                                )
+                                pred = futurePred.result()
+                                refPred = futurePredRef.result()
+                                refPredBase = futurePredRefBase.result()
+                                futurePredRaf = futurePredRaf.result()
 
                             Utils.plot(
                                 [
@@ -1402,6 +1450,24 @@ class Evaluation(FileSystem):
                                 pred,
                             )
 
+                            maseRef : float = self.__getMASE(
+                                sample[index].iloc[:contextLength].values,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                refPred,
+                            )
+
+                            maseRefBase : float = self.__getMASE(
+                                sample[index].iloc[:contextLength].values,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                refPredBase,
+                            )
+
+                            maseRaf : float = self.__getMASE(
+                                sample[index].iloc[:contextLength].values,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                futurePredRaf,
+                            )
+
                             mae : float = self.__getMAE(
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
@@ -1414,6 +1480,12 @@ class Evaluation(FileSystem):
 
                             if mase:
                                 reportMASE = np.append(reportMASE, [mase])
+                            if maseRef:
+                                reportMASERef = np.append(reportMASERef, [maseRef])
+                            if maseRefBase:
+                                reportMASERefBase = np.append(reportMASERefBase, [maseRefBase])
+                            if maseRaf:
+                                reportMASERaf = np.append(reportMASERaf, [maseRaf])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
                             if mse:
@@ -1450,6 +1522,14 @@ class Evaluation(FileSystem):
                     },
                     "numberIterations" : iterations,
                 }
+                print("MASE: " + str(np.mean(reportMASE)))
+                print("MASE Ref: " + str(np.mean(reportMASERef)))
+                print("MASE Ref Base: " + str(np.mean(reportMASERefBase)))
+                print("MASE Raf: " + str(np.mean(reportMASERaf)))
+
+                with open("mase.txt", "a") as file:
+                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)},{np.mean(reportMASERef)},{np.mean(reportMASERefBase)},{np.mean(reportMASERaf)}\n")
+                    #file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)}\n")
 
                 self.__writeReport(report, "evaluationReportsMoiraiMoERagCA")
 
