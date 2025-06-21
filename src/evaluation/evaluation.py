@@ -8,6 +8,7 @@ from reportlab.lib import colors
 from datasetsModule.datasets import Datasets
 from model.lineal import LinealRegression
 from model.moiraiMoe import MoiraiMoE
+from model.chronosModel import Chronos
 from model.chatTime import ChatTimeModel
 from utils.fileSystem import FileSystem
 from utils.utils import Utils
@@ -66,17 +67,20 @@ class Evaluation(FileSystem):
         )
 
         return meanAbsoluteError
-    
-    def __getMSE(self, groundTruth : np.ndarray, prediction : np.ndarray) -> float:
+
+    def __getMSE(self, groundTruth : np.ndarray, prediction : np.ndarray, std : np.ndarray | None = None) -> float:
         """
         Method to calculate MEAN SQUARED ERROR
         """
-        meanAbsoluteError : float = np.mean(
-            (prediction - groundTruth) ** 2,
-        )
+        if std:
+            return np.mean(
+                ((prediction - groundTruth) / std) ** 2,
+            )
+        else:
+            return np.mean(
+                ((prediction - groundTruth)) ** 2,
+            )
 
-        return meanAbsoluteError
-    
     def compileReports(self, reportOriginName : str = "evaluationReportsMoiraiMoE", reportTargetName : str = "evaluationFinalReport"):
         """
         Method to compile results in a human readable report
@@ -1315,11 +1319,10 @@ class Evaluation(FileSystem):
 
         return report
 
-    def evaluateMoiraiMoERagCA(
+    def evaluateChronosRagLeveling(
         self,
         contextLength : int,
         predictionLength : int,
-        numberSamples : int,
         dataset : str,
         collection : str,
         subdataset : str = "",
@@ -1329,34 +1332,15 @@ class Evaluation(FileSystem):
         """
         Method to evaluate model RAG CA
         """
+        report : dict = {}
         print(f"Evaluating Dataset {dataset}, context length : {contextLength}, prediction length : {predictionLength}, collection : {collection}_{dataset}")
         maxTestSamples : int = self._getConfig()["maxTestSamples"]
         subdatasets : list = []
-        model : MoiraiMoE = MoiraiMoE(
-            predictionLength = predictionLength,
-            contextLength = contextLength,
-            numSamples = numberSamples,
-            loadPretrainedModel=True,
-        )
-        if raf:
-            model.setRafCollection(collection, dataset)
-        else:
-            model.setRagCollection(collection, dataset)
+        model : Chronos = Chronos()
+        model.setRafCollection(collection, dataset)
+
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
         iterator.setSampleSize(contextLength + predictionLength)
-
-        modelRaf : MoiraiMoE = MoiraiMoE(
-            predictionLength = predictionLength,
-            contextLength = contextLength,
-            numSamples = numberSamples,
-        )
-        #collection = f"moiraiMoETrainingRafL2_{contextLength}_{predictionLength}"
-        if "cosine" in collection:
-            modelRaf.setRafCollection(collection.replace("Cosine","RafL2"), "lotsaData")
-        elif "L2" in collection and "RafL2" not in collection:
-            modelRaf.setRafCollection(collection.replace("L2","RafL2"), "lotsaData")
-        else:
-            modelRaf.setRafCollection(collection, "lotsaData")
 
         if subdataset == "":
             datasetConfig : dict = Utils.readYaml(
@@ -1372,6 +1356,213 @@ class Evaluation(FileSystem):
                 print(f"Subdataset {element}")
                 reportMAE : np.ndarray = np.array([])
                 reportMSE : np.ndarray = np.array([])
+                reportMSERef : np.ndarray = np.array([])
+                reportMASE : np.ndarray = np.array([])
+                reportMASERef : np.ndarray = np.array([])
+                iterations : int = 0
+                running : bool = True
+                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
+                metadata : dict = iterator.getDatasetMetadata()
+                std : float = metadata["std"]
+                features : list = list(iterator.getAvailableFeatures(element).keys())
+
+                while running:
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                        futureSample : concurrent.futures._base.Future = executor.submit(
+                            iterator.iterateDataset,
+                            element,
+                            features,
+                            trainSet,
+                        )
+                        sample : pd.core.frame.DataFrame = futureSample.result()
+                        if sample is None:
+                            break
+                        if len(sample) < predictionLength + contextLength:
+                            break
+
+                        indexes : list = [index for index in range(1,len(features))]
+                        random.shuffle(indexes)
+                        for i in range(len(indexes)):
+                            index : int = indexes[i]
+                            if sample[index].isna().any().any():
+                                continue
+
+                            pred : np.ndarray = None
+                            refPred : np.ndarray = None
+                            with concurrent.futures.ThreadPoolExecutor() as executor2:
+                                futurePred : concurrent.futures._base.Future = executor2.submit(
+                                    model.predictRag,
+                                    sample[index].iloc[:contextLength].values,
+                                    predictionLength,
+                                )
+                                futurePredRef : concurrent.futures._base.Future = executor2.submit(
+                                    model.predict,
+                                    sample[index].iloc[:contextLength].values,
+                                    predictionLength,
+                                )
+                                pred = futurePred.result()
+                                refPred = futurePredRef.result()
+
+                            Utils.plot(
+                                [
+                                    sample[index].tolist(),
+                                    sample[index].iloc[:contextLength].to_list() + pred.tolist(),
+                                ],
+                                "ground_truth_pred.png",
+                                "-",
+                                contextLength,
+                            )
+                            mase : float = self.__getMASE(
+                                sample[index].iloc[:contextLength].values,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            maseRef : float = self.__getMASE(
+                                sample[index].iloc[:contextLength].values,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                refPred,
+                            )
+
+                            mae : float = self.__getMAE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            mse : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                                std,
+                            )
+
+                            mseRef : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                refPred,
+                                std,
+                            )
+
+                            if mase:
+                                reportMASE = np.append(reportMASE, [mase])
+                            if maseRef:
+                                reportMASERef = np.append(reportMASERef, [maseRef])
+                            if mae:
+                                reportMAE = np.append(reportMAE, [mae])
+                            if mse:
+                                reportMSE = np.append(reportMSE, [mse])
+                            if mseRef:
+                                reportMSERef = np.append(reportMSERef, [mseRef])
+
+                            iterations += 1
+
+                            if iterations >= maxTestSamplesPerSubdataset:
+                                running = False
+                                break
+
+                if iterations <= 0:
+                    continue
+
+                #report : dict = self.__loadReport("evaluationReportsMoiraiMoERagCA")
+
+                #if dataset not in report:
+                #    report[dataset] = dict()
+                #if f"{contextLength},{predictionLength}" not in report[dataset]:
+                #    report[dataset][f"{contextLength},{predictionLength}"] = dict()
+
+                #report[dataset][f"{contextLength},{predictionLength}"][element] = {
+                #    "MASE" : {
+                #        "mean" : float(reportMASE.mean()),
+                #        "median" : float(np.median(reportMASE)),
+                #    },
+                #    "MAE" : {
+                #        "mean" : float(reportMAE.mean()),
+                #        "median" : float(np.median(reportMAE)),
+                #    },
+                #    "MSE" : {
+                #        "mean" : float(reportMSE.mean()),
+                #        "median" : float(np.median(reportMSE)),
+                #    },
+                #    "numberIterations" : iterations,
+                #}
+                print("MASE: " + str(np.mean(reportMASE)))
+                print("MASE Ref: " + str(np.mean(reportMASERef)))
+
+                with open("mase.txt", "a") as file:
+                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)},{np.mean(reportMASERef)}\n")
+                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMSE)},{np.mean(reportMSERef)}\n")
+                    #file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)}\n")
+
+                #self.__writeReport(report, "evaluationReportsMoiraiMoERagCA")
+
+            except Exception as e:
+                raise e
+                print("Exception: " + str(e))
+                continue
+
+        return report
+
+    def evaluateMoiraiMoERagCA(
+        self,
+        contextLength : int,
+        predictionLength : int,
+        numberSamples : int,
+        dataset : str,
+        collection : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+        raf : bool = True,
+        useTrainRagDatabase : bool = True,
+    ) -> dict:
+        """
+        Method to evaluate model RAG CA
+        """
+        ragDataset : str = "lotsaData" if useTrainRagDatabase else dataset
+        collection = f"moiraiMoETrainingRafL2_{contextLength}_{predictionLength}" if useTrainRagDatabase else collection
+        print(f"Evaluating Dataset {dataset}, context length : {contextLength}, prediction length : {predictionLength}, collection : {collection}_{dataset}")
+        maxTestSamples : int = self._getConfig()["maxTestSamples"]
+        subdatasets : list = []
+        model : MoiraiMoE = MoiraiMoE(
+            predictionLength = predictionLength,
+            contextLength = contextLength,
+            numSamples = numberSamples,
+            loadPretrainedModel=True,
+        )
+        if raf:
+            model.setRafCollection(collection, ragDataset)
+        else:
+            model.setRagCollection(collection, ragDataset)
+        iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
+        iterator.setSampleSize(contextLength + predictionLength)
+
+        modelRaf : MoiraiMoE = MoiraiMoE(
+            predictionLength = predictionLength,
+            contextLength = contextLength,
+            numSamples = numberSamples,
+        )
+        #if "cosine" in collection:
+        #    modelRaf.setRafCollection(collection.replace("Cosine","RafL2"), "lotsaData")
+        #elif "L2" in collection and "RafL2" not in collection:
+        #    modelRaf.setRafCollection(collection.replace("L2","RafL2"), "lotsaData")
+        #else:
+        #    modelRaf.setRafCollection(collection, "lotsaData")
+        modelRaf.setRafCollection(collection, ragDataset)
+
+        if subdataset == "":
+            datasetConfig : dict = Utils.readYaml(
+                self._getFiles()["datasets"]
+            )
+            subdatasets = list(datasetConfig[dataset].keys())
+        else:
+            subdatasets.append(subdataset)
+
+        maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
+        for element in subdatasets:
+            try:
+                print(f"Subdataset {element}")
+                reportMAE : np.ndarray = np.array([])
+                reportMSE : np.ndarray = np.array([])
+                reportMSERef : np.ndarray = np.array([])
+                reportMSERefBase : np.ndarray = np.array([])
+                reportMSERaf : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 reportMASERef : np.ndarray = np.array([])
                 reportMASERefBase : np.ndarray = np.array([])
@@ -1379,6 +1570,8 @@ class Evaluation(FileSystem):
                 iterations : int = 0
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
+                metadata : dict = iterator.getDatasetMetadata()
+                std : float = metadata["std"]
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
                 while running:
@@ -1476,6 +1669,25 @@ class Evaluation(FileSystem):
                             mse : float = self.__getMSE(
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
+                                std,
+                            )
+
+                            mseRef : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                refPred,
+                                std,
+                            )
+
+                            mseRefBase : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                refPredBase,
+                                std,
+                            )
+
+                            mseRaf : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                futurePredRaf,
+                                std,
                             )
 
                             if mase:
@@ -1490,6 +1702,12 @@ class Evaluation(FileSystem):
                                 reportMAE = np.append(reportMAE, [mae])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
+                            if mseRef:
+                                reportMSERef = np.append(reportMSERef, [mseRef])
+                            if mseRefBase:
+                                reportMSERefBase = np.append(reportMSERefBase, [mseRefBase])
+                            if mseRaf:
+                                reportMSERaf = np.append(reportMSERaf, [mseRaf])
 
                             iterations += 1
 
@@ -1529,6 +1747,7 @@ class Evaluation(FileSystem):
 
                 with open("mase.txt", "a") as file:
                     file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)},{np.mean(reportMASERef)},{np.mean(reportMASERefBase)},{np.mean(reportMASERaf)}\n")
+                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMSE)},{np.mean(reportMSERef)},{np.mean(reportMSERefBase)},{np.mean(reportMSERaf)}\n")
                     #file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)}\n")
 
                 self.__writeReport(report, "evaluationReportsMoiraiMoERagCA")

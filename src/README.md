@@ -226,3 +226,7 @@ print(queried)
 ```bash
 tensorboard --logdir src/lightning_logs
 ```
+
+### Training MoiraiMoE
+
+To enable training a forked version of MoiraiMoE has to be used, see fork in https://github.com/jpvilla1990/uni2ts

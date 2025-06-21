@@ -1,21 +1,20 @@
-import numpy as np
+import pandas as pd
 import torch
-from vectorDB.vectorDB import vectorDB, MilvusVectorDB
+from model.chronosModel import Chronos
 
-context : np.ndarray = np.ones((10))
-predict : np.ndarray = np.ones((5)) * 2
-query : np.ndarray = np.ones((10)) * 0.9
+model : Chronos = Chronos()
 
-database : vectorDB = vectorDB()
+df = pd.read_csv(
+    "https://raw.githubusercontent.com/AileenNielsen/TimeSeriesAnalysisWithPython/master/data/AirPassengers.csv"
+)
 
-#database.setCollection("testcollection", "testdataset", lambda x : (torch.tensor(x)*2).unsqueeze(0))
-#database.ingestTimeseries(
-#    context,
-#    predict,
-#    "testdataset",
-#)
-#queried = database.queryTimeseries(query, 1)
-#print(queried)
+# context must be either a 1D tensor, a list of 1D tensors,
+# or a left-padded 2D tensor with batch as the first dimension
+# quantiles is an fp32 tensor with shape [batch_size, prediction_length, num_quantile_levels]
+# mean is an fp32 tensor with shape [batch_size, prediction_length]
+prediction = model.predict(
+    sample=torch.tensor(df["#Passengers"]),
+    predictionLength=12,
+)
 
-milvusDatabase = MilvusVectorDB()
-milvusDatabase.setCollection("testcollection", "testdataset",10)
+print(prediction.shape)
