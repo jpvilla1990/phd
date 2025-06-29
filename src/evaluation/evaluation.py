@@ -1510,7 +1510,7 @@ class Evaluation(FileSystem):
         subdataset : str = "",
         trainSet : bool = False,
         raf : bool = True,
-        useTrainRagDatabase : bool = True,
+        useTrainRagDatabase : bool = False,
     ) -> dict:
         """
         Method to evaluate model RAG CA

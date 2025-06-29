@@ -26,7 +26,7 @@ vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoERafL2_128_16", raf=True)
 #    trainSet=True,
 #)
 #report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoE",reportTargetName="evaluationFinalReportMoiraiMoE")
-training.saveModelState("RagCA-ragCA-lotsaData-epoch=00-step=000100-v1.ckpt")
+training.saveModelState("RagCA-ragCA-lotsaData-epoch=00-step=000900-v1.ckpt")
 #report : dict = evaluation.evaluateMoiraiMoERagCA(
 #    contextLength=64,
 #    predictionLength=16,

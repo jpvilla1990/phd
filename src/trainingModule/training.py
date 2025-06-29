@@ -126,13 +126,9 @@ class TrainingRagCA(L.LightningModule):
         refPredSample : torch.Tensor = refPred.sample(torch.Size((self.numberSamples,))).mean(dim=0)[:,-2,:].clone()
         masePred : torch.Tensor = self.__getMASE(xContext, xTarget, predSample)
         maseRefPred : torch.Tensor = self.__getMASE(xContext, xTarget, refPredSample)
-        #lossPred : torch.Tensor = masePred - maseRefPred
         loss : torch.Tensor = logProbPred - logProbRef
-        #loss = -pred.log_prob(xTarget)[:,-1,:]
-        #loss = loss.logsumexp(dim=0).mean()# + lossPred.mean()
         loss = loss.mean()
         print(loss)
-        #print(lossPred)
         print(f"MASE Pred: {masePred}, MASE Ref: {maseRefPred}")
 
         Utils.plot(
