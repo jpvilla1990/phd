@@ -43,6 +43,7 @@ class RagCrossAttention(torch.nn.Module):
 
         if loadPretrainedModel:
             if os.path.exists(pretrainedModel):
+                print(f"Loading pretrained model from {pretrainedModel}")
                 self.load_state_dict(
                     torch.load(pretrainedModel, map_location=self.__device, weights_only=False),
                 )
@@ -287,31 +288,35 @@ class RagCrossAttention(torch.nn.Module):
         context = context.unsqueeze(1)
 
         x = self.__patching(x)
-        x, xMean, xStd = self.__normalization(x)
+        xNormed, xMean, xStd = self.__normalization(x)
 
         context = self.__patching(context)
         context = (context - xMean) / xStd
 
         scaleContext : torch.Tensor = self.__linealScalerInput(context)
-        scaleX : torch.Tensor = self.__linealScalerInput(x)
+        scaleX : torch.Tensor = self.__linealScalerInput(xNormed)
 
         scaleContext = self.__linealScalerOutput(scaleContext).squeeze(1).squeeze(-1)
         scaleX = self.__linealScalerOutput(scaleX).squeeze(1).squeeze(-1)
 
-        scale : torch.Tensor = scaleContext.mean(1) - scaleX.mean(1)
-        scale = self.__sigmoid(scale)
+        scale : torch.Tensor = scaleContext.sum(1) - scaleX.sum(1)
+        #scale = self.__sigmoid(scale)
+
+        #difference : torch.Tensor = x[:,0,0,0] - context[:,-1,-1,-1]
+        #context = context + difference.unsqueeze(1).unsqueeze(2).unsqueeze(3)
 
         context = context + scale.view(scale.shape[0],1,1,1)
 
-        augmentedContext = self.__denormalization(context, xMean, xStd)
+        #augmentedContext = self.__denormalization(context, xMean, xStd)
 
-        augmentedContext = self.__joinPatches(augmentedContext)
+        augmentedContext = self.__joinPatches(context)
+        xInput = self.__joinPatches(xNormed)
 
         augmentedContext = augmentedContext.squeeze(1)
-
+        xInput = xInput.squeeze(1)
         xAugmented : torch.Tensor = self.__concat(augmentedContext, xInput)
 
-        return xAugmented
+        return xAugmented, xMean, xStd
 
     def inference(
         self, xInput : torch.Tensor,

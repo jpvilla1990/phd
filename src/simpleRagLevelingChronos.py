@@ -26,7 +26,7 @@ vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoERafL2_128_16", raf=True)
 #    trainSet=True,
 #)
 #report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoE",reportTargetName="evaluationFinalReportMoiraiMoE")
-training.saveModelState("RagCA-ragCA-lotsaData-epoch=00-step=000100-v1.ckpt")
+training.saveModelState("RagCA-2-ragCA-lotsaData-epoch=00-step=001000.ckpt")
 #report : dict = evaluation.evaluateChronosRagLeveling(
 #    contextLength=64,
 #    predictionLength=16,
@@ -48,7 +48,7 @@ training.saveModelState("RagCA-ragCA-lotsaData-epoch=00-step=000100-v1.ckpt")
 #    predictionLength=16,
 #    numberSamples=100,
 #    dataset="lotsaData",
-#    collection="moiraiMoETrainingCosine_64_16",
+#    collection="moiraiMoETrainingCosine_128_16",
 #    trainSet=True,
 #)
 #report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERagCA",reportTargetName="evaluationFinalReportMoiraiMoERagCA")
@@ -63,41 +63,6 @@ report : dict = evaluation.evaluateChronosRagLeveling(
     contextLength=64,
     predictionLength=16,
     dataset="power",
-    collection="moiraiMoERafL2_64_16",
-)
-
-report : dict = evaluation.evaluateChronosRagLeveling(
-    contextLength=64,
-    predictionLength=16,
-    dataset="covid19Deaths",
-    collection="moiraiMoERafL2_64_16",
-)
-
-report : dict = evaluation.evaluateChronosRagLeveling(
-    contextLength=64,
-    predictionLength=16,
-    dataset="electricityUCI",
-    collection="moiraiMoERafL2_64_16",
-)
-
-report : dict = evaluation.evaluateChronosRagLeveling(
-    contextLength=64,
-    predictionLength=16,
-    dataset="fredMd",
-    collection="moiraiMoERafL2_64_16",
-)
-
-report : dict = evaluation.evaluateChronosRagLeveling(
-    contextLength=64,
-    predictionLength=16,
-    dataset="nn5",
-    collection="moiraiMoERafL2_64_16",
-)
-
-report : dict = evaluation.evaluateChronosRagLeveling(
-    contextLength=64,
-    predictionLength=16,
-    dataset="m4-monthly",
     collection="moiraiMoERafL2_64_16",
 )
 

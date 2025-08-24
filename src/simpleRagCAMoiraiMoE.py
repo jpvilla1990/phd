@@ -26,7 +26,9 @@ vectorDBingestion.ingestDatasetsMoiraiMoE("moiraiMoERafL2_128_16", raf=True)
 #    trainSet=True,
 #)
 #report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoE",reportTargetName="evaluationFinalReportMoiraiMoE")
-training.saveModelState("RagCA-ragCA-lotsaData-epoch=00-step=000900-v1.ckpt")
+modelRagCa : str = "RagCA-ragCA-lotsaData-epoch=00-step=001000-v1.ckpt"
+modelRagCrossAttention : str = "RagCA-2-ragCA-lotsaData-epoch=00-step=001000.ckpt"
+training.saveModelState(modelRagCrossAttention)
 #report : dict = evaluation.evaluateMoiraiMoERagCA(
 #    contextLength=64,
 #    predictionLength=16,
@@ -53,13 +55,13 @@ training.saveModelState("RagCA-ragCA-lotsaData-epoch=00-step=000900-v1.ckpt")
 #)
 #report : dict = evaluation.compileReports(reportOriginName="evaluationReportsMoiraiMoERagCA",reportTargetName="evaluationFinalReportMoiraiMoERagCA")
 report : dict = evaluation.evaluateMoiraiMoERagCA(
-    contextLength=64,
+    contextLength=32,
     predictionLength=16,
     numberSamples=100,
-    dataset="ET",
-    collection="moiraiMoERafL2_64_16",
+    dataset="traffic",
+    collection="moiraiMoERafL2_32_16",
 )
-
+exit()
 report : dict = evaluation.evaluateMoiraiMoERagCA(
     contextLength=64,
     predictionLength=16,

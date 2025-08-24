@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from utils.fileSystem import FileSystem
 from utils.utils import Utils
 from model.moiraiMoe import MoiraiMoE
+from model.chronosModel import Chronos
 from datasetsModule.datasetTrainingIterator import DatasetTrainingIterator
 from model.ragCrossAttention import RagCrossAttention
 from utils.utils import Utils
@@ -17,7 +18,7 @@ class TrainingRagCA(L.LightningModule):
         self,
         dataset : str,
         collectionPrefix : str,
-        k : int = 1,
+        k : int = 16,
         lr : float = 1e-3,
         numberSamples : int = 100,
         batchSize : int = 1,
@@ -42,40 +43,10 @@ class TrainingRagCA(L.LightningModule):
             loadPretrainedModel=self.__loadPretrainedModel,
         )
 
-        self.backBoneModels : dict = {}
-
-    def __getMASE(self, context : torch.Tensor, groundTruth : torch.Tensor, prediction : torch.Tensor) -> torch.Tensor:
-        """
-        Method to calculate MEAN ABSOLUTE SCALED ERROR
-        """
-        meanAbsoluteError : torch.Tensor = (torch.abs(prediction - groundTruth)).mean(dim=1)
-
-        meanAbsoluteDeviation : torch.Tensor = torch.abs(context[:, :-1] - context[:, 1:]).mean(dim=1)
-
-        mase : torch.Tensor = meanAbsoluteError / meanAbsoluteDeviation
-
-        mask = torch.isfinite(mase)
-
-        return mase[mask].mean()
-
-    def getBackBoneModel(self, contextLength : int, predictionLength : int) -> MoiraiMoE:
-        """
-        Method to get the backbone model
-        :return: Backbone model
-        """
-        index : str = f"{contextLength}_{predictionLength}"
-        if index not in self.backBoneModels:
-            self.backBoneModels[index] = MoiraiMoE(
-                predictionLength = predictionLength,
-                contextLength = contextLength,
-                numSamples = self.numberSamples,
-                batchSize = self.__batchSize,
-                createPredictor=False,
-                frozen=True,
-                loadPretrainedModel=self.__loadPretrainedModel,
-            )
-            self.backBoneModels[index].setRafCollection(f"{self.__collectionPrefix}_{index}", self.__dataset)
-        return self.backBoneModels[index]
+        self.backBoneModels : Chronos = Chronos(
+            bolt=False,
+            frozen=True,
+        )
 
     def training_step(
             self,
@@ -95,15 +66,13 @@ class TrainingRagCA(L.LightningModule):
             contextLength = contextLength[-1].item()
         batch = batch.squeeze(0)
         predictionLength : int = batch.shape[1] - contextLength
-        modelBackBone : MoiraiMoE = self.getBackBoneModel(
-            contextLength = contextLength,
-            predictionLength = predictionLength,
-        )
 
         xContext : torch.Tensor = batch[:, :contextLength]
         xTarget : torch.Tensor = batch[:, contextLength:]
 
-        queried, scores = modelBackBone.queryBatchVector(xContext, k=self.__k)
+        self.backBoneModels.setRafCollection(f"{self.__collectionPrefix}_{contextLength}_{predictionLength}", self.__dataset)
+
+        queried, scores =  self.backBoneModels.queryBatchVector(xContext, k=self.__k)
 
         augmentedSample, mean, std = self.modelRagCA.forward(
             xContext,
@@ -111,49 +80,9 @@ class TrainingRagCA(L.LightningModule):
             scores,
         )
 
-        pred : torch.Tensor = None
-        refPred : torch.Tensor = None
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future1 : concurrent.futures._base.Future = executor.submit(modelBackBone.forwardRagCA, augmentedSample, False)
-            future2 : concurrent.futures._base.Future = executor.submit(modelBackBone.forwardRagCA, xContext, True)
+        loss = self.backBoneModels.forwardLoss(augmentedSample, mean, std, xTarget)
 
-            pred = future1.result()
-            refPred = future2.result()
-
-        xTargetNormed : torch.Tensor = (xTarget - mean.squeeze(-1).squeeze(-1)) / std.squeeze(-1).squeeze(-1)
-
-        logProbPred : torch.Tensor = -pred.log_prob(xTargetNormed.unsqueeze(1))[:,-2,:]
-        logProbRef : torch.Tensor = -refPred.log_prob(xTarget.unsqueeze(1))[:,-2,:]
-        predSample : torch.Tensor = pred.sample(torch.Size((self.numberSamples,))).mean(dim=0)[:,-2,:].clone()
-        predSample = (predSample * std.squeeze(-1).squeeze(-1)) + mean.squeeze(-1).squeeze(-1)
-
-        refPredSample : torch.Tensor = refPred.sample(torch.Size((self.numberSamples,))).mean(dim=0)[:,-2,:].clone()
-        masePred : torch.Tensor = self.__getMASE(xContext, xTarget, predSample)
-        maseRefPred : torch.Tensor = self.__getMASE(xContext, xTarget, refPredSample)
-        loss : torch.Tensor = logProbPred - logProbRef
-        loss = loss.mean()
         print(loss)
-        print(f"MASE Pred: {masePred}, MASE Ref: {maseRefPred}")
-
-        Utils.plot(
-            [
-                xContext[0].tolist() + xContext[0].tolist() + xTarget[0].tolist(),
-                augmentedSample[0].tolist() + predSample[0].tolist(),
-            ],
-            "train_pred.png",
-            "-",
-            contextLength,
-        )
-
-        Utils.plot(
-            [
-                xContext[0].tolist() + xTarget[0].tolist(),
-                xContext[0].tolist() + refPredSample[0].tolist(),
-            ],
-            "train_ref.png",
-            "-",
-            contextLength,
-        )
 
         self.log("train_loss", loss, on_step=True, on_epoch=True)
         return loss
@@ -199,6 +128,7 @@ class Training(FileSystem):
         Method to get RAG CA state
         """
         parametersFile = os.path.join(self._getPaths()["RagCAModels"], parametersFile)
+        print(parametersFile)
         model : RagCrossAttention = TrainingRagCA.load_from_checkpoint(
             parametersFile,
             dataset=self._getConfig()["training"]["dataset"],
@@ -242,17 +172,18 @@ class Training(FileSystem):
             callbacks=[
                 ModelCheckpoint(
                     dirpath=self._getPaths()["RagCAModels"],
-                    filename=f"RagCA-2-{modelName}-{self._getConfig()['training']['dataset']}-{{epoch:02d}}-{{step:06d}}",
+                    filename=f"RagCA-{modelName}-{self._getConfig()['training']['dataset']}-{{epoch:02d}}-{{step:06d}}",
                     save_top_k=-1,
-                    every_n_train_steps=100,
+                    every_n_train_steps=1000,
                     save_on_train_epoch_end=False,
                 ),
             ],
         )
         if self._getConfig()["training"]["checkpoint"] != "":
+            print(self._getConfig()["training"]["checkpoint"])
             trainer.fit(
                 model,
-                tsLoader, 
+                tsLoader,
                 ckpt_path = os.path.join(
                     self._getPaths()["RagCAModels"],
                     self._getConfig()["training"]["checkpoint"],

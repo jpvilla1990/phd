@@ -1,3 +1,4 @@
+import uuid
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -112,6 +113,7 @@ class MoiraiMoE(FileSystem):
         createPredictor : bool = True,
         frozen : bool = True,
         loadPretrainedModel : bool = False,
+        loadFineTunedModel : bool = False,
     ):
         super().__init__()
         self.__patchSize : int = patchSize
@@ -134,7 +136,8 @@ class MoiraiMoE(FileSystem):
         self.__numberSamples : int = numSamples
 
         self.__contextLength : int = contextLength
-        self.__model : MoiraiMoEForecast = MoiraiMoEForecast(
+        self.__predictionLength : int = predictionLength
+        self.model : MoiraiMoEForecast = MoiraiMoEForecast(
             module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
             prediction_length=predictionLength,
             context_length=contextLength,
@@ -145,7 +148,19 @@ class MoiraiMoE(FileSystem):
             past_feat_dynamic_real_dim=pastFeatDynamicRealDim,
         )
 
-        self.__modelRag : MoiraiMoEForecast = MoiraiMoEForecast(
+        if loadFineTunedModel:
+            checkpoint : dict = torch.load(self._getFiles()["paramsFineTunedModel"], weights_only=False)
+            parsedCheckpoint : dict = {}
+            for key in checkpoint["state_dict"].keys():
+                if key.startswith("model.module."):
+                    parsedCheckpoint[key.replace("model.module.", "")] = checkpoint["state_dict"][key]
+                else:
+                    parsedCheckpoint[key] = checkpoint["state_dict"][key]
+            self.model.module.load_state_dict(
+                parsedCheckpoint,
+            )
+
+        self.modelRag : MoiraiMoEForecast = MoiraiMoEForecast(
             module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
             prediction_length=predictionLength,
             context_length= contextLength + predictionLength,
@@ -156,13 +171,13 @@ class MoiraiMoE(FileSystem):
             past_feat_dynamic_real_dim=pastFeatDynamicRealDim,
         )
 
-        self.__modelRagCA : RagCrossAttention = RagCrossAttention(
+        self.modelRagCA : RagCrossAttention = RagCrossAttention(
             patchSize=self.__patchSize,
             pretrainedModel=self._getFiles()["paramsRagCA"],
             loadPretrainedModel=loadPretrainedModel,
         )
 
-        self.__modelRagCABackBone : MoiraiMoEForecast = MoiraiMoEForecast(
+        self.modelRagCABackBone : MoiraiMoEForecast = MoiraiMoEForecast(
             module=MoiraiMoEModule.from_pretrained(f"Salesforce/moirai-moe-1.0-R-{modelSize}"),
             prediction_length=predictionLength,
             context_length= contextLength + contextLength,
@@ -173,24 +188,24 @@ class MoiraiMoE(FileSystem):
             past_feat_dynamic_real_dim=pastFeatDynamicRealDim,
         )
 
-        self.__moiraiMoEEmbeddings : MoiraiMoEEmbeddings = MoiraiMoEEmbeddings(self.__model.module)
+        self.__moiraiMoEEmbeddings : MoiraiMoEEmbeddings = MoiraiMoEEmbeddings(self.model.module)
         self.__vectorDB : vectorDB = vectorDB()
 
         if createPredictor:
-            self.__predictor : PyTorchPredictor = self.__model.create_predictor(batch_size=batchSize)
-            self.__predictorRag : PyTorchPredictor = self.__modelRag.create_predictor(batch_size=batchSize)
+            self.__predictor : PyTorchPredictor = self.model.create_predictor(batch_size=batchSize)
+            self.__predictorRag : PyTorchPredictor = self.modelRag.create_predictor(batch_size=batchSize)
 
         if frozen:
-            for param in self.__model.module.parameters():
+            for param in self.model.module.parameters():
                 param.requires_grad = False
-            for param in self.__modelRag.module.parameters():
+            for param in self.modelRag.module.parameters():
                 param.requires_grad = False
-            for param in self.__modelRagCABackBone.module.parameters():
+            for param in self.modelRagCABackBone.module.parameters():
                 param.requires_grad = False
 
-        self.__model.module = self.__model.module.to(self.__device)
-        self.__modelRag.module = self.__modelRag.module.to(self.__device)
-        self.__modelRagCABackBone.module = self.__modelRagCABackBone.module.to(self.__device)
+        self.model.module = self.model.module.to(self.__device)
+        self.modelRag.module = self.modelRag.module.to(self.__device)
+        self.modelRagCABackBone.module = self.modelRagCABackBone.module.to(self.__device)
 
     def __patching(
         self,
@@ -257,7 +272,7 @@ class MoiraiMoE(FileSystem):
         )
 
         if moiraiMoEOnly:
-            return self.__model.module(
+            return self.model.module(
                 target=target,
                 observed_mask=observedMask,
                 sample_id=sampleId,
@@ -267,7 +282,7 @@ class MoiraiMoE(FileSystem):
                 patch_size=patchSizeTensor,
             )
         else:
-            return self.__modelRagCABackBone.module(
+            return self.modelRagCABackBone.module(
                 target=target,
                 observed_mask=observedMask,
                 sample_id=sampleId,
@@ -519,18 +534,37 @@ class MoiraiMoE(FileSystem):
             queriedTorch : torch.Tensor = torch.Tensor(queried).unsqueeze(0)
             scoreTensor : torch.Tensor = torch.Tensor(score).unsqueeze(0)
 
-            augmentedSample : torch.Tensor = self.__modelRagCA.inference(
+            augmentedSample, mean, std = self.modelRagCA.inference(
                 xContext,
                 queriedTorch,
                 scoreTensor,
             )
 
-            pred = self.forwardRagCA(
-                augmentedSample,
-                False,
-            )
+            steps : int = math.ceil(self.__predictionLength / self.__patchSize)
 
-            prediction :np.ndarray = pred.sample(torch.Size((self.__numberSamples,))).median(dim=0).values[:,-2,:].clone().to("cpu").squeeze(0).numpy()
+            prediction : np.ndarray = np.empty((augmentedSample.shape[0], 0))
+            timeSeries : np.ndarray = augmentedSample
+            augmentedContextLength : int = augmentedSample.shape[1]
+
+            for step in range(steps):
+                pred = self.forwardRagCA(
+                    timeSeries,
+                    False,
+                )
+
+                pred = pred.sample(torch.Size((self.__numberSamples,))).median(dim=0).values[:,-2,:].clone()
+
+                predNp : np.ndarray = pred.to("cpu").numpy()
+
+                prediction = np.concatenate((prediction, predNp), axis=1)
+                timeSeries = torch.cat((timeSeries[:, self.__patchSize:], pred), dim=1)
+
+            stdNp : np.ndarray = std.to("cpu").squeeze(-1).squeeze(-1).numpy()
+            meanNp : np.ndarray = mean.to("cpu").squeeze(-1).squeeze(-1).numpy()
+            prediction = (prediction * stdNp) + meanNp
+
+            prediction = prediction.squeeze(0)
+
             #newSample : list = augmentedSample[0].tolist()
             #sampleGluonts : ListDataset = ListDataset(
             #    [{
@@ -540,22 +574,21 @@ class MoiraiMoE(FileSystem):
             #    freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
             #)
             #prediction : np.ndarray = next(iter(self.__predictorRag.predict(sampleGluonts))).mean
-
+            id : str = str(uuid.uuid4())
             if plot:
                 Utils.plot(
                     [query.tolist() for query in queried],
-                    "rag.png",
+                    "images/rag" + id + ".png",
                     ":",
                     self.__contextLength,
                 )
                 Utils.plot(
                     [augmentedSample[0].tolist()],
-                    "augmentedRag.png",
-                    
+                    "images/augmentedRa" + id + ".png",
                 )
                 Utils.plot(
                     [sample["value"].tolist() + prediction.tolist()],
-                    "pred.png",
+                    "images/pred.png" + id + ".png",
                     "-",
                     self.__contextLength,
                 )

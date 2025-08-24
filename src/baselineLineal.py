@@ -179,31 +179,55 @@ report : dict = evaluation.evaluateLinearModel(
 report : dict = evaluation.evaluateLinearModel(
     contextLength=128,
     predictionLength=16,
-    dataset="nn5",
+    dataset="ET",
 )
 
 report : dict = evaluation.evaluateLinearModel(
-    contextLength=64,
+    contextLength=128,
+    predictionLength=16,
+    dataset="covid19Deaths",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=128,
+    predictionLength=16,
+    dataset="electricityUCI",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=128,
+    predictionLength=16,
+    dataset="fredMd",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=128,
+    predictionLength=16,
+    dataset="huaweiCloud",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=128,
+    predictionLength=16,
+    dataset="m4-monthly",
+)
+
+report : dict = evaluation.evaluateLinearModel(
+    contextLength=128,
     predictionLength=16,
     dataset="nn5",
 )
 
 report : dict = evaluation.evaluateLinearModel(
-    contextLength=32,
+    contextLength=128,
     predictionLength=16,
-    dataset="nn5",
+    dataset="power",
 )
 
 report : dict = evaluation.evaluateLinearModel(
-    contextLength=520,
-    predictionLength=30,
-    dataset="nn5",
-)
-
-report : dict = evaluation.evaluateLinearModel(
-    contextLength=520,
-    predictionLength=96,
-    dataset="nn5",
+    contextLength=128,
+    predictionLength=16,
+    dataset="traffic",
 )
 
 report : dict = evaluation.compileReports(reportOriginName="evaluationReportsLineal",reportTargetName="evaluationFinalReportLineal")

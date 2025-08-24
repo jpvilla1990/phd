@@ -41,7 +41,7 @@ class Evaluation(FileSystem):
             self.__loadReport(report) | entry,
         )
 
-    def __getMASE(self, context : np.ndarray, groundTruth : np.ndarray, prediction : np.ndarray) -> float:
+    def __getMASE(self, seasonabilityError : float, groundTruth : np.ndarray, prediction : np.ndarray) -> float:
         """
         Method to calculate MEAN ABSOLUTE SCALED ERROR
         """
@@ -49,14 +49,7 @@ class Evaluation(FileSystem):
             abs(prediction - groundTruth),
         )
 
-        meanAbsoluteDeviation : float = np.mean(
-            abs(context[:-1] - context[1:])
-        )
-
-        if meanAbsoluteDeviation == 0:
-            return None
-
-        return meanAbsoluteError / meanAbsoluteDeviation
+        return meanAbsoluteError / seasonabilityError
     
     def __getMAE(self, groundTruth : np.ndarray, prediction : np.ndarray) -> float:
         """
@@ -193,6 +186,7 @@ class Evaluation(FileSystem):
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
 
                 while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -222,7 +216,7 @@ class Evaluation(FileSystem):
                                 continue
 
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
@@ -276,6 +270,8 @@ class Evaluation(FileSystem):
                     "numberIterations" : iterations,
                 }
 
+                print(f"MASE: {reportMASE.mean()}")
+
                 self.__writeReport(report, "evaluationReportsLineal")
 
             except Exception as e:
@@ -326,6 +322,7 @@ class Evaluation(FileSystem):
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
 
                 while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -349,7 +346,7 @@ class Evaluation(FileSystem):
                                 continue
                             pred : np.ndarray = model.inference(sample[[0, index]].iloc[:contextLength], dataset)
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
@@ -455,6 +452,7 @@ class Evaluation(FileSystem):
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
 
                 while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -479,7 +477,7 @@ class Evaluation(FileSystem):
                             pred : np.ndarray = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset)
 
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
@@ -586,6 +584,7 @@ class Evaluation(FileSystem):
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
 
                 while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -610,7 +609,7 @@ class Evaluation(FileSystem):
                             pred : np.ndarray = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset, True, cosine)
 
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
@@ -716,6 +715,7 @@ class Evaluation(FileSystem):
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
 
                 while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -740,7 +740,7 @@ class Evaluation(FileSystem):
                             pred : np.ndarray = model.rafInference(sample[[0, index]].iloc[:contextLength], dataset, True)
 
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
@@ -846,6 +846,7 @@ class Evaluation(FileSystem):
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
 
                 while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -870,7 +871,7 @@ class Evaluation(FileSystem):
                             pred : np.ndarray = model.rafInference(sample[[0, index]].iloc[:contextLength], dataset, True, True)
 
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
@@ -976,6 +977,7 @@ class Evaluation(FileSystem):
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
 
                 while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -1000,7 +1002,7 @@ class Evaluation(FileSystem):
                             pred : np.ndarray = model.ragOnlyInference(sample[[0, index]].iloc[:contextLength], dataset, True)
 
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
@@ -1102,6 +1104,7 @@ class Evaluation(FileSystem):
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
 
                 while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -1127,7 +1130,7 @@ class Evaluation(FileSystem):
                             pred : np.ndarray = model.inference(sample[[index]].iloc[:contextLength])
 
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
@@ -1232,6 +1235,7 @@ class Evaluation(FileSystem):
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 features : list = list(iterator.getAvailableFeatures(element).keys())
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
 
                 while running:
                     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -1257,7 +1261,7 @@ class Evaluation(FileSystem):
                             pred : np.ndarray = model.ragInference(sample[[index]].iloc[:contextLength], dataset)
 
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
@@ -1336,7 +1340,7 @@ class Evaluation(FileSystem):
         print(f"Evaluating Dataset {dataset}, context length : {contextLength}, prediction length : {predictionLength}, collection : {collection}_{dataset}")
         maxTestSamples : int = self._getConfig()["maxTestSamples"]
         subdatasets : list = []
-        model : Chronos = Chronos()
+        model : Chronos = Chronos(bolt=False, frozen=False)
         model.setRafCollection(collection, dataset)
 
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
@@ -1359,10 +1363,12 @@ class Evaluation(FileSystem):
                 reportMSERef : np.ndarray = np.array([])
                 reportMASE : np.ndarray = np.array([])
                 reportMASERef : np.ndarray = np.array([])
+                reportMASERaf : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 metadata : dict = iterator.getDatasetMetadata()
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
                 std : float = metadata["std"]
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
@@ -1389,6 +1395,7 @@ class Evaluation(FileSystem):
 
                             pred : np.ndarray = None
                             refPred : np.ndarray = None
+                            rafPred : np.ndarray = None
                             with concurrent.futures.ThreadPoolExecutor() as executor2:
                                 futurePred : concurrent.futures._base.Future = executor2.submit(
                                     model.predictRag,
@@ -1400,8 +1407,14 @@ class Evaluation(FileSystem):
                                     sample[index].iloc[:contextLength].values,
                                     predictionLength,
                                 )
+                                futurePredRaf : concurrent.futures._base.Future = executor2.submit(
+                                    model.predictRaf,
+                                    sample[index].iloc[:contextLength].values,
+                                    predictionLength,
+                                )
                                 pred = futurePred.result()
                                 refPred = futurePredRef.result()
+                                rafPred = futurePredRaf.result()
 
                             Utils.plot(
                                 [
@@ -1413,15 +1426,21 @@ class Evaluation(FileSystem):
                                 contextLength,
                             )
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
 
                             maseRef : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 refPred,
+                            )
+
+                            maseRaf : float = self.__getMASE(
+                                seasonabilityError,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                rafPred,
                             )
 
                             mae : float = self.__getMAE(
@@ -1445,6 +1464,8 @@ class Evaluation(FileSystem):
                                 reportMASE = np.append(reportMASE, [mase])
                             if maseRef:
                                 reportMASERef = np.append(reportMASERef, [maseRef])
+                            if maseRaf:
+                                reportMASERaf = np.append(reportMASERaf, [maseRaf])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
                             if mse:
@@ -1485,13 +1506,138 @@ class Evaluation(FileSystem):
                 #}
                 print("MASE: " + str(np.mean(reportMASE)))
                 print("MASE Ref: " + str(np.mean(reportMASERef)))
+                print("MASE Raf: " + str(np.mean(reportMASERaf)))
 
                 with open("mase.txt", "a") as file:
-                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)},{np.mean(reportMASERef)}\n")
+                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)},{np.mean(reportMASERef)},{np.mean(reportMASERaf)}\n")
                     file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMSE)},{np.mean(reportMSERef)}\n")
                     #file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)}\n")
 
                 #self.__writeReport(report, "evaluationReportsMoiraiMoERagCA")
+
+            except Exception as e:
+                raise e
+                print("Exception: " + str(e))
+                continue
+
+        return report
+
+    def evaluateChronos(
+        self,
+        contextLength : int,
+        predictionLength : int,
+        dataset : str,
+        subdataset : str = "",
+        trainSet : bool = False,
+    ) -> dict:
+        """
+        Method to evaluate model RAG CA
+        """
+        report : dict = {}
+        print(f"Evaluating Dataset {dataset}, context length : {contextLength}, prediction length : {predictionLength}")
+        maxTestSamples : int = self._getConfig()["maxTestSamples"]
+        subdatasets : list = []
+        model : Chronos = Chronos(model="amazon/chronos-t5-small")
+
+        iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
+        iterator.setSampleSize(contextLength + predictionLength)
+
+        if subdataset == "":
+            datasetConfig : dict = Utils.readYaml(
+                self._getFiles()["datasets"]
+            )
+            subdatasets = list(datasetConfig[dataset].keys())
+        else:
+            subdatasets.append(subdataset)
+
+        maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
+        for element in subdatasets:
+            try:
+                print(f"Subdataset {element}")
+                reportMAE : np.ndarray = np.array([])
+                reportMSE : np.ndarray = np.array([])
+                reportMASE : np.ndarray = np.array([])
+                iterations : int = 0
+                running : bool = True
+                iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
+                metadata : dict = iterator.getDatasetMetadata()
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
+                std : float = metadata["std"]
+                features : list = list(iterator.getAvailableFeatures(element).keys())
+
+                while running:
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                        futureSample : concurrent.futures._base.Future = executor.submit(
+                            iterator.iterateDataset,
+                            element,
+                            features,
+                            trainSet,
+                        )
+                        sample : pd.core.frame.DataFrame = futureSample.result()
+                        if sample is None:
+                            break
+                        if len(sample) < predictionLength + contextLength:
+                            break
+
+                        indexes : list = [index for index in range(1,len(features))]
+                        random.shuffle(indexes)
+                        for i in range(len(indexes)):
+                            index : int = indexes[i]
+                            if sample[index].isna().any().any():
+                                continue
+
+                            pred : np.ndarray = None
+                            with concurrent.futures.ThreadPoolExecutor() as executor2:
+                                futurePred : concurrent.futures._base.Future = executor2.submit(
+                                    model.predict,
+                                    sample[index].iloc[:contextLength].values,
+                                    predictionLength,
+                                )
+                                pred = futurePred.result()
+
+                            Utils.plot(
+                                [
+                                    sample[index].tolist(),
+                                    sample[index].iloc[:contextLength].to_list() + pred.tolist(),
+                                ],
+                                "ground_truth_pred.png",
+                                "-",
+                                contextLength,
+                            )
+                            mase : float = self.__getMASE(
+                                seasonabilityError,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            mae : float = self.__getMAE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                            )
+
+                            mse : float = self.__getMSE(
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                pred,
+                                std,
+                            )
+
+                            if mase:
+                                reportMASE = np.append(reportMASE, [mase])
+                            if mae:
+                                reportMAE = np.append(reportMAE, [mae])
+                            if mse:
+                                reportMSE = np.append(reportMSE, [mse])
+
+                            iterations += 1
+
+                            if iterations >= maxTestSamplesPerSubdataset:
+                                running = False
+                                break
+
+                if iterations <= 0:
+                    continue
+
+                print("MASE: " + str(np.mean(reportMASE)))
 
             except Exception as e:
                 raise e
@@ -1526,6 +1672,13 @@ class Evaluation(FileSystem):
             numSamples = numberSamples,
             loadPretrainedModel=True,
         )
+        modelFineTuned : MoiraiMoE = MoiraiMoE(
+            predictionLength = predictionLength,
+            contextLength = contextLength,
+            numSamples = numberSamples,
+            loadPretrainedModel=False,
+            loadFineTunedModel=True,
+        )
         if raf:
             model.setRafCollection(collection, ragDataset)
         else:
@@ -1544,7 +1697,10 @@ class Evaluation(FileSystem):
         #    modelRaf.setRafCollection(collection.replace("L2","RafL2"), "lotsaData")
         #else:
         #    modelRaf.setRafCollection(collection, "lotsaData")
-        modelRaf.setRafCollection(collection, ragDataset)
+        if raf:
+            modelRaf.setRafCollection(collection, ragDataset)
+        else:
+            modelRaf.setRafCollection(f"moiraiMoETrainingRafL2_{contextLength}_{predictionLength}", ragDataset)
 
         if subdataset == "":
             datasetConfig : dict = Utils.readYaml(
@@ -1567,10 +1723,12 @@ class Evaluation(FileSystem):
                 reportMASERef : np.ndarray = np.array([])
                 reportMASERefBase : np.ndarray = np.array([])
                 reportMASERaf : np.ndarray = np.array([])
+                reportMASEFineTuning : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
                 metadata : dict = iterator.getDatasetMetadata()
+                seasonabilityError : float = iterator.getSeasonabilityError(element)
                 std : float = metadata["std"]
                 features : list = list(iterator.getAvailableFeatures(element).keys())
 
@@ -1623,10 +1781,16 @@ class Evaluation(FileSystem):
                                     False,
                                     False,
                                 )
+                                futurePredFineTuning : concurrent.futures._base.Future = executor2.submit(
+                                    modelFineTuned.inference,
+                                    sample[[0, index]].iloc[:contextLength],
+                                    dataset,
+                                )
                                 pred = futurePred.result()
                                 refPred = futurePredRef.result()
                                 refPredBase = futurePredRefBase.result()
                                 futurePredRaf = futurePredRaf.result()
+                                futurePredFineTuning = futurePredFineTuning.result()
 
                             Utils.plot(
                                 [
@@ -1638,27 +1802,33 @@ class Evaluation(FileSystem):
                                 contextLength,
                             )
                             mase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
                             )
 
                             maseRef : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 refPred,
                             )
 
                             maseRefBase : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 refPredBase,
                             )
 
                             maseRaf : float = self.__getMASE(
-                                sample[index].iloc[:contextLength].values,
+                                seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 futurePredRaf,
+                            )
+
+                            maseFineTuning : float = self.__getMASE(
+                                seasonabilityError,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                futurePredFineTuning,
                             )
 
                             mae : float = self.__getMAE(
@@ -1698,6 +1868,8 @@ class Evaluation(FileSystem):
                                 reportMASERefBase = np.append(reportMASERefBase, [maseRefBase])
                             if maseRaf:
                                 reportMASERaf = np.append(reportMASERaf, [maseRaf])
+                            if maseFineTuning:
+                                reportMASEFineTuning = np.append(reportMASEFineTuning, [maseFineTuning])
                             if mae:
                                 reportMAE = np.append(reportMAE, [mae])
                             if mse:
@@ -1744,10 +1916,10 @@ class Evaluation(FileSystem):
                 print("MASE Ref: " + str(np.mean(reportMASERef)))
                 print("MASE Ref Base: " + str(np.mean(reportMASERefBase)))
                 print("MASE Raf: " + str(np.mean(reportMASERaf)))
+                print("MASE Fine Tuning: " + str(np.mean(reportMASEFineTuning)))
 
                 with open("mase.txt", "a") as file:
-                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)},{np.mean(reportMASERef)},{np.mean(reportMASERefBase)},{np.mean(reportMASERaf)}\n")
-                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMSE)},{np.mean(reportMSERef)},{np.mean(reportMSERefBase)},{np.mean(reportMSERaf)}\n")
+                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)},{np.mean(reportMASERef)},{np.mean(reportMASERefBase)},{np.mean(reportMASERaf)},{np.mean(reportMASEFineTuning)}\n")
                     #file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)}\n")
 
                 self.__writeReport(report, "evaluationReportsMoiraiMoERagCA")

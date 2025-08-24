@@ -48,6 +48,34 @@ class DatasetIterator(object):
             "std" : sdt,
         }
 
+    def getSeasonabilityError(self, subdataset : str) -> float:
+        """
+        Method to get seasonability error
+        """
+        if subdataset not in self.__datasets:
+            raise DatasetException(
+                f"Subdataset {subdataset} does not exists in dataset {self}"
+            )
+
+        seasonality : int = self.__datasetConfig["seasonality"][subdataset]
+
+        dataframe : pd.core.frame.DataFrame = Utils.loadPandasFromArrow(self.__datasets[subdataset])
+        features : list = dataframe.columns.tolist()[1:]
+        seasonal_errors : list = []
+
+        for col in features:
+            series : np.ndarray = dataframe[col].dropna().to_numpy()
+
+            if len(series) <= seasonality:
+                continue  # Not enough data to compute seasonality
+
+            # Compute |y_t - y_{t - m}|
+            diffs : np.ndarray = np.abs(series[seasonality:] - series[:-seasonality])
+            seasonal_errors.append(np.mean(diffs))
+
+        # Return mean seasonal error across all series
+        return float(np.mean(seasonal_errors)) if seasonal_errors else float('nan')
+
     def setSampleSize(self, sampleSize : int):
         """
         Method to set sample size
