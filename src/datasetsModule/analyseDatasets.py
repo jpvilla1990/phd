@@ -2,6 +2,7 @@ import random
 import concurrent.futures
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from datasetsModule.datasetIterator import DatasetIterator
 from datasetsModule.datasets import Datasets
 from utils.fileSystem import FileSystem
@@ -77,6 +78,43 @@ class AnalyseDataset(FileSystem):
                 continue
 
         return pd.DataFrame(np.vstack(samples))
+
+    def analyseDataset(self, dataset: str, contextLength: int = 32, predictionLength: int = 16):
+        """
+        Method to analyse a dataset
+        """
+        trainSet : pd.DataFrame = self.loadSubset(dataset, contextLength, predictionLength, True)
+        testSet : pd.DataFrame = self.loadSubset(dataset, contextLength, predictionLength, False)
+
+        train_stats = trainSet.stack().describe().rename("Train Set")
+        test_stats = testSet.stack().describe().rename("Test Set")
+
+        combined_stats = pd.concat([train_stats, test_stats], axis=1)
+
+        combined_stats.to_csv(f"datasetAnalysis/{dataset}_{contextLength}_{predictionLength}_statistics.csv")
+
+        plt.figure(figsize=(10, 6))
+
+        for i in range(min(len(trainSet), len(testSet))):
+            plt.plot(trainSet.iloc[i].values, label=f"Dataset 1 - Row {i}", color="red", linestyle="-")
+            plt.plot(testSet.iloc[i].values, label=f"Dataset 2 - Row {i}", color="blue", linestyle="--")
+
+        plt.title("Comparison")
+        plt.xlabel("Time Index")
+        plt.ylabel("Value")
+
+        plt.savefig(f"datasetAnalysis/{dataset}_{contextLength}_{predictionLength}_full_comparison.png", dpi=150, bbox_inches="tight")
+        plt.close()
+
+        train_mean = trainSet.mean(axis=0)
+        test_mean = testSet.mean(axis=0)
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(train_mean.values, color="red", label="Train Mean")
+        plt.plot(test_mean.values, color="blue", label="Test Mean")
+
+        plt.savefig(f"datasetAnalysis/{dataset}_{contextLength}_{predictionLength}_mean_comparison.png", dpi=150, bbox_inches="tight")
+        plt.close()
 
 if __name__ == "__main__":
     dataset = "ET"
