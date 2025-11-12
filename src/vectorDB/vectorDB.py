@@ -119,6 +119,29 @@ class vectorDB(FileSystem):
             where={"dataset" : dataset}
         )
 
+    def updateMetadata(self, ids : [str], metadatas : [dict]):
+        """
+        Method to update metadata of several elements in collection
+        """
+        self.__collection.update(
+            ids=ids,
+            metadatas=metadatas,
+        )
+
+    def getAllCollection(self) -> dict:
+        """
+        Method to get all collections in vector database
+        """
+        return self.__collection.get()
+
+    def getSample(self, id : str) -> dict:
+        """
+        Method to get sample from collection by id
+        """
+        return self.__collection.get(
+            ids=[id],
+        )
+
     def queryTimeseries(self, query : np.ndarray, k : int = 1) -> tuple:
         """
         Method to query element from vector database
@@ -145,4 +168,7 @@ class vectorDB(FileSystem):
 
         output : list = [f"{documents[index]},{predictions[index]}" for index in range(len(documents))]
 
-        return np.array([[float(sample) for sample in element.split(",")] for element in output]), scores
+        return (
+            np.array([[float(sample) for sample in element.split(",")] for element in output]),
+            scores,
+        )

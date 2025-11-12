@@ -15,7 +15,7 @@ training:
   beta2: 0.98
   eps: 1e-6
   maxIterationsPerEpoch: 50
-  epochs: 1
+  epochs: 3
   lengthCombinations:
     - contextLength: 32
       predictionLength: 16
@@ -35,7 +35,7 @@ finetuning:
   beta2: 0.98
   eps: 1e-6
   maxIterationsPerEpoch: 500
-  epochs: 1
+  epochs: 2
   lengthCombinations:
     - contextLength: 32
       predictionLength: 16
@@ -786,6 +786,7 @@ paths:
   vectorDatabase: ["data", "vectorDatabase"]
   RagCAModels: ["data", "models", "RagCA"]
   lmdbDatabasePath: ["data", "datasets", "lmdbDatabases"]
+  pretrainedModels: ["pretrained"]
 files:
   datasets: ["data", "datasets", "datasets.yaml"]
   databaseTracking: ["data", "databaseTracking.yaml"]

@@ -208,6 +208,11 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
+
                             pred : np.ndarray = model.predictWithStepFitting(
                                 sample[index].iloc[:contextLength].values,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
@@ -344,6 +349,11 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
+
                             pred : np.ndarray = model.inference(sample[[0, index]].iloc[:contextLength], dataset)
                             mase : float = self.__getMASE(
                                 seasonabilityError,
@@ -474,6 +484,11 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
+
                             pred : np.ndarray = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset)
 
                             mase : float = self.__getMASE(
@@ -606,6 +621,11 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
+
                             pred : np.ndarray = model.ragInference(sample[[0, index]].iloc[:contextLength], dataset, True, cosine)
 
                             mase : float = self.__getMASE(
@@ -737,6 +757,11 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
+
                             pred : np.ndarray = model.rafInference(sample[[0, index]].iloc[:contextLength], dataset, True)
 
                             mase : float = self.__getMASE(
@@ -868,6 +893,11 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
+
                             pred : np.ndarray = model.rafInference(sample[[0, index]].iloc[:contextLength], dataset, True, True)
 
                             mase : float = self.__getMASE(
@@ -999,6 +1029,11 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
+
                             pred : np.ndarray = model.ragOnlyInference(sample[[0, index]].iloc[:contextLength], dataset, True)
 
                             mase : float = self.__getMASE(
@@ -1127,6 +1162,11 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
+
                             pred : np.ndarray = model.inference(sample[[index]].iloc[:contextLength])
 
                             mase : float = self.__getMASE(
@@ -1258,6 +1298,11 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
+
                             pred : np.ndarray = model.ragInference(sample[[index]].iloc[:contextLength], dataset)
 
                             mase : float = self.__getMASE(
@@ -1332,6 +1377,8 @@ class Evaluation(FileSystem):
         subdataset : str = "",
         trainSet : bool = False,
         raf : bool = True,
+        loadPretrainedModel : bool = False,
+        bolt : bool = True,
     ) -> dict:
         """
         Method to evaluate model RAG CA
@@ -1340,7 +1387,7 @@ class Evaluation(FileSystem):
         print(f"Evaluating Dataset {dataset}, context length : {contextLength}, prediction length : {predictionLength}, collection : {collection}_{dataset}")
         maxTestSamples : int = self._getConfig()["maxTestSamples"]
         subdatasets : list = []
-        model : Chronos = Chronos(bolt=False, frozen=False)
+        model : Chronos = Chronos(bolt=bolt, frozen=False, loadPretrainedModel=loadPretrainedModel)
         model.setRafCollection(collection, dataset)
 
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
@@ -1355,15 +1402,16 @@ class Evaluation(FileSystem):
             subdatasets.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
+        reportMAE : np.ndarray = np.array([])
+        reportMSE : np.ndarray = np.array([])
+        reportMSERef : np.ndarray = np.array([])
+        reportMASE : np.ndarray = np.array([])
+        reportMASEExtended : np.ndarray = np.array([])
+        reportMASERef : np.ndarray = np.array([])
+        reportMASERaf : np.ndarray = np.array([])
         for element in subdatasets:
             try:
                 print(f"Subdataset {element}")
-                reportMAE : np.ndarray = np.array([])
-                reportMSE : np.ndarray = np.array([])
-                reportMSERef : np.ndarray = np.array([])
-                reportMASE : np.ndarray = np.array([])
-                reportMASERef : np.ndarray = np.array([])
-                reportMASERaf : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
@@ -1392,6 +1440,10 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
 
                             pred : np.ndarray = None
                             refPred : np.ndarray = None
@@ -1401,6 +1453,13 @@ class Evaluation(FileSystem):
                                     model.predictRag,
                                     sample[index].iloc[:contextLength].values,
                                     predictionLength,
+                                    extended=False,
+                                )
+                                futurePredExtended : concurrent.futures._base.Future = executor2.submit(
+                                    model.predictRag,
+                                    sample[index].iloc[:contextLength].values,
+                                    predictionLength,
+                                    extended=True,
                                 )
                                 futurePredRef : concurrent.futures._base.Future = executor2.submit(
                                     model.predict,
@@ -1413,6 +1472,7 @@ class Evaluation(FileSystem):
                                     predictionLength,
                                 )
                                 pred = futurePred.result()
+                                predExtended = futurePredExtended.result()
                                 refPred = futurePredRef.result()
                                 rafPred = futurePredRaf.result()
 
@@ -1429,6 +1489,12 @@ class Evaluation(FileSystem):
                                 seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 pred,
+                            )
+
+                            maseExtended : float = self.__getMASE(
+                                seasonabilityError,
+                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
+                                predExtended,
                             )
 
                             maseRef : float = self.__getMASE(
@@ -1462,6 +1528,8 @@ class Evaluation(FileSystem):
 
                             if mase:
                                 reportMASE = np.append(reportMASE, [mase])
+                            if maseExtended:
+                                reportMASEExtended = np.append(reportMASEExtended, [maseExtended])
                             if maseRef:
                                 reportMASERef = np.append(reportMASERef, [maseRef])
                             if maseRaf:
@@ -1482,45 +1550,15 @@ class Evaluation(FileSystem):
                 if iterations <= 0:
                     continue
 
-                #report : dict = self.__loadReport("evaluationReportsMoiraiMoERagCA")
-
-                #if dataset not in report:
-                #    report[dataset] = dict()
-                #if f"{contextLength},{predictionLength}" not in report[dataset]:
-                #    report[dataset][f"{contextLength},{predictionLength}"] = dict()
-
-                #report[dataset][f"{contextLength},{predictionLength}"][element] = {
-                #    "MASE" : {
-                #        "mean" : float(reportMASE.mean()),
-                #        "median" : float(np.median(reportMASE)),
-                #    },
-                #    "MAE" : {
-                #        "mean" : float(reportMAE.mean()),
-                #        "median" : float(np.median(reportMAE)),
-                #    },
-                #    "MSE" : {
-                #        "mean" : float(reportMSE.mean()),
-                #        "median" : float(np.median(reportMSE)),
-                #    },
-                #    "numberIterations" : iterations,
-                #}
-                print("MASE: " + str(np.mean(reportMASE)))
-                print("MASE Ref: " + str(np.mean(reportMASERef)))
-                print("MASE Raf: " + str(np.mean(reportMASERaf)))
-
-                with open("mase.txt", "a") as file:
-                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)},{np.mean(reportMASERef)},{np.mean(reportMASERaf)}\n")
-                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMSE)},{np.mean(reportMSERef)}\n")
-                    #file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)}\n")
-
-                #self.__writeReport(report, "evaluationReportsMoiraiMoERagCA")
-
             except Exception as e:
                 raise e
                 print("Exception: " + str(e))
                 continue
 
-        return report
+        print("MASE: " + str(np.mean(reportMASE)))
+        print("MASE Extended: " + str(np.mean(reportMASEExtended)))
+        print("MASE Ref: " + str(np.mean(reportMASERef)))
+        print("MASE Raf: " + str(np.mean(reportMASERaf))) 
 
     def evaluateChronos(
         self,
@@ -1584,6 +1622,10 @@ class Evaluation(FileSystem):
                         for i in range(len(indexes)):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
+                                continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
                                 continue
 
                             pred : np.ndarray = None
@@ -1657,6 +1699,8 @@ class Evaluation(FileSystem):
         trainSet : bool = False,
         raf : bool = True,
         useTrainRagDatabase : bool = False,
+        loadPretrainedRagCA : bool = True,
+        fineTunedModel : str = "",
     ) -> dict:
         """
         Method to evaluate model RAG CA
@@ -1670,7 +1714,7 @@ class Evaluation(FileSystem):
             predictionLength = predictionLength,
             contextLength = contextLength,
             numSamples = numberSamples,
-            loadPretrainedModel=True,
+            loadPretrainedModel=loadPretrainedRagCA,
         )
         modelFineTuned : MoiraiMoE = MoiraiMoE(
             predictionLength = predictionLength,
@@ -1678,11 +1722,14 @@ class Evaluation(FileSystem):
             numSamples = numberSamples,
             loadPretrainedModel=False,
             loadFineTunedModel=True,
+            fineTunedModel=fineTunedModel,
         )
         if raf:
             model.setRafCollection(collection, ragDataset)
+            modelFineTuned.setRafCollection(collection, ragDataset)
         else:
             model.setRagCollection(collection, ragDataset)
+            modelFineTuned.setRagCollection(collection, ragDataset)
         iterator : DatasetIterator = self.__dataset.loadDataset(dataset)
         iterator.setSampleSize(contextLength + predictionLength)
 
@@ -1711,19 +1758,18 @@ class Evaluation(FileSystem):
             subdatasets.append(subdataset)
 
         maxTestSamplesPerSubdataset : int = int(maxTestSamples / len(subdatasets))
+        reportMAE : np.ndarray = np.array([])
+        reportMSE : np.ndarray = np.array([])
+        reportMSERefBase : np.ndarray = np.array([])
+        reportMSERaf : np.ndarray = np.array([])
+        reportMASE : np.ndarray = np.array([])
+        reportMASEExtended : np.ndarray = np.array([])
+        reportMASERefBase : np.ndarray = np.array([])
+        reportMASERaf : np.ndarray = np.array([])
+        reportMASEFineTuning : np.ndarray = np.array([])
         for element in subdatasets:
             try:
                 print(f"Subdataset {element}")
-                reportMAE : np.ndarray = np.array([])
-                reportMSE : np.ndarray = np.array([])
-                reportMSERef : np.ndarray = np.array([])
-                reportMSERefBase : np.ndarray = np.array([])
-                reportMSERaf : np.ndarray = np.array([])
-                reportMASE : np.ndarray = np.array([])
-                reportMASERef : np.ndarray = np.array([])
-                reportMASERefBase : np.ndarray = np.array([])
-                reportMASERaf : np.ndarray = np.array([])
-                reportMASEFineTuning : np.ndarray = np.array([])
                 iterations : int = 0
                 running : bool = True
                 iterator.resetIteration(element, True, trainPartition=self._getConfig()["trainPartition"])
@@ -1752,6 +1798,10 @@ class Evaluation(FileSystem):
                             index : int = indexes[i]
                             if sample[index].isna().any().any():
                                 continue
+                            if (sample[index] == 0.0).any().any():
+                                continue
+                            if (sample[index] == sample[index].mean().mean()).all().all():
+                                continue
 
                             pred : np.ndarray = None
                             refPred : np.ndarray = None
@@ -1761,13 +1811,14 @@ class Evaluation(FileSystem):
                                     sample[[0, index]].iloc[:contextLength],
                                     dataset,
                                     cosine=False,
-                                    plot=True,
+                                    extended=False,
                                 )
-                                futurePredRef : concurrent.futures._base.Future = executor2.submit(
-                                    model.ragInference,
+                                futurePredExtended : concurrent.futures._base.Future = executor2.submit(
+                                    model.ragCaInference,
                                     sample[[0, index]].iloc[:contextLength],
                                     dataset,
                                     cosine=False,
+                                    extended=True,
                                 )
                                 futurePredRefBase : concurrent.futures._base.Future = executor2.submit(
                                     model.inference,
@@ -1787,7 +1838,7 @@ class Evaluation(FileSystem):
                                     dataset,
                                 )
                                 pred = futurePred.result()
-                                refPred = futurePredRef.result()
+                                predExtended = futurePredExtended.result()
                                 refPredBase = futurePredRefBase.result()
                                 futurePredRaf = futurePredRaf.result()
                                 futurePredFineTuning = futurePredFineTuning.result()
@@ -1807,10 +1858,10 @@ class Evaluation(FileSystem):
                                 pred,
                             )
 
-                            maseRef : float = self.__getMASE(
+                            maseExtended : float = self.__getMASE(
                                 seasonabilityError,
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                refPred,
+                                predExtended,
                             )
 
                             maseRefBase : float = self.__getMASE(
@@ -1842,12 +1893,6 @@ class Evaluation(FileSystem):
                                 std,
                             )
 
-                            mseRef : float = self.__getMSE(
-                                sample[index].iloc[contextLength:contextLength+predictionLength].values,
-                                refPred,
-                                std,
-                            )
-
                             mseRefBase : float = self.__getMSE(
                                 sample[index].iloc[contextLength:contextLength+predictionLength].values,
                                 refPredBase,
@@ -1862,8 +1907,8 @@ class Evaluation(FileSystem):
 
                             if mase:
                                 reportMASE = np.append(reportMASE, [mase])
-                            if maseRef:
-                                reportMASERef = np.append(reportMASERef, [maseRef])
+                            if maseExtended:
+                                reportMASEExtended = np.append(reportMASEExtended, [maseExtended])
                             if maseRefBase:
                                 reportMASERefBase = np.append(reportMASERefBase, [maseRefBase])
                             if maseRaf:
@@ -1874,8 +1919,6 @@ class Evaluation(FileSystem):
                                 reportMAE = np.append(reportMAE, [mae])
                             if mse:
                                 reportMSE = np.append(reportMSE, [mse])
-                            if mseRef:
-                                reportMSERef = np.append(reportMSERef, [mseRef])
                             if mseRefBase:
                                 reportMSERefBase = np.append(reportMSERefBase, [mseRefBase])
                             if mseRaf:
@@ -1890,43 +1933,12 @@ class Evaluation(FileSystem):
                 if iterations <= 0:
                     continue
 
-                report : dict = self.__loadReport("evaluationReportsMoiraiMoERagCA")
-
-                if dataset not in report:
-                    report[dataset] = dict()
-                if f"{contextLength},{predictionLength}" not in report[dataset]:
-                    report[dataset][f"{contextLength},{predictionLength}"] = dict()
-
-                report[dataset][f"{contextLength},{predictionLength}"][element] = {
-                    "MASE" : {
-                        "mean" : float(reportMASE.mean()),
-                        "median" : float(np.median(reportMASE)),
-                    },
-                    "MAE" : {
-                        "mean" : float(reportMAE.mean()),
-                        "median" : float(np.median(reportMAE)),
-                    },
-                    "MSE" : {
-                        "mean" : float(reportMSE.mean()),
-                        "median" : float(np.median(reportMSE)),
-                    },
-                    "numberIterations" : iterations,
-                }
-                print("MASE: " + str(np.mean(reportMASE)))
-                print("MASE Ref: " + str(np.mean(reportMASERef)))
-                print("MASE Ref Base: " + str(np.mean(reportMASERefBase)))
-                print("MASE Raf: " + str(np.mean(reportMASERaf)))
-                print("MASE Fine Tuning: " + str(np.mean(reportMASEFineTuning)))
-
-                with open("mase.txt", "a") as file:
-                    file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)},{np.mean(reportMASERef)},{np.mean(reportMASERefBase)},{np.mean(reportMASERaf)},{np.mean(reportMASEFineTuning)}\n")
-                    #file.write(f"{dataset},{contextLength},{predictionLength},{element},{np.mean(reportMASE)}\n")
-
-                self.__writeReport(report, "evaluationReportsMoiraiMoERagCA")
-
             except Exception as e:
                 raise e
                 print("Exception: " + str(e))
                 continue
-
-        return report
+        print("MASE: " + str(np.mean(reportMASE)))
+        print("MASE Extended: " + str(np.mean(reportMASEExtended)))
+        print("MASE Ref Base: " + str(np.mean(reportMASERefBase)))
+        print("MASE Raf: " + str(np.mean(reportMASERaf)))
+        print("MASE Fine Tuning: " + str(np.mean(reportMASEFineTuning)))

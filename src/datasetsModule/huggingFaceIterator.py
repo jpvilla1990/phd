@@ -97,6 +97,15 @@ class HuggingFaceIterator(object):
 
         return features
 
+    def getDatasetMetadata(self) -> dict:
+        return {"std" : 1.0, "mean" : 0.0}
+
+    def getSeasonabilityError(self, subdataset : str) -> float:
+        """
+        Method to get seasonability error
+        """
+        return 1.0
+
     def resetIteration(self, subdataset : str, randomOrder : bool = False, trainPartition : float = 1.0):
         """
         Method to reset dataset iteration

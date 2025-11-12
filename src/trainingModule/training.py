@@ -130,9 +130,13 @@ class TrainingRagCA(L.LightningModule):
         refPredSample : torch.Tensor = refPred.sample(torch.Size((self.numberSamples,))).mean(dim=0)[:,-2,:].clone()
         masePred : torch.Tensor = self.__getMASE(xContext, xTarget, predSample)
         maseRefPred : torch.Tensor = self.__getMASE(xContext, xTarget, refPredSample)
-        loss : torch.Tensor = logProbPred - logProbRef
+        loss : torch.Tensor = logProbPred
         loss = loss.mean()
-        print(loss)
+        #for param in self.parameters():
+        #    print(param)
+        #    break
+        print(f"Relative Loss: {(logProbPred - logProbRef).mean()}")
+        print(f"Loss: {loss}")
         print(f"MASE Pred: {masePred}, MASE Ref: {maseRefPred}")
 
         Utils.plot(
@@ -155,7 +159,7 @@ class TrainingRagCA(L.LightningModule):
             contextLength,
         )
 
-        self.log("train_loss", loss, on_step=True, on_epoch=True)
+        self.log("train_loss", loss, on_step=True, on_epoch=False)
         return loss
 
     def configure_optimizers(self):
@@ -244,7 +248,7 @@ class Training(FileSystem):
                     dirpath=self._getPaths()["RagCAModels"],
                     filename=f"RagCA-2-{modelName}-{self._getConfig()['training']['dataset']}-{{epoch:02d}}-{{step:06d}}",
                     save_top_k=-1,
-                    every_n_train_steps=100,
+                    every_n_train_steps=10,
                     save_on_train_epoch_end=False,
                 ),
             ],

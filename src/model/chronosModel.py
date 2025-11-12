@@ -20,6 +20,7 @@ class Chronos(FileSystem):
         self,
         bolt : bool = False,
         frozen : bool = False,
+        loadPretrainedModel : bool = True,
     ):
         self.__bolt : bool = bolt
         self.__modelName : str = "amazon/chronos-bolt-small" if bolt else "amazon/chronos-t5-small"
@@ -37,7 +38,7 @@ class Chronos(FileSystem):
         self.__modelRagCA : RagCrossAttention = RagCrossAttention(
             patchSize=16,
             pretrainedModel=self._getFiles()["paramsRagCA"],
-            loadPretrainedModel=True,
+            loadPretrainedModel=loadPretrainedModel,
         )
 
     def setRafCollection(self, collectionName : str, dataset : str):
@@ -58,10 +59,16 @@ class Chronos(FileSystem):
 
     def predict(self, sample : np.ndarray | torch.Tensor, predictionLength : int = 16) -> np.ndarray:
         sample = torch.tensor(sample) if type(sample) == np.ndarray else sample
-        return self.__model.predict_quantiles(
+        import time
+        start = time.perf_counter()
+        prediction = self.__model.predict_quantiles(
             context=sample,
             prediction_length=predictionLength,
-        )[1].squeeze().numpy()
+        )
+        end = time.perf_counter()
+
+        #print(f"Inference time: {(end - start) * 1000:.3f} ms")
+        return prediction[1].squeeze().numpy()
 
     def predictTraining(self, sample : np.ndarray | torch.Tensor, predictionLength : int = 16) -> np.ndarray:
         """
@@ -208,10 +215,10 @@ class Chronos(FileSystem):
 
         return queriedBatch, scoreBatch
 
-    def predictRag(self, sample : np.ndarray | torch.Tensor, predictionLength : int = 16) -> np.ndarray:
+    def predictRag(self, sample : np.ndarray | torch.Tensor, predictionLength : int = 16, extended : bool = False) -> np.ndarray:
         contextLength : int = sample.shape[-1]
         query : torch.tensor = torch.tensor(sample, dtype=torch.float32)
-        queried, score = self.queryVector(query, k=16)
+        queried, score = self.queryVector(query, k=self._getConfig()["vectorDatabase"]["k"])
         if queried is not None:
             xContext : torch.Tensor = query.unsqueeze(0)
             queriedTorch : torch.Tensor = torch.Tensor(queried).unsqueeze(0)
@@ -221,18 +228,19 @@ class Chronos(FileSystem):
                 xContext,
                 queriedTorch,
                 scoreTensor,
+                extended
             )
 
             id : str = str(uuid.uuid4())
 
-            Utils.plot(
-                [
-                    augmentedSample.squeeze().tolist(),
-                ],
-                "images/augmentedSample" + id + ".png",
-                "-",
-                contextLength + contextLength + predictionLength,
-            )
+            #Utils.plot(
+            #    [
+            #        augmentedSample.squeeze().tolist(),
+            #    ],
+            #    "images/augmentedSample" + id + ".png",
+            #    "-",
+            #    contextLength + contextLength + predictionLength,
+            #)
 
             return ((self.predict(
                 augmentedSample.squeeze().to("cpu"),

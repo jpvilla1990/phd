@@ -1,4 +1,5 @@
 import uuid
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -114,6 +115,7 @@ class MoiraiMoE(FileSystem):
         frozen : bool = True,
         loadPretrainedModel : bool = False,
         loadFineTunedModel : bool = False,
+        fineTunedModel : str = "",
     ):
         super().__init__()
         self.__patchSize : int = patchSize
@@ -149,7 +151,7 @@ class MoiraiMoE(FileSystem):
         )
 
         if loadFineTunedModel:
-            checkpoint : dict = torch.load(self._getFiles()["paramsFineTunedModel"], weights_only=False)
+            checkpoint : dict = torch.load(os.path.join(self._getPaths()["pretrainedModels"], fineTunedModel), weights_only=False)
             parsedCheckpoint : dict = {}
             for key in checkpoint["state_dict"].keys():
                 if key.startswith("model.module."):
@@ -432,7 +434,14 @@ class MoiraiMoE(FileSystem):
             }],
             freq=self.__getFrequency(sample["datetime"].iloc[0:2], timestampFormat)
         )
-        return next(iter(self.__predictor.predict(sampleGluonts))).quantile(0.5)
+        #import time
+        #start = time.perf_counter()
+        prediction = next(iter(self.__predictor.predict(sampleGluonts)))
+
+        #end = time.perf_counter()
+
+        #print(f"Inference time: {(end - start) * 1000:.3f} ms")
+        return prediction.quantile(0.5)
 
     def ragInference(
             self,
@@ -517,6 +526,7 @@ class MoiraiMoE(FileSystem):
             dataset : str,
             cosine : bool = True,
             plot : bool = False,
+            extended : bool = False,
         ) -> np.ndarray:
         """
         Method to predict one sample, first columns must be the timestamp and second is the timeseries
@@ -538,6 +548,7 @@ class MoiraiMoE(FileSystem):
                 xContext,
                 queriedTorch,
                 scoreTensor,
+                extended,
             )
 
             steps : int = math.ceil(self.__predictionLength / self.__patchSize)
@@ -549,7 +560,7 @@ class MoiraiMoE(FileSystem):
             for step in range(steps):
                 pred = self.forwardRagCA(
                     timeSeries,
-                    False,
+                    True,
                 )
 
                 pred = pred.sample(torch.Size((self.__numberSamples,))).median(dim=0).values[:,-2,:].clone()
